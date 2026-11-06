@@ -1,214 +1,214 @@
 /* Jumbotron.css */
 
 .jumbotron {
-    background-image: 
-        /* url("/static/images/IMG_0847 1.png"),
-        url("/static/images/IMG_0847 2.png"), */
-        /* url("/static/images/backgroundnew.PNG"); */
-        url("/img/static/images/official-jumbo-finall.webp");
-    background-size: 
-        /* 300px auto,
-        300px auto, */
-        cover;
-    background-repeat: 
-        /* no-repeat,
-        no-repeat, */
-        no-repeat;
-    background-position:
-        /* top left,
-        bottom 420px right 0, */
-        top center;
-    padding: 2rem 1rem;
-    display: flex;
-    flex-direction: column;
-    /* justify-content: center;  OLD CODE*/ 
-    justify-content: flex-start;
-    max-height: 100vh;
+  background-image: 
+      /* url("/static/images/IMG_0847 1.png"),
+      url("/static/images/IMG_0847 2.png"), */
+      /* url("/static/images/backgroundnew.PNG"); */
+      url("/img/static/images/official-jumbo-finall.webp");
+  background-size: 
+      /* 300px auto,
+      300px auto, */
+      cover;
+  background-repeat: 
+      /* no-repeat,
+      no-repeat, */
+      no-repeat;
+  background-position:
+      /* top left,
+      bottom 420px right 0, */
+      top center;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center;  OLD CODE*/ 
+  justify-content: flex-start;
+  max-height: 100vh;
 }
 
 .mentor-app {
-  filter: drop-shadow(0rem 0rem 0.7rem #A6CDC4);
+filter: drop-shadow(0rem 0rem 0.7rem #A6CDC4);
 }
 .mentor-app:hover {
-  filter: drop-shadow(0rem 0rem 1rem #A6CDC4);
+filter: drop-shadow(0rem 0rem 1rem #A6CDC4);
 }
 
 /* .jumbo-group {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 9rem;
+display: flex;
+flex-wrap: wrap;
+flex-direction: column;
+align-items: center;
+margin-top: 9rem;
 } */
 
 .jumbo-group {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  align-items: flex-start;
+display: flex;
+flex-wrap: wrap;
+flex-direction: column;
+align-items: flex-start;
 }
 
 .jumbo-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 4rem 0rem 0rem 0rem;
-  gap: 1.3rem;
+display: flex;
+flex-wrap: wrap;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+margin: 4rem 0rem 0rem 0rem;
+gap: 1.3rem;
 }
 
 .jumbo-title{
-    text-shadow: 0rem 0rem 3rem white;
+  text-shadow: 0rem 0rem 3rem white;
 }
 
 
 .jumbo-text {
-    font-family: var(--font-marcellus);
+  font-family: var(--font-marcellus);
 }
 
 .countdown-container {
-  background-color: #251E2B;
-  padding: 4rem 2rem;
-  width: 100%;
+background-color: #251E2B;
+padding: 4rem 2rem;
+width: 100%;
 }
 
 .countdown {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  width: 100%;
-  position: relative;
-  margin-top: 8rem;
-  margin-bottom: 6rem;
-  gap: 3rem;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-wrap: wrap;
+width: 100%;
+position: relative;
+margin-top: 8rem;
+margin-bottom: 6rem;
+gap: 3rem;
 }
 
 .circle-container {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0;
+position: relative;
+display: flex;
+flex-direction: column;
+align-items: center;
+margin: 0;
 }
 
 .circle {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  box-shadow: 0px 25px 101.5px #D2AF71;
-  color: #755642;
-  font-family: var(--font-righteous);
+display: flex;
+justify-content: center;
+align-items: center;
+border-radius: 50%;
+box-shadow: 0px 25px 101.5px #D2AF71;
+color: #755642;
+font-family: var(--font-righteous);
 }
 
 .label {
-  color: #CCBA97;
-  margin-top: 1rem;
-  font-size: 12px;
-  font-family: var(--font-darker-grotesque);
+color: #CCBA97;
+margin-top: 1rem;
+font-size: 12px;
+font-family: var(--font-darker-grotesque);
 }
 
 /* Circle Sizes & Text Sizes */
 .circle-container.large .circle {
-  width: 14rem;
-  height: 14rem;
+width: 14rem;
+height: 14rem;
 }
 
 .circle-container.medium .circle {
-  width: 10rem;
-  height: 10rem;
+width: 10rem;
+height: 10rem;
 }
 
 .circle-container.small .circle {
-  width: 7rem;
-  height: 7rem;
+width: 7rem;
+height: 7rem;
 }
 
 .circle-container.smallest .circle {
-  width: 5rem;
-  height: 5rem;
+width: 5rem;
+height: 5rem;
 }
 
 .circle-container.large p {
-  font-size: 45px;
+font-size: 45px;
 }
 
 .circle-container.medium p {
-  font-size: 35px;
+font-size: 35px;
 }
 
 .circle-container.small p {
-  font-size: 28px;
+font-size: 28px;
 }
 
 .circle-container.smallest p {
-  font-size: 24px;
+font-size: 24px;
 }
 
 /* Y-positioning using transform for vertical adjustment */
-  .circle-container.large {
-    transform: translateY(40px);
-  }
-  
-  .circle-container.medium {
-    transform: translateY(100px);
-  }
-  
-  .circle-container.small {
-    transform: translateY(20px);
-  }
+.circle-container.large {
+  transform: translateY(40px);
+}
 
-  .circle-container.smallest {
-    transform: translateY(0px);
-  }
+.circle-container.medium {
+  transform: translateY(100px);
+}
+
+.circle-container.small {
+  transform: translateY(20px);
+}
+
+.circle-container.smallest {
+  transform: translateY(0px);
+}
 
 /* Media Queries */
 @media (max-width: 780px) {
-  .jumbotron {
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Center content vertically */
-    align-items: center; /* Center content horizontally */
-    min-height: 100vh; /* Ensure the jumbotron takes up the full viewport height */
-    background-size: cover;
-    background-position: top left;
-  }
-
-  .jumbo-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center the title horizontally */
-    justify-content: center; /* Center the title vertically */
-    text-align: center; /* Center-align the text */
-    margin-top: 0; /* Remove any top margin */
-  }
-
-  .jumbo-title {
-    font-size: 2.5rem; /* Adjust font size for smaller screens */
-    text-align: center;
-    line-height: 3rem;
-    text-shadow: 0rem 0rem 5rem black,
-                 2px 2px 5px rgba(0, 0, 0, 0.7);
-  }
-
-  .jumbo-text {
-    font-size: 1.5rem; /* Adjust font size for smaller screens */
-    text-align: center;
-    font-weight: 300;
-    text-shadow: 0rem 0rem 5rem black,
-                 1px 1px 3px rgba(0, 0, 0, 0.5);
-  }
+.jumbotron {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center content vertically */
+  align-items: center; /* Center content horizontally */
+  min-height: 100vh; /* Ensure the jumbotron takes up the full viewport height */
+  background-size: cover;
+  background-position: top left;
 }
-  
+
+.jumbo-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the title horizontally */
+  justify-content: center; /* Center the title vertically */
+  text-align: center; /* Center-align the text */
+  margin-top: 0; /* Remove any top margin */
+}
+
+.jumbo-title {
+  font-size: 2.5rem; /* Adjust font size for smaller screens */
+  text-align: center;
+  line-height: 3rem;
+  text-shadow: 0rem 0rem 5rem black,
+               2px 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+.jumbo-text {
+  font-size: 1.5rem; /* Adjust font size for smaller screens */
+  text-align: center;
+  font-weight: 300;
+  text-shadow: 0rem 0rem 5rem black,
+               1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+}
+
 
 @media (min-width: 1024px) {
-  .jumbotron {
-    gap: 6rem;
-  }
+.jumbotron {
+  gap: 6rem;
+}
 }
 
 .circle p {
-  font-family: var(--font-junge);
+font-family: var(--font-junge);
 }

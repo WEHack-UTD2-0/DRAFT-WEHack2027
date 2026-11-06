@@ -49,7 +49,7 @@ const cormorant_garamond = Cormorant_Garamond({
 
 export const metadata: Metadata = {
 	title: "WEHack",
-	description: "WEHack 25-26 Website",
+	description: "WEHack 26-27 Website",
 };
 
 export default function RootLayout({

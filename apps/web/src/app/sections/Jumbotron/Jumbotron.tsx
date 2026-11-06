@@ -1,30 +1,63 @@
 "use client";
-import React, { useEffect, useState } from 'react'
-import './Jumbotron.css'
+import React from 'react';
+import './Jumbotron.css';
 
-function Jumbotron() {
+export default function Jumbotron() {
   return (
-    <section className='jumbotron md:h-[80rem]' id="home">
-      <div className='jumboText-container flex flex-col items-start text-left'>
-        <div className='jumbo-group md:ml-[1rem] mt-16 md:mt-[5rem]'>
-          <h4 className='jumbo-text font-thin text-[#FFE9D7] text-xs md:text-base lg:text-2xl'>WEHack 2027 Presents</h4>
-          <h1 className='jumbo-title text-[#FFE9D7] text-3xl md:text-5xl lg:text-7xl animate-pulse'>WEHack 2027 Coming Soon</h1>
-          <h2 className='jumbo-text font-thin text-[#C9D5E3] text-base sm:text-1xl md:1xl lg:text-4xl'>Spring 2027</h2>
+    <>
+      {/* Asian brush display font CDN */}
+      <link 
+        rel="stylesheet" 
+        href="https://fonts.cdnfonts.com/css/gang-of-three" 
+      />
+      {/* Zen Maru Gothic from Google Fonts */}
+      <link 
+        rel="stylesheet" 
+        href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap" 
+      />
 
-                <div className='jumbo-buttons flex flex-row items-start space-x-4 mt-4 gap-1.3'>
-                <a 
-                  href="https://events.mlh.com/events/14391-wehack-2027" 
-                  className="px-8 py-4 rounded-xl font-bold transition-all duration-200 text-[#1a1a1a] bg-[#FFE9D7] hover:bg-[#CCBA97] transform hover:scale-[1.02] shadow-xl text-lg inline-block"
-                  target="_blank" 
-                  rel="noreferrer"
-                >
-                  Fill out our Interest Form!
-                </a>
-                </div>
+      <section className='jumbotron md:h-[80rem]' id="home">
+        <div className='jumboText-container flex flex-col items-start text-left'>
+          <div className='jumbo-group md:ml-[1rem] mt-16 md:mt-[5rem] flex flex-col items-start'>
+            
+            {/* Top Subtitle - Soft Blue */}
+            <h4 
+              className='text-xs md:text-base lg:text-2xl tracking-wider'
+              style={{ 
+                fontFamily: "'Zen Maru Gothic', sans-serif",
+                color: "#C5D9EB" 
+              }}
+            >
+              WEHack 2027 Presents
+            </h4>
+
+            {/* Main Brush Title - Focal Pink */}
+            <h1 
+              className='text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-wider my-3'
+              style={{ 
+                fontFamily: "'Gang of Three', fantasy, cursive",
+                color: "#EFB5D5",
+                textShadow: '0 0 25px rgba(239, 181, 213, 0.4), 0 3px 10px rgba(0, 0, 0, 0.9)'
+              }}
+            >
+              A Trip to WEMart
+            </h1>
+
+            {/* Bottom Subtitle - Saturated Blue */}
+            <h2 
+              className='text-base sm:text-xl md:text-2xl lg:text-4xl tracking-wide'
+              style={{ 
+                fontFamily: "'Zen Maru Gothic', sans-serif",
+                color: "#C5D9EB",
+                fontWeight: 700 
+              }}
+            >
+              April 3-4
+            </h2>
+
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
-
-export default Jumbotron;
