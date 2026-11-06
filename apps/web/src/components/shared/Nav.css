@@ -1,12 +1,100 @@
-a:hover {
-	/* background-color:#4A3628;
-    border-radius:1rem; */
-	/* Updated cursor with icon */
-	cursor: pointer;	
-	text-shadow: 0rem 0rem 1rem white;
-	transition: 0.3s ease-in-out;
+/* ==========================================================================
+   WEHack 2027 Tokyo Tech Navigation Stylesheet
+   ========================================================================== */
+
+/* 1. Remove all square background tints, focus rings, and outlines on Hamburger Trigger */
+button[aria-haspopup="menu"],
+.mobile-menu-trigger,
+.nav-toggle-btn {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    background-color: transparent !important;
+    background: transparent !important;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.primary-btn {
-	border-radius: 2rem;
+/* Ensure no square appears on hover, click, active, or when open */
+button[aria-haspopup="menu"]:hover,
+button[aria-haspopup="menu"]:active,
+button[aria-haspopup="menu"]:focus,
+button[aria-haspopup="menu"]:focus-visible,
+button[aria-haspopup="menu"][data-state="open"],
+.mobile-menu-trigger:hover,
+.mobile-menu-trigger:active,
+.mobile-menu-trigger[data-state="open"] {
+    background-color: transparent !important;
+    background: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Hamburger icon SVG remains crisp light blue */
+button[aria-haspopup="menu"] svg,
+.mobile-menu-trigger svg {
+    stroke: #C5D9EB !important;
+    color: #C5D9EB !important;
+    transition: opacity 0.15s ease-in-out;
+}
+
+/* Optional subtle icon opacity tweak on hover instead of a box */
+button[aria-haspopup="menu"]:hover svg,
+.mobile-menu-trigger:hover svg {
+    opacity: 0.8;
+}
+
+/* 2. Dropdown Panel Container (Clean Light Blue Outline, Dark Background) */
+[data-radix-popper-content-wrapper] [role="menu"],
+[data-radix-popper-content-wrapper] [role="dialog"],
+.dropdown-menu,
+.mobile-menu-dropdown {
+    background-color: rgba(26, 28, 40, 0.96) !important;
+    border: 1px solid rgba(197, 217, 235, 0.35) !important;
+    box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.75) !important;
+    outline: none !important;
+    border-radius: 0.75rem !important;
+    backdrop-filter: blur(16px) !important;
+}
+
+/* 3. Dropdown Menu Items Hover/Focus & Text Color */
+[role="menuitem"],
+[data-radix-collection-item] {
+    outline: none !important;
+    border: none !important;
+    color: #C5D9EB !important;
+}
+
+[role="menuitem"] a,
+[role="menuitem"] button,
+[role="menuitem"] span {
+    color: #C5D9EB !important;
+}
+
+[role="menuitem"]:hover,
+[role="menuitem"]:focus,
+[role="menuitem"][data-highlighted],
+[data-radix-collection-item]:hover,
+[data-radix-collection-item]:focus {
+    background-color: rgba(197, 217, 235, 0.16) !important;
+    color: #C5D9EB !important;
+    outline: none !important;
+}
+
+[role="menuitem"]:hover a,
+[role="menuitem"]:hover button,
+[role="menuitem"]:hover span {
+    color: #C5D9EB !important;
+}
+
+/* 4. Desktop Navbar Navigation Links */
+.nav-link {
+    font-family: 'IBM Plex Mono', monospace !important;
+    color: #C5D9EB !important;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    transition: color 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+    color: #EFB5D5 !important;
 }

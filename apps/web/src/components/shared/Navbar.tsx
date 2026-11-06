@@ -3,120 +3,85 @@ import Image from "next/image";
 import c from "config";
 import { Button } from "../shadcn/ui/button";
 import ProfileButton from "./ProfileButton";
-import { auth, currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs";
 import NavBarLinksGrouper from "./NavBarLinksGrouper";
-import { Oswald } from "next/font/google";
 import { cn } from "@/lib/utils/client/cn";
 import { getUser } from "db/functions";
 import "./Nav.css";
 
-const oswald = Oswald({
-	variable: "--font-oswald",
-	subsets: ["latin"],
-});
-
 interface NavbarProps {
-	className?: string;
+    className?: string;
 }
 
-export default async function Navbar({ className }: NavbarProps) {
-	const user = await currentUser();
-	const registrationIsComplete =
-		user != null && (await getUser(user.id)) != undefined;
-	return (
-		<div className="absolute z-50 w-screen pt-6">
-			<div className={cn(`relative top-0 z-50 h-16 w-screen`, className)}>
-				<div className="mx-auto grid h-full w-full max-w-7xl grid-flow-col grid-cols-2 px-2 sm:px-6 lg:max-w-full lg:px-8">
-					<div className="col-span-3 flex items-center justify-start gap-x-5 pl-4 md:pl-0">
-						<Link
-							href={"/"}
-							className="mr-5 flex items-center gap-x-2"
-						>
-							<Image
-								src={"/img/static/images/white wehack logo.png"}
-								alt={c.hackathonName + " Logo"}
-								width={65}
-								height={65}
-								className={"drop-shadow-[0_0px_8px_rgba(255,255,255,0.90)] transform-gpu"}
-							/>
-						</Link>
-					</div>
+const NAV_LINKS = [
+    { name: "About", href: "#about-wehack" },
+    { name: "Sponsors", href: "#Sponsor" },
+    { name: "Donations", href: "#Donations" },
+    { name: "FAQ", href: "#FAQ" },
+    { name: "MLH Conduct", href: "http://hackp.ac/coc", external: true },
+    {
+        name: "Hackerpack",
+        href: "https://ultra-spell-68d.notion.site/WEHack-2026-Hacker-Guide-3150c60731128055a92cf2e6e1190852",
+        external: true,
+    },
+];
 
-					<div className="flex items-center justify-between space-x-2 pr-20 md:justify-center md:pr-32">
-						<div className="col-span-2 hidden items-center justify-end gap-x-5 lg:flex md:pr-10">
-							<NavBarLinksGrouper />
-							<a
-								className="text-lg font-medium md:text-sm"
-								href="#about-wehack"
-							>
-								About
-							</a>
-							<a
-								className="text-lg font-medium md:text-sm"
-								href="#LiveStream"
-							>
-								Live Stream
-							</a>
-							<a
-								className="text-lg font-medium md:text-sm"
-								href="#Schedule"
-							>
-								Schedule
-							</a>	
-							<a
-								className="text-lg font-medium md:text-sm"
-								href="#Menu"
-							>
-								Menu
-							</a>
-							{/* <a
-								className="text-lg font-medium md:text-sm"
-								href="#Testimonials"
-							>
-								Testimonials
-							</a> */}
-							<a
-								className="text-lg font-medium md:text-sm"
-								href="#Sponsor"
-							>
-								Sponsors
-							</a>
-							<a
-								className="text-lg font-medium md:text-sm"
-								href="#Donations"
-							>
-								Donations
-							</a>
-							<a
-								className="text-lg font-medium md:text-sm"
-								href="#FAQ"
-							>
-								FAQ
-							</a>
-							{/* <a
-								className="text-lg font-medium md:text-sm"
-								href="#ImageGallery"
-							>
-								Meet the Team
-							</a> */}
-							<a
-								className="text-lg font-medium md:text-sm"
-								href="http://hackp.ac/coc"
-								target="_blank"
-							>
-								MLH Conduct
-							</a>
-							<a
-								className="text-lg font-medium md:text-sm"
-								href="https://ultra-spell-68d.notion.site/WEHack-2026-Hacker-Guide-3150c60731128055a92cf2e6e1190852"
-								target="_blank"
-							>
-								Hackerpack
-							</a>
-						</div>
-						<div className="hidden gap-x-4 lg:flex">
-							{user ? (
-								<>
+export default async function Navbar({ className }: NavbarProps) {
+    const user = await currentUser();
+    const registrationIsComplete =
+        user != null && (await getUser(user.id)) != undefined;
+
+    return (
+        <>
+            <link
+                rel="stylesheet"
+                href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Zen+Maru+Gothic:wght@700&display=swap"
+            />
+
+            <div className="absolute z-50 w-screen pt-6">
+                <div className={cn(`relative top-0 z-50 h-16 w-screen`, className)}>
+                    <div className="mx-auto grid h-full w-full max-w-7xl grid-flow-col grid-cols-2 px-2 sm:px-6 lg:max-w-full lg:px-8">
+                        
+                        {/* Logo */}
+                        <div className="col-span-3 flex items-center justify-start gap-x-5 pl-4 md:pl-0">
+                            <Link
+                                href={"/"}
+                                className="mr-5 flex items-center gap-x-2"
+                            >
+                                <Image
+                                    src={"/img/static/images/white wehack logo.png"}
+                                    alt={c.hackathonName + " Logo"}
+                                    width={65}
+                                    height={65}
+                                    className={"drop-shadow-[0_0px_10px_rgba(239,181,213,0.35)] transform-gpu"}
+                                />
+                            </Link>
+                        </div>
+
+                        {/* Navigation Links and Actions */}
+                        <div className="flex items-center justify-between space-x-2 pr-4 md:justify-center md:pr-10 lg:pr-16">
+                            <div className="col-span-2 hidden items-center justify-end gap-x-6 lg:flex md:pr-8">
+                                <NavBarLinksGrouper />
+                                {NAV_LINKS.map((link) => (
+                                    <a
+                                        key={link.name}
+                                        className="text-xs uppercase tracking-[0.18em] transition-colors duration-200"
+                                        style={{
+                                            fontFamily: "'IBM Plex Mono', monospace",
+                                            color: "#C5D9EB",
+                                        }}
+                                        href={link.href}
+                                        target={link.external ? "_blank" : undefined}
+                                        rel={link.external ? "noopener noreferrer" : undefined}
+                                    >
+                                        {link.name}
+                                    </a>
+                                ))}
+                            </div>
+
+                            {/* Authentication / CTA Button */}
+							<div className="hidden gap-x-4 lg:flex">
+								{user ? (
 									<Link
 										href={
 											registrationIsComplete
@@ -124,36 +89,46 @@ export default async function Navbar({ className }: NavbarProps) {
 												: "/register"
 										}
 									>
-										<Button className="primary-btn w-full bg-[#A6CDC4] px-5 py-3 text-[#282738] hover:bg-[#6e8d85]">
+										<Button 
+											className="w-full rounded-xl px-6 py-3 font-bold tracking-wider shadow-lg transition-all duration-200 hover:scale-[1.03] border-none hover:opacity-90"
+											style={{
+												fontFamily: "'Zen Maru Gothic', sans-serif",
+												backgroundColor: "#538FDD",
+												color: "#C5D9EB",
+											}}
+										>
 											{registrationIsComplete
 												? "Dashboard"
 												: "Complete Registration"}
 										</Button>
 									</Link>
-								</>
-							) : (
-								<>
-									{/* <Link href={"/sign-in"}>
-										<Button className="primary-btn w-full bg-[#A6CDC4] px-5 py-3 text-[#282738] hover:bg-[#6e8d85]">
-											Sign In
-										</Button>
-									</Link> */}
+								) : (
 									<Link href={"/register"}>
-										<Button className="primary-btn w-full bg-[#A6CDC4] px-5 py-3 text-[#282738] hover:bg-[#6e8d85]">
+										<Button 
+											className="w-full rounded-xl px-6 py-3 font-bold tracking-wider shadow-lg transition-all duration-200 hover:scale-[1.03] border-none hover:opacity-90"
+											style={{
+												fontFamily: "'Zen Maru Gothic', sans-serif",
+												backgroundColor: "#538FDD",
+												color: "#C5D9EB",
+											}}
+										>
 											Register
 										</Button>
 									</Link>
-								</>
-							)}
-						</div>
-						<div className="relative">
-							<ProfileButton />
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+								)}
+							</div>
+
+                            {/* Hamburger Menu & Profile Trigger */}
+                            <div className="relative">
+                                <ProfileButton />
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </>
+    );
 }
 
 export const runtime = "edge";

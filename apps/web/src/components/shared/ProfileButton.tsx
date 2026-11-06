@@ -1,236 +1,147 @@
-import c from "config";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuGroup,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/shadcn/ui/dropdown-menu";
-import {
-	Avatar,
-	AvatarFallback,
-	AvatarImage,
-} from "@/components/shadcn/ui/avatar";
-import { Button } from "@/components/shadcn/ui/button";
-import { auth, SignOutButton } from "@clerk/nextjs";
+"use client";
+import React from "react";
 import Link from "next/link";
-import { DropdownSwitcher } from "@/components/shared/ThemeSwitcher";
-import DefaultDropdownTrigger from "../dash/shared/DefaultDropDownTrigger";
-import MobileNavBarLinks from "./MobileNavBarLinks";
-import { getUser } from "db/functions";
-import { clientLogOut } from "@/lib/utils/server/user";
-import { useRouter } from "next/router";
-import NavBarLinksGrouper from "./NavBarLinksGrouper";
+import { useUser, useClerk } from "@clerk/nextjs";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/shadcn/ui/dropdown-menu";
+import { Button } from "@/components/shadcn/ui/button";
 
+const MOBILE_NAV_LINKS = [
+    { name: "About", href: "#about-wehack" },
+    { name: "Sponsors", href: "#Sponsor" },
+    { name: "Donations", href: "#Donations" },
+    { name: "FAQ", href: "#FAQ" },
+    { name: "MLH Conduct", href: "http://hackp.ac/coc", external: true },
+    {
+        name: "Hackerpack",
+        href: "https://ultra-spell-68d.notion.site/WEHack-2026-Hacker-Guide-3150c60731128055a92cf2e6e1190852",
+        external: true,
+    },
+];
 
-export default async function ProfileButton() {
-	const clerkUser = await auth();
-	const { userId } = clerkUser;
+export default function ProfileButton() {
+    const { isSignedIn, user } = useUser();
+    const { signOut } = useClerk();
 
-	// This is our default component if there is no user data
-	if (!userId) {
-		return (
-			
-			<DropdownMenu modal={false}>
-				{/* <Link href={"/sign-in"} className="md:hidden">
-					<Button className="primary-btn text-[12px] w-full bg-[#A6CDC4] px-2 py-1 text-[#282738] hover:bg-[#6e8d85]">
-						Sign In
-					</Button>
-				</Link>
-				<Link href={"/register"} className="md:hidden">
-					<Button className="primary-btn text-[12px] w-full bg-[#A6CDC4] px-2 text-[#282738] hover:bg-[#6e8d85]">
-						Register
-					</Button>
-				</Link> */}
-				<DropdownMenuTrigger
-					asChild
-					className="border-transparent bg-transparent hover:border-transparent hover:bg-transparent"
-				>
-					<Button className="relative rounded-full border-transparent bg-transparent hover:bg-transparent">
-						<DefaultDropdownTrigger />
-					</Button>	
-				</DropdownMenuTrigger>
-				
-				<DropdownMenuContent
-					className="mt-2 w-32 bg-[rgb(247,240,232)] sm:w-40 lg:w-52"
-					align="end"
-					forceMount
-				>
-					
-					<DropdownMenuGroup>
-						<Link href={`/sign-in`}>
-							<DropdownMenuItem className="cursor-pointer">
-								Sign In
-							</DropdownMenuItem>
+    return (
+        <DropdownMenu>
+            {/* Hamburger Trigger: Transparent background, zero hover box */}
+            <DropdownMenuTrigger asChild>
+                <Button
+                    variant="ghost"
+                    aria-label="Open navigation menu"
+                    className="flex h-11 w-11 items-center justify-center p-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent focus:ring-0 focus-visible:ring-0 border-none shadow-none text-[#C5D9EB]"
+                >
+                    <svg
+                        className="h-6 w-6 stroke-current text-[#C5D9EB]"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M4 6h16M4 12h16M4 18h16"
+                        />
+                    </svg>
+                </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+                align="end"
+                className="z-50 w-64 rounded-xl border border-[#C5D9EB]/30 bg-[#1A1C28]/95 p-3 text-[#C5D9EB] shadow-2xl backdrop-blur-xl focus:outline-none"
+            >
+                {/* User Header when Logged In */}
+                {isSignedIn && (
+                    <div className="mb-2 border-b border-[#C5D9EB]/20 px-2 pb-2 pt-1">
+                        <span
+                            className="text-[11px] uppercase tracking-wider text-[#C5D9EB]/70"
+                            style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+                        >
+                            Signed in as
+                        </span>
+                        <p
+                            className="truncate text-sm font-semibold text-[#C5D9EB]"
+                            style={{ fontFamily: "'Zen Maru Gothic', sans-serif" }}
+                        >
+                            {user?.primaryEmailAddress?.emailAddress}
+                        </p>
+                    </div>
+                )}
+
+                {/* Mobile Navigation Links */}
+                <div className="flex flex-col space-y-1 lg:hidden">
+                    {MOBILE_NAV_LINKS.map((link) => (
+                        <DropdownMenuItem key={link.name} asChild>
+                            <a
+                                href={link.href}
+                                target={link.external ? "_blank" : undefined}
+                                rel={link.external ? "noopener noreferrer" : undefined}
+                                className="block rounded-lg px-3 py-2 text-xs uppercase tracking-[0.16em] text-[#C5D9EB] transition-colors hover:bg-[#C5D9EB]/15 hover:text-[#C5D9EB] focus:bg-[#C5D9EB]/15 focus:text-[#C5D9EB] focus:outline-none"
+                                style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+                            >
+                                {link.name}
+                            </a>
+                        </DropdownMenuItem>
+                    ))}
+                    <div className="my-2 border-t border-[#C5D9EB]/20" />
+                </div>
+
+                {/* Actions: Register & Sign In / Sign Out */}
+                <div className="flex flex-col space-y-2 pt-1">
+                    
+                    {/* Register Button: Transparent with border matching Sign In */}
+					<DropdownMenuItem asChild>
+						<Link
+							href="/register"
+							className="flex w-full items-center justify-center rounded-lg border border-[#C5D9EB]/30 bg-transparent px-3 py-2.5 text-center text-xs uppercase tracking-widest transition-all duration-150 hover:bg-[#C5D9EB]/20 hover:border-[#C5D9EB] focus:bg-[#C5D9EB]/20 focus:outline-none !text-[#C5D9EB]"
+							style={{ 
+								fontFamily: "'IBM Plex Mono', monospace",
+								color: "#C5D9EB",
+							}}
+						>
+							Register
 						</Link>
-						<Link href={`/register`}>
-							<DropdownMenuItem className="cursor-pointer">
-								Register
-							</DropdownMenuItem>
-						</Link>
-						
-						<MobileNavBarLinks/>
-
-						<DropdownMenuSeparator className="bg-[rgb(228,228,231)]" />
-						{/* <DropdownSwitcher /> */}
-						<Link href={`/bug-report`}>
-							<DropdownMenuItem className="cursor-pointer">
-								Report a Bug
-							</DropdownMenuItem>
-						</Link>
-					</DropdownMenuGroup>
-				</DropdownMenuContent>
-			</DropdownMenu>
-		);
-	}
-
-	// Make request with the clerk data that we may or may not have
-	const user = await getUser(userId);
-
-	// If we do not have a fully fledged user, encourage them to complete registration
-	if (!user) {
-		return (
-			<DropdownMenu>
-				<DropdownMenuTrigger
-					asChild
-					className="border-transparent bg-transparent hover:border-transparent hover:bg-transparent"
-				>
-					<Button className="relative rounded-full border-transparent focus-visible:ring-transparent focus-visible:ring-offset-transparent">
-						<DefaultDropdownTrigger />
-					</Button>
-				</DropdownMenuTrigger>
-				<DropdownMenuContent
-					className="mt-2 w-32 bg-[rgb(247,240,232)] sm:w-40 lg:w-52"
-					align="end"
-					forceMount
-				>
-					<DropdownMenuGroup>
-						<Link href={`/register`}>
-							<DropdownMenuItem className="cursor-pointer">
-								Complete Registration
-							</DropdownMenuItem>
-						</Link>
-						<MobileNavBarLinks />
-						<Link href={`/bug-report`}>
-							<DropdownMenuItem className="cursor-pointer">
-								Report a Bug
-							</DropdownMenuItem>
-						</Link>
-					</DropdownMenuGroup>
-					<DropdownMenuSeparator className="bg-[rgb(228,228,231)]" />
-					{/* <DropdownSwitcher /> */}
-					<SignOutButton signOutCallback={clientLogOut}>
-						<DropdownMenuItem className="cursor-pointer hover:!bg-destructive">
-							Sign out
-						</DropdownMenuItem>
-					</SignOutButton>
-				</DropdownMenuContent>
-			</DropdownMenu>
-		);
-	}
-
-	// Returns only if there is a full user
-	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button
-					variant="ghost"
-					className="relative h-8 w-8 rounded-full"
-				>
-					<Avatar className="h-8 w-8">
-						<AvatarImage src={user.profilePhoto} alt="@shadcn" />
-						<AvatarFallback>
-							{user.firstName.charAt(0) + user.lastName.charAt(0)}
-						</AvatarFallback>
-					</Avatar>
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent
-				className="mt-2 w-32 sm:w-40 lg:w-52"
-				align="end"
-				forceMount
-			>
-				<DropdownMenuLabel className="font-normal break-words break-all">
-					<div className="flex flex-col space-y-1">
-						<p className="text-xl font-medium leading-none">{`${user.firstName} ${user.lastName}`}</p>
-						<p className="text-xl flex flex-row leading-none text-border">
-							@{user.hackerTag}
-						</p>
-					</div>
-				</DropdownMenuLabel>
-				<DropdownMenuSeparator className="bg-[rgb(228,228,231)]" />
-				<DropdownMenuGroup>
-					<Link href={`/`}>
-						<DropdownMenuItem className="cursor-pointer">
-							Home
-						</DropdownMenuItem>
-					</Link>
-					<Link href={`/rsvp`}>
-						<DropdownMenuItem className="cursor-pointer">
-							RSVP
-						</DropdownMenuItem>
-					</Link>
-					<Link href={`/dash`}>
-						<DropdownMenuItem className="cursor-pointer">
-							Dashboard
-						</DropdownMenuItem>
-					</Link>
-					<Link href={`/@${user.hackerTag}`}>
-						<DropdownMenuItem className="cursor-pointer">
-							Profile
-						</DropdownMenuItem>
-					</Link>
-					<Link href={`/dash/pass`}>
-						<DropdownMenuItem className="cursor-pointer">
-							Event Pass
-						</DropdownMenuItem>
-					</Link>
-					<Link href={c.links.discord} target="_blank">
-						<DropdownMenuItem className="cursor-pointer">
-							Discord
-						</DropdownMenuItem>
-					</Link>
-					<Link href={c.links.guide} target="_blank">
-						<DropdownMenuItem className="cursor-pointer">
-							Hacker Pack
-						</DropdownMenuItem>
-					</Link>
-					{/* <MobileNavBarLinks /> */}
-					<DropdownMenuSeparator className="bg-[rgb(228,228,231)]" />
-					{["admin", "super_admin", "volunteer"].includes(
-						user.role,
-					) && (
-						<Link href={`/admin`}>
-							<DropdownMenuItem className="cursor-pointer text-background">
-								Admin
-							</DropdownMenuItem>
-						</Link>
-					)}
-					<MobileNavBarLinks />
-					<DropdownMenuSeparator className="bg-[rgb(228,228,231)] dark:bg-[rgb(39,39,42)]" />
-					<Link href={`/bug-report`}>
-						<DropdownMenuItem className="cursor-pointer">
-							Report a Bug
-						</DropdownMenuItem>
-					</Link>
-					<Link href={"/settings"}>
-						<DropdownMenuItem className="cursor-pointer">
-							Settings
-						</DropdownMenuItem>
-					</Link>
-				</DropdownMenuGroup>
-				<DropdownMenuSeparator className="bg-[rgb(228,228,231)]" />
-				{/* <DropdownSwitcher /> */}
-				<SignOutButton signOutCallback={clientLogOut}>
-					<DropdownMenuItem className="cursor-pointer text-red-500 hover:!bg-destructive hover:text-muted">
-						Sign out
 					</DropdownMenuItem>
-				</SignOutButton>
-			</DropdownMenuContent>
-		</DropdownMenu>
-	);
-}
 
-export const runtime = "edge";
+                    {/* Sign In Option (when signed out) */}
+                    {!isSignedIn && (
+                        <DropdownMenuItem asChild>
+                            <Link
+                                href="/sign-in"
+                                className="flex w-full items-center justify-center rounded-lg border border-[#C5D9EB]/30 bg-transparent px-3 py-2 text-xs uppercase tracking-widest transition-all duration-150 hover:bg-[#C5D9EB]/20 hover:border-[#C5D9EB] focus:bg-[#C5D9EB]/20 focus:outline-none !text-[#C5D9EB]"
+                                style={{ 
+                                    fontFamily: "'IBM Plex Mono', monospace",
+                                    color: "#C5D9EB",
+                                }}
+                            >
+                                Sign In
+                            </Link>
+                        </DropdownMenuItem>
+                    )}
+
+                    {/* Sign Out Option (when signed in) */}
+                    {isSignedIn && (
+                        <DropdownMenuItem asChild>
+                            <button
+                                onClick={() => signOut()}
+                                className="flex w-full items-center justify-center rounded-lg px-3 py-2 text-xs uppercase tracking-widest transition-all duration-150 hover:bg-[#C5D9EB]/20 focus:bg-[#C5D9EB]/20 focus:outline-none !text-[#C5D9EB]"
+                                style={{ 
+                                    fontFamily: "'IBM Plex Mono', monospace",
+                                    color: "#C5D9EB",
+                                }}
+                            >
+                                Sign Out
+                            </button>
+                        </DropdownMenuItem>
+                    )}
+
+                </div>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+}

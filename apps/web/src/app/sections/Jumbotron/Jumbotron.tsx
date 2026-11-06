@@ -36,7 +36,7 @@ export default function Jumbotron() {
               className='text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-wider my-3'
               style={{ 
                 fontFamily: "'Gang of Three', fantasy, cursive",
-                color: "#EFB5D5",
+                color: "#EDD0E0",
                 textShadow: '0 0 25px rgba(239, 181, 213, 0.4), 0 3px 10px rgba(0, 0, 0, 0.9)'
               }}
             >
