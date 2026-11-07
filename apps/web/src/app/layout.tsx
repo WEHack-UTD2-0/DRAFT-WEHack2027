@@ -7,6 +7,7 @@ import { neobrutalism } from "@clerk/themes";
 import Script from "next/script";
 import { Inknut_Antiqua, Nunito, Junge, Julius_Sans_One, Righteous, Darker_Grotesque, Sriracha, Cinzel_Decorative, Gantari, Marcellus, Cormorant_Garamond} from "next/font/google";
 import type { Metadata } from "next";
+import { clerkEnabled } from "@/lib/clerk-enabled";
 
 export const dynamic = "force-dynamic";
 
@@ -58,10 +59,16 @@ export default function RootLayout({
 	children: React.ReactNode;
 }) {
 	const theme = cookies().get("hk_theme")?.value || defaultTheme;
-	return (
-		<ClerkProvider>
+	const page = (
 			<html lang="en">
 				<head>
+					{/* WEmart fonts: Yusei Magic, Zen Maru Gothic, IBM Plex Mono */}
+					<link rel="preconnect" href="https://fonts.googleapis.com" />
+					<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+					<link
+						rel="stylesheet"
+						href="https://fonts.googleapis.com/css2?family=Yusei+Magic&family=Zen+Maru+Gothic:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+					/>
 					{/* google analytics tag */}
 					<Script
 						async
@@ -85,8 +92,8 @@ export default function RootLayout({
 					<Analytics />
 				</body>
 			</html>
-		</ClerkProvider>
 	);
+	return clerkEnabled ? <ClerkProvider>{page}</ClerkProvider> : page;
 }
 
 export const runtime = "edge";

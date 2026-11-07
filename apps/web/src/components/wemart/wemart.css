@@ -1,0 +1,128 @@
+/* WEmart — "The Trip to WEmart" (WEHack 2027). Global styles for the landing page. */
+
+/* The site-wide globals.css sets overflow-x:hidden on html/body, which turns them into
+   scroll containers and breaks position:sticky (hero, teams, exit). Use clip instead,
+   and swap the page background, only while the WEmart page is mounted. */
+html:has(.wemart),
+body:has(.wemart) {
+	overflow-x: clip;
+	background: #f2ead0;
+}
+
+.wemart {
+	position: relative;
+	line-height: normal; /* Tailwind preflight sets 1.5; the design uses the browser default */
+	background: #f2ead0;
+	color: #4a3a30;
+	font-family: "Zen Maru Gothic", system-ui, sans-serif;
+	-webkit-font-smoothing: antialiased;
+}
+.wemart *,
+.wemart *::before,
+.wemart *::after {
+	box-sizing: border-box;
+}
+.wemart a {
+	color: #76aecc;
+	text-decoration: none;
+}
+.wemart a:hover {
+	color: #7ba3d6 !important;
+}
+.wemart h1,
+.wemart h2,
+.wemart h3 {
+	font-family: "Yusei Magic", sans-serif;
+}
+/* globals.css sets p and h2 to Marcellus site-wide; paragraphs here use the body font */
+.wemart p {
+	font-family: inherit;
+}
+/* Anchor jumps land below the fixed nav */
+.wemart section[id] {
+	scroll-margin-top: 80px;
+}
+
+@keyframes wm-pop {
+	0% { transform: translateY(-30px) scale(.4); opacity: 0 }
+	60% { transform: translateY(4px) scale(1.1); opacity: 1 }
+	100% { transform: translateY(0) scale(1) }
+}
+@keyframes wm-in {
+	from { opacity: 0; transform: translateY(16px) scale(.97) }
+	to { opacity: 1; transform: none }
+}
+
+/* Photo placeholder (replaces the prototype's <image-slot>) */
+.wm-photo {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	display: flex;
+	align-items: flex-end;
+	background: rgba(255, 255, 255, .45);
+	background-image: repeating-linear-gradient(45deg, rgba(0, 0, 0, .05) 0 6px, transparent 6px 12px);
+}
+.wm-photo img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.wm-photo span {
+	font: 500 8px "IBM Plex Mono", monospace;
+	padding: 4px;
+	color: #4a3a30;
+	background: rgba(255, 255, 255, .8);
+}
+
+/* Sponsor capsule-machine knob */
+.wm-knob:hover {
+	background: #f2ead0 !important;
+}
+
+/* Magazine cover hover lift */
+.mag-cover {
+	transform: rotate(var(--tilt));
+	transition: transform .25s ease;
+}
+.mag-cover:hover,
+.mag-cover:focus-visible {
+	transform: translateY(-18px) rotate(0deg);
+}
+
+/* Magazine book leaves */
+.mag-leaf {
+	position: absolute;
+	left: 50%;
+	top: 0;
+	width: 50%;
+	height: 100%;
+	transform-origin: left center;
+	transition: transform .9s cubic-bezier(.6, .1, .25, 1);
+	transform-style: preserve-3d;
+}
+.mag-face {
+	position: absolute;
+	inset: 0;
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+	border: 1.8px solid #4a3a30;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+.mag-face.back {
+	transform: rotateY(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wemart *,
+	.wemart *::before,
+	.wemart *::after {
+		transition-duration: .01ms !important;
+		animation-duration: .01ms !important;
+	}
+}

@@ -23,11 +23,11 @@ import { getUser } from "db/functions";
 import { clientLogOut } from "@/lib/utils/server/user";
 import { useRouter } from "next/router";
 import NavBarLinksGrouper from "./NavBarLinksGrouper";
+import { clerkEnabled } from "@/lib/clerk-enabled";
 
 
 export default async function ProfileButton() {
-	const clerkUser = await auth();
-	const { userId } = clerkUser;
+	const { userId } = clerkEnabled ? await auth() : { userId: null };
 
 	// This is our default component if there is no user data
 	if (!userId) {

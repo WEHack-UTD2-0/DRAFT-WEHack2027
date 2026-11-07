@@ -9,6 +9,7 @@ import { Oswald } from "next/font/google";
 import { cn } from "@/lib/utils/client/cn";
 import { getUser } from "db/functions";
 import "./Nav.css";
+import { clerkEnabled } from "@/lib/clerk-enabled";
 
 const oswald = Oswald({
 	variable: "--font-oswald",
@@ -20,7 +21,7 @@ interface NavbarProps {
 }
 
 export default async function Navbar({ className }: NavbarProps) {
-	const user = await currentUser();
+	const user = clerkEnabled ? await currentUser() : null;
 	const registrationIsComplete =
 		user != null && (await getUser(user.id)) != undefined;
 	return (

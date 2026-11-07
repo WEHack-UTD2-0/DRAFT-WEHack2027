@@ -9,6 +9,7 @@ import { Oswald } from "next/font/google";
 import { cn } from "@/lib/utils/client/cn";
 import { getUser } from "db/functions";
 import "./Nav.css";
+import { clerkEnabled } from "@/lib/clerk-enabled";
 import DashNavItem from "../dash/shared/DashNavItem";
 
 const oswald = Oswald({
@@ -25,7 +26,7 @@ export default async function NavbarNonDash({
     className,
     title,
 }: NavbarNonDashProps) {
-    const user = await currentUser();
+    const user = clerkEnabled ? await currentUser() : null;
     const registrationIsComplete =
         user != null && (await getUser(user.id)) != undefined;
         
