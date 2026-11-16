@@ -19,36 +19,13 @@ export default function Jumbotron() {
       <section className='jumbotron md:h-[80rem]' id="home">
         <div className='jumboText-container flex flex-col items-start text-left'>
           <div className='jumbo-group md:ml-[1rem] mt-10 md:mt-[2.5rem] flex flex-col items-start'>
-            
-            {/* Top Subtitle */}
-            <h4 
-              className='text-sm md:text-lg lg:text-2xl tracking-wider'
-              style={{ 
-                fontFamily: "'IBM Plex Mono', monospace",
-                color: "#538FDD",
-                fontWeight: 700,
-                textShadow: `
-                  -2px -2px 0 #FFFFFF,
-                  2px -2px 0 #FFFFFF,
-                  -2px  2px 0 #FFFFFF,
-                  2px  2px 0 #FFFFFF,
-                  0px -2px 0 #FFFFFF,
-                  0px  2px 0 #FFFFFF,
-                  -2px  0px 0 #FFFFFF,
-                  2px  0px 0 #FFFFFF,
-                  0 0 18px rgba(255, 255, 255, 0.75)
-                `
-              }}
-            >
-              WEHack 2027 Presents
-            </h4>
 
             {/* Main Brush Title - Crisp White Outline + Subtle Glow */}
             <h1 
               className='text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-wider my-3'
               style={{ 
                 fontFamily: "'Gang of Three', fantasy, cursive",
-                color: "#E4DFAA",
+                color: "#00072D",
                 textShadow: `
                   -2px -2px 0 #FFFFFF,
                   2px -2px 0 #FFFFFF,
@@ -69,18 +46,18 @@ export default function Jumbotron() {
             <h2 
               className='text-lg sm:text-2xl md:text-3xl lg:text-4xl tracking-wider mt-1'
               style={{ 
-                fontFamily: "'IBM Plex Mono', monospace",
-                color: "#EFB5D5",
-                fontWeight: 700,
+                fontFamily: "'Gang of Three', fantasy, cursive",
+                color: "#538FDD",
+                fontWeight: 500,
                 textShadow: `
-                  -2px -2px 0 #FFFFFF,
-                  2px -2px 0 #FFFFFF,
-                  -2px  2px 0 #FFFFFF,
-                  2px  2px 0 #FFFFFF,
-                  0px -2px 0 #FFFFFF,
-                  0px  2px 0 #FFFFFF,
-                  -2px  0px 0 #FFFFFF,
-                  2px  0px 0 #FFFFFF,
+                  -1px -1px 0 #FFFFFF,
+                  1px -1px 0 #FFFFFF,
+                  -1px  1px 0 #FFFFFF,
+                  1px  1px 0 #FFFFFF,
+                  0px -1px 0 #FFFFFF,
+                  0px  1px 0 #FFFFFF,
+                  -1px  0px 0 #FFFFFF,
+                  1px  0px 0 #FFFFFF,
                   0 0 18px rgba(255, 255, 255, 0.75)
                 `
               }}

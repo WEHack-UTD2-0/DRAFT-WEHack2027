@@ -112,7 +112,7 @@ export default async function Navbar({ className }: NavbarProps) {
                                                 fontFamily: "'IBM Plex Mono', monospace",
                                                 fontWeight: 600,
                                                 backgroundColor: "#538FDD",
-                                                color: "#EEEEEE",
+                                                color: "#FFFFFF",
                                             }}
                                         >
                                             Register
