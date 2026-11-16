@@ -18,38 +18,71 @@ export default function Jumbotron() {
 
       <section className='jumbotron md:h-[80rem]' id="home">
         <div className='jumboText-container flex flex-col items-start text-left'>
-          <div className='jumbo-group md:ml-[1rem] mt-16 md:mt-[5rem] flex flex-col items-start'>
+          <div className='jumbo-group md:ml-[1rem] mt-10 md:mt-[2.5rem] flex flex-col items-start'>
             
-            {/* Top Subtitle - Soft Blue */}
+            {/* Top Subtitle */}
             <h4 
-              className='text-xs md:text-base lg:text-2xl tracking-wider'
+              className='text-sm md:text-lg lg:text-2xl tracking-wider'
               style={{ 
-                fontFamily: "'Zen Maru Gothic', sans-serif",
-                color: "#C5D9EB" 
+                fontFamily: "'IBM Plex Mono', monospace",
+                color: "#538FDD",
+                fontWeight: 700,
+                textShadow: `
+                  -2px -2px 0 #FFFFFF,
+                  2px -2px 0 #FFFFFF,
+                  -2px  2px 0 #FFFFFF,
+                  2px  2px 0 #FFFFFF,
+                  0px -2px 0 #FFFFFF,
+                  0px  2px 0 #FFFFFF,
+                  -2px  0px 0 #FFFFFF,
+                  2px  0px 0 #FFFFFF,
+                  0 0 18px rgba(255, 255, 255, 0.75)
+                `
               }}
             >
               WEHack 2027 Presents
             </h4>
 
-            {/* Main Brush Title - Focal Pink */}
+            {/* Main Brush Title - Crisp White Outline + Subtle Glow */}
             <h1 
               className='text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-wider my-3'
               style={{ 
                 fontFamily: "'Gang of Three', fantasy, cursive",
-                color: "#EDD0E0",
-                textShadow: '0 0 25px rgba(239, 181, 213, 0.4), 0 3px 10px rgba(0, 0, 0, 0.9)'
+                color: "#E4DFAA",
+                textShadow: `
+                  -2px -2px 0 #FFFFFF,
+                  2px -2px 0 #FFFFFF,
+                  -2px  2px 0 #FFFFFF,
+                  2px  2px 0 #FFFFFF,
+                  0px -2px 0 #FFFFFF,
+                  0px  2px 0 #FFFFFF,
+                  -2px  0px 0 #FFFFFF,
+                  2px  0px 0 #FFFFFF,
+                  0 0 18px rgba(255, 255, 255, 0.75)
+                `
               }}
             >
               A Trip to WEMart
             </h1>
 
-            {/* Bottom Subtitle - Saturated Blue */}
+            {/* Bottom Subtitle ("April 3-4") */}
             <h2 
-              className='text-base sm:text-xl md:text-2xl lg:text-4xl tracking-wide'
+              className='text-lg sm:text-2xl md:text-3xl lg:text-4xl tracking-wider mt-1'
               style={{ 
-                fontFamily: "'Zen Maru Gothic', sans-serif",
-                color: "#C5D9EB",
-                fontWeight: 700 
+                fontFamily: "'IBM Plex Mono', monospace",
+                color: "#EFB5D5",
+                fontWeight: 700,
+                textShadow: `
+                  -2px -2px 0 #FFFFFF,
+                  2px -2px 0 #FFFFFF,
+                  -2px  2px 0 #FFFFFF,
+                  2px  2px 0 #FFFFFF,
+                  0px -2px 0 #FFFFFF,
+                  0px  2px 0 #FFFFFF,
+                  -2px  0px 0 #FFFFFF,
+                  2px  0px 0 #FFFFFF,
+                  0 0 18px rgba(255, 255, 255, 0.75)
+                `
               }}
             >
               April 3-4

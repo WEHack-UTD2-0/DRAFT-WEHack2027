@@ -15,13 +15,12 @@ export default function NavbarItem({ link, children }: NavbarItemProps) {
             href={link}
             target={isExternal ? "_blank" : undefined}
             rel={isExternal ? "noopener noreferrer" : undefined}
-            className="text-xs uppercase tracking-[0.18em] transition-colors duration-200"
+            className="text-xs uppercase tracking-[0.12em] transition-colors duration-200 hover:opacity-75"
             style={{
                 fontFamily: "'IBM Plex Mono', monospace",
-                color: "#C5D9EB",
+                fontWeight: 500,
+                color: "#538FDD",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#EFB5D5")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#C5D9EB")}
         >
             {children}
         </Link>

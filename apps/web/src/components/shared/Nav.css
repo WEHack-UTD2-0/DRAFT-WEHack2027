@@ -29,21 +29,20 @@ button[aria-haspopup="menu"][data-state="open"],
     box-shadow: none !important;
 }
 
-/* Hamburger icon SVG remains crisp light blue */
+/* Hamburger icon SVG in Accent Blue */
 button[aria-haspopup="menu"] svg,
 .mobile-menu-trigger svg {
-    stroke: #C5D9EB !important;
-    color: #C5D9EB !important;
+    stroke: #538FDD !important;
+    color: #538FDD !important;
     transition: opacity 0.15s ease-in-out;
 }
 
-/* Optional subtle icon opacity tweak on hover instead of a box */
 button[aria-haspopup="menu"]:hover svg,
 .mobile-menu-trigger:hover svg {
     opacity: 0.8;
 }
 
-/* 2. Dropdown Panel Container (Clean Light Blue Outline, Dark Background) */
+/* 2. Dropdown Panel Container */
 [data-radix-popper-content-wrapper] [role="menu"],
 [data-radix-popper-content-wrapper] [role="dialog"],
 .dropdown-menu,
@@ -56,17 +55,18 @@ button[aria-haspopup="menu"]:hover svg,
     backdrop-filter: blur(16px) !important;
 }
 
-/* 3. Dropdown Menu Items Hover/Focus & Text Color */
+/* 3. Dropdown Menu Items Typography, Hover/Focus & Text Color */
 [role="menuitem"],
 [data-radix-collection-item] {
+    font-family: 'IBM Plex Mono', monospace !important;
     outline: none !important;
-    border: none !important;
     color: #C5D9EB !important;
 }
 
 [role="menuitem"] a,
 [role="menuitem"] button,
 [role="menuitem"] span {
+    font-family: 'IBM Plex Mono', monospace !important;
     color: #C5D9EB !important;
 }
 
@@ -86,13 +86,12 @@ button[aria-haspopup="menu"]:hover svg,
     color: #C5D9EB !important;
 }
 
-/* 4. Desktop Navbar Navigation Links */
+/* 4. Desktop Navbar Links */
 .nav-link {
     font-family: 'IBM Plex Mono', monospace !important;
-    color: #C5D9EB !important;
-    letter-spacing: 0.18em;
+    font-weight: 500 !important;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    transition: color 0.2s ease-in-out;
 }
 
 .nav-link:hover {

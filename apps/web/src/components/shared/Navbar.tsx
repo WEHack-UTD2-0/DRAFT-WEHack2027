@@ -35,7 +35,7 @@ export default async function Navbar({ className }: NavbarProps) {
         <>
             <link
                 rel="stylesheet"
-                href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Zen+Maru+Gothic:wght@700&display=swap"
+                href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
             />
 
             <div className="absolute z-50 w-screen pt-6">
@@ -60,15 +60,16 @@ export default async function Navbar({ className }: NavbarProps) {
 
                         {/* Navigation Links and Actions */}
                         <div className="flex items-center justify-between space-x-2 pr-4 md:justify-center md:pr-10 lg:pr-16">
-                            <div className="col-span-2 hidden items-center justify-end gap-x-6 lg:flex md:pr-8">
+                            <div className="col-span-2 hidden items-center justify-end gap-x-5 lg:flex md:pr-6">
                                 <NavBarLinksGrouper />
                                 {NAV_LINKS.map((link) => (
                                     <a
                                         key={link.name}
-                                        className="text-xs uppercase tracking-[0.18em] transition-colors duration-200"
+                                        className="text-xs uppercase tracking-[0.12em] transition-colors duration-200 hover:opacity-75"
                                         style={{
                                             fontFamily: "'IBM Plex Mono', monospace",
-                                            color: "#C5D9EB",
+                                            fontWeight: 500,
+                                            color: "#538FDD",
                                         }}
                                         href={link.href}
                                         target={link.external ? "_blank" : undefined}
@@ -80,43 +81,45 @@ export default async function Navbar({ className }: NavbarProps) {
                             </div>
 
                             {/* Authentication / CTA Button */}
-							<div className="hidden gap-x-4 lg:flex">
-								{user ? (
-									<Link
-										href={
-											registrationIsComplete
-												? "/dash"
-												: "/register"
-										}
-									>
-										<Button 
-											className="w-full rounded-xl px-6 py-3 font-bold tracking-wider shadow-lg transition-all duration-200 hover:scale-[1.03] border-none hover:opacity-90"
-											style={{
-												fontFamily: "'Zen Maru Gothic', sans-serif",
-												backgroundColor: "#538FDD",
-												color: "#C5D9EB",
-											}}
-										>
-											{registrationIsComplete
-												? "Dashboard"
-												: "Complete Registration"}
-										</Button>
-									</Link>
-								) : (
-									<Link href={"/register"}>
-										<Button 
-											className="w-full rounded-xl px-6 py-3 font-bold tracking-wider shadow-lg transition-all duration-200 hover:scale-[1.03] border-none hover:opacity-90"
-											style={{
-												fontFamily: "'Zen Maru Gothic', sans-serif",
-												backgroundColor: "#538FDD",
-												color: "#C5D9EB",
-											}}
-										>
-											Register
-										</Button>
-									</Link>
-								)}
-							</div>
+                            <div className="hidden gap-x-4 lg:flex">
+                                {user ? (
+                                    <Link
+                                        href={
+                                            registrationIsComplete
+                                                ? "/dash"
+                                                : "/register"
+                                        }
+                                    >
+                                        <Button 
+                                            className="w-full rounded-xl px-6 py-3 text-xs uppercase tracking-[0.12em] shadow-lg transition-all duration-200 hover:scale-[1.03] border-none hover:opacity-90"
+                                            style={{
+                                                fontFamily: "'IBM Plex Mono', monospace",
+                                                fontWeight: 600,
+                                                backgroundColor: "#538FDD",
+                                                color: "#C5D9EB",
+                                            }}
+                                        >
+                                            {registrationIsComplete
+                                                ? "Dashboard"
+                                                : "Complete Registration"}
+                                        </Button>
+                                    </Link>
+                                ) : (
+                                    <Link href={"/register"}>
+                                        <Button 
+                                            className="w-full rounded-xl px-6 py-3 text-xs uppercase tracking-[0.12em] shadow-lg transition-all duration-200 hover:scale-[1.03] border-none hover:opacity-90"
+                                            style={{
+                                                fontFamily: "'IBM Plex Mono', monospace",
+                                                fontWeight: 600,
+                                                backgroundColor: "#538FDD",
+                                                color: "#EEEEEE",
+                                            }}
+                                        >
+                                            Register
+                                        </Button>
+                                    </Link>
+                                )}
+                            </div>
 
                             {/* Hamburger Menu & Profile Trigger */}
                             <div className="relative">

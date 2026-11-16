@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { UserButton, useUser, useClerk } from "@clerk/nextjs";
+import { useUser, useClerk } from "@clerk/nextjs";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -29,14 +29,15 @@ export default function ProfileButton() {
 
     return (
         <DropdownMenu>
+            {/* Hamburger Trigger: Transparent background, zero hover box */}
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
                     aria-label="Open navigation menu"
-                    className="flex h-11 w-11 items-center justify-center rounded-xl p-0 text-[#C5D9EB] transition-all duration-150 hover:bg-[#C5D9EB]/20 hover:text-[#C5D9EB] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 active:bg-[#C5D9EB]/25 data-[state=open]:bg-[#C5D9EB]/25 border-none"
+                    className="flex h-11 w-11 items-center justify-center p-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent focus:ring-0 focus-visible:ring-0 border-none shadow-none text-[#1A1C28]"
                 >
                     <svg
-                        className="h-6 w-6 stroke-current"
+                        className="h-6 w-6 stroke-current text-[#1A1C28]"
                         fill="none"
                         viewBox="0 0 24 24"
                         strokeWidth={2}
@@ -59,12 +60,12 @@ export default function ProfileButton() {
                     <div className="mb-2 border-b border-[#C5D9EB]/20 px-2 pb-2 pt-1">
                         <span
                             className="text-[11px] uppercase tracking-wider text-[#C5D9EB]/70"
-                            style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+                            style={{ fontFamily: "'Dela Gothic One', sans-serif" }}
                         >
                             Signed in as
                         </span>
                         <p
-                            className="truncate text-sm font-semibold text-[#FFE9D7]"
+                            className="truncate text-sm font-semibold text-[#C5D9EB]"
                             style={{ fontFamily: "'Zen Maru Gothic', sans-serif" }}
                         >
                             {user?.primaryEmailAddress?.emailAddress}
@@ -80,8 +81,11 @@ export default function ProfileButton() {
                                 href={link.href}
                                 target={link.external ? "_blank" : undefined}
                                 rel={link.external ? "noopener noreferrer" : undefined}
-                                className="block rounded-lg px-3 py-2 text-xs uppercase tracking-[0.16em] text-[#C5D9EB] transition-colors hover:bg-[#C5D9EB]/15 hover:text-[#C5D9EB] focus:bg-[#C5D9EB]/15 focus:text-[#C5D9EB] focus:outline-none"
-                                style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+                                className="block rounded-lg px-3 py-2 text-xs uppercase tracking-[0.06em] text-[#C5D9EB] transition-colors hover:bg-[#C5D9EB]/15 hover:text-[#C5D9EB] focus:bg-[#C5D9EB]/15 focus:text-[#C5D9EB] focus:outline-none"
+                                style={{ 
+                                    fontFamily: "'Dela Gothic One', sans-serif",
+                                    fontWeight: 400,
+                                }}
                             >
                                 {link.name}
                             </a>
@@ -90,39 +94,58 @@ export default function ProfileButton() {
                     <div className="my-2 border-t border-[#C5D9EB]/20" />
                 </div>
 
-                {/* Registration / Account CTA */}
+                {/* Actions: Register & Sign In / Sign Out */}
                 <div className="flex flex-col space-y-2 pt-1">
+                    
+                    {/* Register Option - Dela Gothic One */}
                     <DropdownMenuItem asChild>
                         <Link
                             href="/register"
-                            className="flex w-full items-center justify-center rounded-lg bg-[#538FDD] px-3 py-2.5 text-center text-sm font-bold tracking-wider text-[#1A1C28] shadow-md transition-colors hover:bg-[#EFB5D5] focus:bg-[#EFB5D5] focus:outline-none"
-                            style={{ fontFamily: "'Zen Maru Gothic', sans-serif" }}
+                            className="flex w-full items-center justify-center rounded-lg border border-[#C5D9EB]/30 bg-transparent px-3 py-2.5 text-center text-xs uppercase tracking-[0.06em] transition-all duration-150 hover:bg-[#C5D9EB]/20 hover:border-[#C5D9EB] focus:bg-[#C5D9EB]/20 focus:outline-none !text-[#C5D9EB]"
+                            style={{ 
+                                fontFamily: "'Dela Gothic One', sans-serif",
+                                fontWeight: 400,
+                                color: "#C5D9EB",
+                            }}
                         >
-                            Register Now
+                            Register
                         </Link>
                     </DropdownMenuItem>
 
-                    {isSignedIn ? (
-                        <DropdownMenuItem asChild>
-                            <button
-                                onClick={() => signOut()}
-                                className="flex w-full items-center justify-center rounded-lg px-3 py-2 text-xs uppercase tracking-widest text-[#C5D9EB] transition-colors hover:bg-[#C5D9EB]/15 focus:bg-[#C5D9EB]/15 focus:outline-none"
-                                style={{ fontFamily: "'IBM Plex Mono', monospace" }}
-                            >
-                                Sign Out
-                            </button>
-                        </DropdownMenuItem>
-                    ) : (
+                    {/* Sign In Option (when signed out) - Dela Gothic One */}
+                    {!isSignedIn && (
                         <DropdownMenuItem asChild>
                             <Link
                                 href="/sign-in"
-                                className="flex w-full items-center justify-center rounded-lg border border-[#C5D9EB]/30 px-3 py-2 text-xs uppercase tracking-widest text-[#C5D9EB] transition-colors hover:bg-[#C5D9EB]/15 focus:bg-[#C5D9EB]/15 focus:outline-none"
-                                style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+                                className="flex w-full items-center justify-center rounded-lg border border-[#C5D9EB]/30 bg-transparent px-3 py-2 text-xs uppercase tracking-[0.06em] transition-all duration-150 hover:bg-[#C5D9EB]/20 hover:border-[#C5D9EB] focus:bg-[#C5D9EB]/20 focus:outline-none !text-[#C5D9EB]"
+                                style={{ 
+                                    fontFamily: "'Dela Gothic One', sans-serif",
+                                    fontWeight: 400,
+                                    color: "#C5D9EB",
+                                }}
                             >
                                 Sign In
                             </Link>
                         </DropdownMenuItem>
                     )}
+
+                    {/* Sign Out Option (when signed in) - Dela Gothic One */}
+                    {isSignedIn && (
+                        <DropdownMenuItem asChild>
+                            <button
+                                onClick={() => signOut()}
+                                className="flex w-full items-center justify-center rounded-lg px-3 py-2 text-xs uppercase tracking-[0.06em] transition-all duration-150 hover:bg-[#C5D9EB]/20 focus:bg-[#C5D9EB]/20 focus:outline-none !text-[#C5D9EB]"
+                                style={{ 
+                                    fontFamily: "'Dela Gothic One', sans-serif",
+                                    fontWeight: 400,
+                                    color: "#C5D9EB",
+                                }}
+                            >
+                                Sign Out
+                            </button>
+                        </DropdownMenuItem>
+                    )}
+
                 </div>
             </DropdownMenuContent>
         </DropdownMenu>

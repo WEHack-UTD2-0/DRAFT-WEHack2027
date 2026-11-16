@@ -34,10 +34,10 @@ export default function ProfileButton() {
                 <Button
                     variant="ghost"
                     aria-label="Open navigation menu"
-                    className="flex h-11 w-11 items-center justify-center p-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent focus:ring-0 focus-visible:ring-0 border-none shadow-none text-[#C5D9EB]"
+                    className="flex h-11 w-11 items-center justify-center p-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent focus:ring-0 focus-visible:ring-0 border-none shadow-none text-[#1A1C28]"
                 >
                     <svg
-                        className="h-6 w-6 stroke-current text-[#C5D9EB]"
+                        className="h-6 w-6 stroke-current text-[#1A1C28]"
                         fill="none"
                         viewBox="0 0 24 24"
                         strokeWidth={2}
@@ -60,13 +60,13 @@ export default function ProfileButton() {
                     <div className="mb-2 border-b border-[#C5D9EB]/20 px-2 pb-2 pt-1">
                         <span
                             className="text-[11px] uppercase tracking-wider text-[#C5D9EB]/70"
-                            style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+                            style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 400 }}
                         >
                             Signed in as
                         </span>
                         <p
-                            className="truncate text-sm font-semibold text-[#C5D9EB]"
-                            style={{ fontFamily: "'Zen Maru Gothic', sans-serif" }}
+                            className="truncate text-xs text-[#C5D9EB]"
+                            style={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 600 }}
                         >
                             {user?.primaryEmailAddress?.emailAddress}
                         </p>
@@ -81,8 +81,11 @@ export default function ProfileButton() {
                                 href={link.href}
                                 target={link.external ? "_blank" : undefined}
                                 rel={link.external ? "noopener noreferrer" : undefined}
-                                className="block rounded-lg px-3 py-2 text-xs uppercase tracking-[0.16em] text-[#C5D9EB] transition-colors hover:bg-[#C5D9EB]/15 hover:text-[#C5D9EB] focus:bg-[#C5D9EB]/15 focus:text-[#C5D9EB] focus:outline-none"
-                                style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+                                className="block rounded-lg px-3 py-2 text-xs uppercase tracking-[0.12em] text-[#C5D9EB] transition-colors hover:bg-[#C5D9EB]/15 hover:text-[#C5D9EB] focus:bg-[#C5D9EB]/15 focus:text-[#C5D9EB] focus:outline-none"
+                                style={{ 
+                                    fontFamily: "'IBM Plex Mono', monospace",
+                                    fontWeight: 500,
+                                }}
                             >
                                 {link.name}
                             </a>
@@ -94,28 +97,30 @@ export default function ProfileButton() {
                 {/* Actions: Register & Sign In / Sign Out */}
                 <div className="flex flex-col space-y-2 pt-1">
                     
-                    {/* Register Button: Transparent with border matching Sign In */}
-					<DropdownMenuItem asChild>
-						<Link
-							href="/register"
-							className="flex w-full items-center justify-center rounded-lg border border-[#C5D9EB]/30 bg-transparent px-3 py-2.5 text-center text-xs uppercase tracking-widest transition-all duration-150 hover:bg-[#C5D9EB]/20 hover:border-[#C5D9EB] focus:bg-[#C5D9EB]/20 focus:outline-none !text-[#C5D9EB]"
-							style={{ 
-								fontFamily: "'IBM Plex Mono', monospace",
-								color: "#C5D9EB",
-							}}
-						>
-							Register
-						</Link>
-					</DropdownMenuItem>
+                    {/* Register Option - Translucent style matching Sign In */}
+                    <DropdownMenuItem asChild>
+                        <Link
+                            href="/register"
+                            className="flex w-full items-center justify-center rounded-lg border border-[#C5D9EB]/30 bg-transparent px-3 py-2.5 text-center text-xs uppercase tracking-[0.12em] transition-all duration-150 hover:bg-[#C5D9EB]/20 hover:border-[#C5D9EB] focus:bg-[#C5D9EB]/20 focus:outline-none !text-[#C5D9EB]"
+                            style={{ 
+                                fontFamily: "'IBM Plex Mono', monospace",
+                                fontWeight: 600,
+                                color: "#C5D9EB",
+                            }}
+                        >
+                            Register
+                        </Link>
+                    </DropdownMenuItem>
 
                     {/* Sign In Option (when signed out) */}
                     {!isSignedIn && (
                         <DropdownMenuItem asChild>
                             <Link
                                 href="/sign-in"
-                                className="flex w-full items-center justify-center rounded-lg border border-[#C5D9EB]/30 bg-transparent px-3 py-2 text-xs uppercase tracking-widest transition-all duration-150 hover:bg-[#C5D9EB]/20 hover:border-[#C5D9EB] focus:bg-[#C5D9EB]/20 focus:outline-none !text-[#C5D9EB]"
+                                className="flex w-full items-center justify-center rounded-lg border border-[#C5D9EB]/30 bg-transparent px-3 py-2 text-xs uppercase tracking-[0.12em] transition-all duration-150 hover:bg-[#C5D9EB]/20 hover:border-[#C5D9EB] focus:bg-[#C5D9EB]/20 focus:outline-none !text-[#C5D9EB]"
                                 style={{ 
                                     fontFamily: "'IBM Plex Mono', monospace",
+                                    fontWeight: 500,
                                     color: "#C5D9EB",
                                 }}
                             >
@@ -129,9 +134,10 @@ export default function ProfileButton() {
                         <DropdownMenuItem asChild>
                             <button
                                 onClick={() => signOut()}
-                                className="flex w-full items-center justify-center rounded-lg px-3 py-2 text-xs uppercase tracking-widest transition-all duration-150 hover:bg-[#C5D9EB]/20 focus:bg-[#C5D9EB]/20 focus:outline-none !text-[#C5D9EB]"
+                                className="flex w-full items-center justify-center rounded-lg px-3 py-2 text-xs uppercase tracking-[0.12em] transition-all duration-150 hover:bg-[#C5D9EB]/20 focus:bg-[#C5D9EB]/20 focus:outline-none !text-[#C5D9EB]"
                                 style={{ 
                                     fontFamily: "'IBM Plex Mono', monospace",
+                                    fontWeight: 500,
                                     color: "#C5D9EB",
                                 }}
                             >

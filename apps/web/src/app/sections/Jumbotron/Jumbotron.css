@@ -2,26 +2,13 @@
 
 .jumbotron {
   background-image: 
-      /* url("/static/images/IMG_0847 1.png"),
-      url("/static/images/IMG_0847 2.png"), */
-      /* url("/static/images/backgroundnew.PNG"); */
-      url("/img/static/images/official-jumbo-finall.webp");
-  background-size: 
-      /* 300px auto,
-      300px auto, */
-      cover;
-  background-repeat: 
-      /* no-repeat,
-      no-repeat, */
-      no-repeat;
-  background-position:
-      /* top left,
-      bottom 420px right 0, */
-      top center;
+      url("/img/static/images/wemart-hero.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top center;
   padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
-  /* justify-content: center;  OLD CODE*/ 
   justify-content: flex-start;
   max-height: 100vh;
 }
