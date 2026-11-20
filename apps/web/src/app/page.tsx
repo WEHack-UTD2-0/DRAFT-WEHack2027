@@ -11,7 +11,7 @@ import Gallery from "@/components/Gallery/Gallery";
 // import FilmStrip from "@/components/FilmStrip/FilmStrip";
 import Stats from "@/components/Stats/Stats";
 import Donations from "./sections/Donations/Donations";
-// import Team from "./sections/Team/Team";
+import Team from "./sections/Team/Team";
 // import Schedule from "./sections/Schedule/Schedule";
 // import Livestream from "./sections/Livestream/Livestream";
 // import Menu from "./sections/Menu/Menu";
@@ -35,7 +35,7 @@ export default function Home() {
       <Sponsor/>
       <Donations/> 
       <FAQ/> 
-      {/* <Team/> */}
+      <Team/>
       <Footer/>
     </div>
   );
