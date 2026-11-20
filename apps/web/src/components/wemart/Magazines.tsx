@@ -1,158 +1,232 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Photo from "./Photo";
-import { magazines as magData, NEXT_YEAR } from "./content";
+import { prefersReducedMotion } from "./frame";
+import { magazines as magData, magazineStand as stand, NEXT_YEAR, type Lettering } from "./content";
 
 const INK = "#4a3a30";
-const PAPER = "#FBF5E3";
 const YUSEI = "'Yusei Magic', sans-serif";
-const ZEN = "'Zen Maru Gothic', sans-serif";
 const MONO = "'IBM Plex Mono', monospace";
 
-const tilts = [1.5, -1, 2, -1.5, 1, -2];
+// Issue viewer palette, taken from magazine-stand.png
+const LINE = "#716662"; // magazine outlines
+const LETTER = "#645c5f"; // lettering
+const WIRE = "#efb5d5"; // pink wire pockets
+const PAPER = "#fdf8ec";
+const NUNITO = "'Nunito', 'Zen Maru Gothic', sans-serif";
+const HAND_RADIUS = "4px 7px 5px 8px / 7px 4px 8px 5px"; // slightly uneven, like the drawn covers
+
+// Cover lettering, matched by eye to each magazine on the stand.
+const LETTERING: Record<Lettering, React.CSSProperties> = {
+	museum: { fontFamily: NUNITO, fontWeight: 900, fontStyle: "italic", textTransform: "uppercase", letterSpacing: ".05em", fontSize: "clamp(22px,3.6vw,38px)", lineHeight: 1.05 },
+	timeless: { fontFamily: "Georgia, 'Times New Roman', serif", fontWeight: 400, fontSize: "clamp(28px,4.6vw,50px)", lineHeight: 0.95 },
+	enchanted: { fontFamily: "'Pinyon Script', cursive", fontWeight: 400, fontSize: "clamp(32px,5.2vw,58px)", lineHeight: 1 },
+	adventure: { fontFamily: NUNITO, fontWeight: 800, fontSize: "clamp(26px,4.2vw,46px)", lineHeight: 1 },
+	future: { fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 500, textTransform: "uppercase", fontSize: "clamp(30px,5vw,56px)", lineHeight: 0.95 },
+	robotics: { fontFamily: NUNITO, fontWeight: 800, fontVariant: "small-caps", letterSpacing: ".12em", fontSize: "clamp(30px,5vw,54px)", lineHeight: 1 },
+};
+
+// Layered art (empty stand + separate covers) once marketing supplies it; otherwise the flat illustration.
+const layered = !!stand.empty && stand.covers.length === magData.length && stand.covers.every(Boolean);
+const pctStr = (v: number) => `${v}%`;
 
 const newest = magData[0].year;
 const oldest = magData[magData.length - 1].year;
 const vol = (i: number) => String(magData.length - i).padStart(2, "0");
 const yy = (year: string) => "'" + year.slice(2);
 
+// Three views: front cover → inside spread → back cover.
+const PAGES = ["Cover", "Inside", "Back cover"];
+const LAST = PAGES.length - 1;
+
 export default function Magazines() {
 	const [mag, setMag] = useState<number | null>(null);
 	const [page, setPage] = useState(0);
 	const [mounted, setMounted] = useState(false);
 	useEffect(() => setMounted(true), []);
+	const dialogRef = useRef<HTMLDivElement>(null);
+	const stageRef = useRef<HTMLDivElement>(null);
+	const closeRef = useRef<HTMLButtonElement>(null);
+	const originRef = useRef<HTMLElement | null>(null); // the magazine on the stand that was opened
+	const closingRef = useRef(false);
+	const pageRef = useRef(0);
+	pageRef.current = page;
 
-	const flip = (d: number) => setPage((p) => Math.max(0, Math.min(3, p + d)));
-	const open = (i: number) => {
+	const flip = (d: number) => setPage((p) => Math.max(0, Math.min(LAST, p + d)));
+	const open = (i: number, el: HTMLElement) => {
+		originRef.current = el;
+		closingRef.current = false;
 		setMag(i);
 		setPage(0);
 	};
-	const close = () => setMag(null);
 
-	// Keyboard: Esc closes, arrows flip pages (only while the viewer is open).
+	// Transform that shrinks the visible card (cover/back cover = half the book, otherwise the
+	// whole spread) onto the magazine on the stand.
+	const toOrigin = () => {
+		const st = stageRef.current;
+		const from = originRef.current?.getBoundingClientRect();
+		if (!st || !from || !from.width) return null;
+		const to = st.getBoundingClientRect();
+		const p = pageRef.current;
+		const visibleW = p === 0 || p === LAST ? to.width / 2 : to.width;
+		const s = from.width / visibleW;
+		const dx = from.left + from.width / 2 - (to.left + to.width / 2);
+		const dy = from.top + from.height / 2 - (to.top + to.height / 2);
+		return `translate(${dx.toFixed(1)}px,${dy.toFixed(1)}px) scale(${s.toFixed(4)})`;
+	};
+
+	// Grow out of the clicked magazine.
+	useLayoutEffect(() => {
+		if (mag == null || prefersReducedMotion()) return;
+		const t = toOrigin();
+		if (t) stageRef.current?.animate([{ transform: t, opacity: 0.4 }, { transform: "none", opacity: 1 }], { duration: 460, easing: "cubic-bezier(.2,.8,.25,1)" });
+		dialogRef.current?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, easing: "ease-out" });
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [mag != null]);
+
+	// Shrink back into the magazine, then unmount.
+	const close = () => {
+		if (closingRef.current) return;
+		const t = prefersReducedMotion() ? null : toOrigin();
+		if (!t || !stageRef.current || !dialogRef.current) return setMag(null);
+		closingRef.current = true;
+		const anim = stageRef.current.animate([{ transform: "none", opacity: 1 }, { transform: t, opacity: 0.3 }], { duration: 340, easing: "cubic-bezier(.5,0,.75,.3)", fill: "forwards" });
+		dialogRef.current.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 340, delay: 60, easing: "ease-in", fill: "forwards" });
+		anim.onfinish = () => setMag(null);
+	};
+
+	const isOpen = mag != null;
+
+	// While the viewer is open: Esc closes, arrows flip pages, Tab stays inside the dialog,
+	// the page behind doesn't scroll, and focus returns to the magazine that opened it.
 	useEffect(() => {
-		if (mag == null) return;
+		if (!isOpen) return;
+		closeRef.current?.focus({ preventScroll: true });
 		const onKey = (e: KeyboardEvent) => {
 			if (e.key === "Escape") close();
-			if (e.key === "ArrowRight") flip(1);
-			if (e.key === "ArrowLeft") flip(-1);
+			else if (e.key === "ArrowRight") flip(1);
+			else if (e.key === "ArrowLeft") flip(-1);
+			else if (e.key === "Tab" && dialogRef.current) {
+				const items = Array.from(dialogRef.current.querySelectorAll<HTMLElement>("button:not([disabled])"));
+				if (!items.length) return;
+				const first = items[0];
+				const last = items[items.length - 1];
+				if (e.shiftKey && document.activeElement === first) {
+					e.preventDefault();
+					last.focus();
+				} else if (!e.shiftKey && document.activeElement === last) {
+					e.preventDefault();
+					first.focus();
+				} else if (!dialogRef.current.contains(document.activeElement)) {
+					e.preventDefault();
+					first.focus();
+				}
+			}
 		};
 		window.addEventListener("keydown", onKey);
-		return () => window.removeEventListener("keydown", onKey);
-	}, [mag]);
+		const html = document.documentElement;
+		const prevOverflow = html.style.overflow;
+		html.style.overflow = "hidden";
+		return () => {
+			window.removeEventListener("keydown", onKey);
+			html.style.overflow = prevOverflow;
+			originRef.current?.focus({ preventScroll: true });
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isOpen]);
 
 	const cur = magData[mag ?? 0];
 	const curVol = vol(mag ?? 0);
 	const P = page;
 	// Leaf i is flipped once page > i. Unflipped leaves stack in order; flipped ones the other way.
-	const leaf = (i: number) => ({ transform: `rotateY(${P > i ? -180 : 0}deg)`, zIndex: P > i ? i + 1 : 3 - i });
-	const bookShift = P === 0 ? "-25%" : P === 3 ? "25%" : "0%";
-	const pageLabel = ["Cover", "Pages 1–2", "Pages 3–4", "Back cover"][P];
-	const pill: React.CSSProperties = { font: `700 14px ${ZEN}`, color: INK, border: `1.8px solid ${INK}`, borderRadius: 30, padding: "10px 18px", cursor: "pointer" };
+	const leaf = (i: number) => ({ transform: `rotateY(${P > i ? -180 : 0}deg)`, zIndex: P > i ? i + 1 : 2 - i });
+	const bookShift = P === 0 ? "-25%" : P === LAST ? "25%" : "0%";
+	const title = LETTERING[cur.lettering];
+	const label: React.CSSProperties = { fontFamily: NUNITO, fontWeight: 800, fontSize: 12, letterSpacing: ".14em", textTransform: "uppercase", color: LETTER };
+	const panel: React.CSSProperties = { border: `2.5px solid ${LINE}`, borderRadius: HAND_RADIUS, overflow: "hidden" };
+	const face = (bg: string): React.CSSProperties => ({ background: bg, border: `3px solid ${LINE}`, borderRadius: HAND_RADIUS, color: LETTER, boxShadow: `7px 8px 0 ${LINE}40` });
 
 	const viewer = (
 		<div
+			ref={dialogRef}
+			className="wm-viewer"
 			role="dialog"
 			aria-modal="true"
-			aria-label={`WEHack ${cur.year} magazine`}
-			style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(59,53,82,.78)", backdropFilter: "blur(4px)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 22, padding: 20, animation: "wm-in .3s ease-out", color: INK, fontFamily: ZEN, lineHeight: "normal" }}
+			aria-label={`WEHack ${cur.year}: ${cur.title}`}
+			style={{ position: "fixed", inset: 0, zIndex: 300, background: "linear-gradient(160deg,rgba(253,248,236,.95) 0%,rgba(250,234,238,.95) 55%,rgba(246,220,233,.96) 100%)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 26, padding: 20, color: LETTER, fontFamily: NUNITO, lineHeight: "normal" }}
 		>
 			{/* Clicking the backdrop closes the viewer */}
 			<div onClick={close} style={{ position: "absolute", inset: 0 }} />
 
-			<div style={{ position: "relative", width: "min(860px,92vw)", aspectRatio: "2/1.4", perspective: 2200 }}>
+			<div ref={stageRef} style={{ position: "relative", width: "min(860px,92vw,calc((100vh - 150px) * 2 / 1.4))", aspectRatio: "2/1.4", perspective: 2200, willChange: "transform" }}>
 				<div style={{ position: "absolute", inset: 0, transform: `translateX(${bookShift})`, transition: "transform .9s cubic-bezier(.6,.1,.25,1)", transformStyle: "preserve-3d" }}>
 					{/* Base pages fade out when empty, so a single page looks centered */}
-					<div style={{ position: "absolute", left: 0, top: 0, width: "50%", height: "100%", background: "#f3efe4", border: `2px solid ${INK}`, opacity: P === 0 ? 0 : 1, transition: "opacity .4s" }} />
-					<div style={{ position: "absolute", left: "50%", top: 0, width: "50%", height: "100%", background: "#f3efe4", border: `2px solid ${INK}`, opacity: P === 3 ? 0 : 1, transition: "opacity .4s" }} />
+					<div style={{ ...face(PAPER), position: "absolute", left: 0, top: 0, width: "50%", height: "100%", boxShadow: `7px 8px 0 ${LINE}40`, opacity: P === 0 ? 0 : 1, transition: "opacity .4s" }} />
+					<div style={{ ...face(PAPER), position: "absolute", left: "50%", top: 0, width: "50%", height: "100%", boxShadow: `7px 8px 0 ${LINE}40`, opacity: P === LAST ? 0 : 1, transition: "opacity .4s" }} />
 
-					{/* Leaf 0: cover / editor's letter */}
+					{/* Leaf 0: front cover / inside left (editor's letter) */}
 					<div className="mag-leaf" style={leaf(0)}>
-						<div className="mag-face" style={{ background: cur.bg }}>
-							<div style={{ padding: "16px 18px 6px", fontFamily: YUSEI, fontSize: "clamp(24px,4.4vw,44px)", lineHeight: 0.92, textTransform: "uppercase" }}>{cur.title}</div>
-							<div style={{ display: "flex", justifyContent: "space-between", padding: "0 18px 10px", font: `500 11px ${MONO}` }}>
-								<span>VOL. {curVol}</span>
-								<span>WEHACK {cur.year}</span>
+						<div className="mag-face cover" style={{ ...face(cur.bg), padding: "clamp(16px,2.6vw,28px)", gap: 14 }}>
+							<div style={{ ...title, margin: 0 }}>{cur.title}</div>
+							<div style={{ ...panel, flex: 1, background: "rgba(255,255,255,.55)" }}>
+								<Photo plain id={`mag-${cur.year}-cover`} label={`Cover art, WEHack ${cur.year}`} />
 							</div>
-							<div style={{ flex: 1, margin: "0 18px", border: `2.5px solid ${INK}` }}>
-								<Photo id={`mag-${cur.year}-cover`} label={`cover photo · WEHack ${cur.year}`} />
-							</div>
-							<div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", padding: "10px 18px 16px", gap: 10 }}>
-								<span style={{ fontWeight: 900, fontSize: 14, maxWidth: "60%" }}>{cur.line}</span>
-								<span style={{ fontFamily: YUSEI, fontSize: "clamp(34px,5vw,56px)", lineHeight: 0.8 }}>{yy(cur.year)}</span>
+							<div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 10 }}>
+								<span style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+									<span style={label}>Vol. {curVol} · WEHack {cur.year}</span>
+									<span style={{ fontWeight: 700, fontSize: 15 }}>{cur.line}</span>
+								</span>
+								<span style={{ ...title, fontSize: "clamp(30px,4.4vw,50px)", lineHeight: 0.8, textTransform: "none", fontVariant: "normal" }}>{yy(cur.year)}</span>
 							</div>
 						</div>
-						<div className="mag-face back" style={{ background: PAPER, padding: "clamp(16px,3vw,32px)", gap: 14 }}>
-							<span style={{ font: `500 10px ${MONO}`, letterSpacing: ".16em", color: "#7ba3d6" }}>EDITOR&apos;S LETTER · {cur.year}</span>
-							<span style={{ fontFamily: YUSEI, fontSize: "clamp(20px,3vw,32px)", lineHeight: 1.05 }}>{cur.headline}</span>
-							<p style={{ margin: 0, fontFamily: "inherit", fontSize: "clamp(12px,1.4vw,15px)", lineHeight: 1.6 }}>
-								Add a short recap of WEHack {cur.year} here: the theme, the vibe, the moment everyone still talks about.
-							</p>
-							<span style={{ marginTop: "auto", fontFamily: ZEN, fontSize: 20 }}>— WEHack {cur.year} team</span>
+						<div className="mag-face back" style={{ ...face(PAPER), padding: "clamp(16px,3vw,32px)", gap: 14 }}>
+							<span style={label}>Editor&apos;s letter · {cur.year}</span>
+							<span style={{ ...title, fontSize: "clamp(24px,3.4vw,38px)" }}>{cur.headline}</span>
+							<p style={{ margin: 0, fontFamily: "inherit", fontSize: "clamp(13px,1.4vw,16px)", lineHeight: 1.6, color: INK }}>{cur.blurb}</p>
+							<span style={{ marginTop: "auto", fontWeight: 700, fontSize: 17 }}>— WEHack {cur.year} team</span>
 						</div>
 					</div>
 
-					{/* Leaf 1: photo special / winners */}
+					{/* Leaf 1: inside right (photo) / back cover */}
 					<div className="mag-leaf" style={leaf(1)}>
-						<div className="mag-face" style={{ background: PAPER, padding: "clamp(14px,2.4vw,26px)", gap: 10 }}>
-							<span style={{ font: `500 10px ${MONO}`, letterSpacing: ".16em" }}>PHOTO SPECIAL</span>
-							<div style={{ flex: 1, border: `2px solid ${INK}` }}>
-								<Photo id={`mag-${cur.year}-p1`} label="highlight photo" />
+						<div className="mag-face" style={{ ...face(PAPER), padding: "clamp(14px,2.4vw,26px)", gap: 10 }}>
+							<span style={label}>Photo special</span>
+							<div style={{ ...panel, flex: 1, background: cur.bg }}>
+								<Photo plain id={`mag-${cur.year}-p1`} label="Highlight photo" />
 							</div>
-							<span style={{ fontWeight: 900, fontSize: "clamp(12px,1.5vw,16px)" }}>Opening ceremony, {cur.year}</span>
+							<span style={{ fontWeight: 800, fontSize: "clamp(13px,1.5vw,16px)" }}>WEHack {cur.year}</span>
 						</div>
-						<div className="mag-face back" style={{ background: cur.bg, padding: "clamp(16px,3vw,32px)", gap: 12 }}>
-							<span style={{ font: `500 10px ${MONO}`, letterSpacing: ".16em" }}>THE WINNERS</span>
-							<span style={{ fontFamily: YUSEI, fontSize: "clamp(22px,3.4vw,38px)", lineHeight: 1 }}>Top of the shelf</span>
-							<div style={{ display: "flex", flexDirection: "column", gap: 8, fontWeight: 700, fontSize: "clamp(12px,1.4vw,15px)" }}>
-								{["1st", "2nd", "3rd"].map((place) => (
-									<div key={place} style={{ display: "flex", justifyContent: "space-between", borderBottom: "2px dashed currentColor", paddingBottom: 6 }}>
-										<span>{place}</span>
-										<span>Project name</span>
-									</div>
-								))}
-							</div>
-						</div>
-					</div>
-
-					{/* Leaf 2: behind the scenes / back cover */}
-					<div className="mag-leaf" style={leaf(2)}>
-						<div className="mag-face" style={{ background: PAPER, padding: "clamp(14px,2.4vw,26px)", gap: 10 }}>
-							<span style={{ font: `500 10px ${MONO}`, letterSpacing: ".16em" }}>BEHIND THE SCENES</span>
-							<div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-								<div style={{ border: `2px solid ${INK}` }}>
-									<Photo id={`mag-${cur.year}-p2`} label="photo" />
-								</div>
-								<div style={{ border: `2px solid ${INK}` }}>
-									<Photo id={`mag-${cur.year}-p3`} label="photo" />
-								</div>
-							</div>
-							<span style={{ fontWeight: 900, fontSize: "clamp(12px,1.5vw,16px)" }}>3 a.m. at WEHack {cur.year}</span>
-						</div>
-						<div className="mag-face back" style={{ background: cur.bg, alignItems: "center", justifyContent: "center", gap: 10, textAlign: "center", padding: 20 }}>
-							<span style={{ fontFamily: YUSEI, fontSize: "clamp(26px,4vw,46px)", lineHeight: 1 }}>
+						<div className="mag-face back cover" style={{ ...face(cur.bg), alignItems: "center", justifyContent: "center", gap: 12, textAlign: "center", padding: 20 }}>
+							<span style={{ ...title, fontSize: "clamp(28px,4.2vw,48px)" }}>
 								See you
 								<br />
 								in {NEXT_YEAR}
 							</span>
-							<span style={{ font: `500 11px ${MONO}`, letterSpacing: ".14em" }}>NEXT ISSUE · THE TRIP TO WEMART</span>
+							<span style={label}>Next issue · The Trip to WEmart</span>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			{/* Controls */}
-			<div style={{ position: "relative", display: "flex", alignItems: "center", gap: 14, color: "#fff", font: `500 12px ${MONO}` }}>
-				<button type="button" onClick={() => flip(-1)} style={{ ...pill, background: PAPER, opacity: P === 0 ? 0.4 : 1 }}>
+			{/* Controls: pink wire pills, like the stand's pockets */}
+			<div style={{ position: "relative", display: "flex", alignItems: "center", flexWrap: "wrap", justifyContent: "center", gap: 14 }}>
+				<button type="button" className="wm-wire" onClick={() => flip(-1)} disabled={P === 0} aria-label="Previous page">
 					← Prev
 				</button>
-				<span style={{ minWidth: 96, textAlign: "center" }}>{pageLabel}</span>
-				<button type="button" onClick={() => flip(1)} style={{ ...pill, background: "#EBD08A", opacity: P === 3 ? 0.4 : 1 }}>
+				<span style={{ display: "flex", gap: 8, alignItems: "center", padding: "0 4px" }} aria-hidden>
+					{PAGES.map((_, i) => (
+						<span key={i} style={{ width: 11, height: 11, borderRadius: "50%", border: `2px solid ${WIRE}`, background: i === P ? WIRE : "#fff", transition: "background .25s" }} />
+					))}
+				</span>
+				<span className="sr-only" aria-live="polite">
+					{PAGES[P]}, page {P + 1} of {PAGES.length}
+				</span>
+				<button type="button" className="wm-wire" onClick={() => flip(1)} disabled={P === LAST} aria-label="Next page">
 					Next →
 				</button>
-				<button type="button" onClick={close} style={{ ...pill, background: INK, color: "#fff", border: "2px solid #fff", marginLeft: 10 }}>
+				<button ref={closeRef} type="button" className="wm-wire" onClick={close} aria-label="Close magazine" style={{ marginLeft: 8 }}>
 					Close ✕
 				</button>
 			</div>
@@ -175,49 +249,33 @@ export default function Magazines() {
 				</p>
 			</div>
 
-			<div style={{ display: "flex", flexDirection: "column", alignItems: "center", filter: "drop-shadow(6px 8px 0 rgba(59,53,82,.25))" }}>
-				{/* Hanging sign */}
-				<div style={{ width: 230, background: PAPER, border: `1.8px solid ${INK}`, padding: 12, textAlign: "center", display: "flex", flexDirection: "column", gap: 4, position: "relative", zIndex: 2 }}>
-					<span style={{ fontFamily: YUSEI, fontSize: 20 }}>BACK ISSUES</span>
-					<span style={{ font: `500 11px ${MONO}`, letterSpacing: ".12em" }}>
-						{newest} — {oldest} · 雑誌
-					</span>
-				</div>
-				<div style={{ width: 10, height: 30, background: "linear-gradient(90deg,#92b4e0,#F1D9C6,#92b4e0)", borderLeft: `2px solid ${INK}`, borderRight: `2px solid ${INK}` }} />
-
-				{/* Rack: two-column grid of covers */}
-				<div style={{ position: "relative", display: "grid", gridTemplateColumns: "repeat(2,clamp(130px,15vw,165px))", columnGap: "clamp(30px,5vw,56px)", rowGap: 26, padding: "4px 14px 0" }}>
-					<div style={{ position: "absolute", left: "50%", top: -4, bottom: -70, width: 10, transform: "translateX(-50%)", background: "linear-gradient(90deg,#92b4e0,#F1D9C6,#92b4e0)", borderLeft: `2px solid ${INK}`, borderRight: `2px solid ${INK}` }} />
-					{magData.map((m, i) => (
-						<div key={m.year} style={{ position: "relative", paddingTop: 4 }}>
-							<button
-								type="button"
-								className="mag-cover"
-								onClick={() => open(i)}
-								aria-label={`Open WEHack ${m.year}: ${m.title}`}
-								style={{ "--tilt": `${tilts[i % tilts.length]}deg`, width: "100%", aspectRatio: "3/4.2", padding: 0, border: `1.8px solid ${INK}`, background: m.bg, color: INK, cursor: "pointer", textAlign: "left", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative" } as React.CSSProperties}
-							>
-								<div style={{ padding: "8px 8px 4px", fontFamily: YUSEI, fontSize: 13, lineHeight: 1, textTransform: "uppercase", overflowWrap: "anywhere", flex: "none", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-									{m.title}
-								</div>
-								<div style={{ margin: "0 8px", flex: "1 1 0", minHeight: 0, border: `2px solid ${INK}` }}>
-									<Photo id={`mag-${m.year}-cover`} label="cover photo" />
-								</div>
-								<div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", padding: "6px 8px 8px" }}>
-									<span style={{ font: `500 10px ${MONO}`, letterSpacing: ".08em" }}>VOL. {vol(i)}</span>
-									<span style={{ fontFamily: YUSEI, fontSize: 24, lineHeight: 0.8 }}>{yy(m.year)}</span>
-								</div>
-							</button>
-							{/* Blue wire band in front of each cover (decoration) */}
-							<div style={{ position: "absolute", left: -10, right: -10, bottom: -8, height: "46%", border: "3px solid #92b4e0", borderRadius: "2px 2px 8px 8px", background: "linear-gradient(transparent calc(50% - 1.5px),#92b4e0 calc(50% - 1.5px) calc(50% + 1.5px),transparent calc(50% + 1.5px))", pointerEvents: "none", zIndex: 2 }} />
-						</div>
-					))}
-				</div>
-
-				{/* Stand base */}
-				<div style={{ height: 70 }} />
-				<div style={{ width: "min(320px,80vw)", height: 64, background: "linear-gradient(90deg,#92b4e0,#F1D9C6 45%,#E5A98A)", clipPath: "polygon(44% 0,56% 0,100% 100%,0 100%)" }} />
-				<div style={{ width: "min(320px,80vw)", height: 16, background: "#8aacd9", border: `1.8px solid ${INK}`, borderRadius: "50%", marginTop: -8 }} />
+			{/* Magazine stand illustration with a clickable area over each magazine (row by row,
+			    newest first, matching content.ts). Hovering or focusing one lifts and tilts it. */}
+			<div className="mag-stand" style={{ position: "relative", width: "clamp(260px,32vw,420px)", aspectRatio: "1000 / 1500" }}>
+				<img src={layered ? stand.empty : stand.flat} alt="" draggable={false} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", userSelect: "none" }} />
+				{magData.map((m, i) => {
+					const [l, t, w, h] = stand.spots[i];
+					const art: React.CSSProperties = layered
+						? { backgroundImage: `url(${stand.covers[i]})`, backgroundSize: "100% 100%" }
+						: {
+								// Cut-out of the flat illustration that sits exactly over this magazine
+								backgroundImage: `url(${stand.flat})`,
+								backgroundSize: `${(100 / w) * 100}% ${(100 / h) * 100}%`,
+								backgroundPosition: `${(l / (100 - w)) * 100}% ${(t / (100 - h)) * 100}%`,
+							};
+					return (
+						<button
+							key={m.year}
+							type="button"
+							className={`mag-spot${layered ? "" : " flat"}`}
+							onClick={(e) => open(i, e.currentTarget)}
+							aria-label={`Open WEHack ${m.year}: ${m.title}`}
+							style={{ "--tilt": i % 2 ? "3deg" : "-3deg", left: pctStr(l), top: pctStr(t), width: pctStr(w), height: pctStr(h) } as React.CSSProperties}
+						>
+							<span className="mag-lift" style={art} />
+						</button>
+					);
+				})}
 			</div>
 
 			{/* Viewer goes straight into <body> so position:fixed covers the screen

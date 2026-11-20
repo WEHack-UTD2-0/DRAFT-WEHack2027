@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from "react";
 import "./wemart.css";
 import { EVENT_START } from "./content";
 import { useFrame, c, ease, smooth, setStyle, prefersReducedMotion } from "./frame";
-import { buildInteriorSvg } from "./interior";
 import Nav from "./Nav";
 import Scene, { type SceneParts } from "./Scene";
 import Hero from "./Hero";
@@ -21,7 +20,8 @@ import Exit from "./Exit";
 // Layers (back to front):
 //   Scene  — fixed night storefront, zoomed/translated via CSS vars
 //   Hero   — 300vh spacer: storefront zooms to the door, doors slide open, bunny appears
-//   <main> — normal-flow sections over a fixed interior-corridor backdrop (--aisle, --big)
+//   <main> — normal-flow sections over a fixed aisle backdrop: three illustrations
+//            (bright → mid → dim) cross-fade as you scroll down the store
 //   Exit   — 240vh spacer: zoom back out, doors close, "Thank you" bunny
 //   Grain  — fixed paper-grain overlay
 // Scroll-linked transform/opacity values are written directly on the moving elements once
@@ -29,6 +29,13 @@ import Exit from "./Exit";
 
 const GRAIN_SVG =
 	"<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/><feColorMatrix values='0 0 0 0 .35 0 0 0 0 .25 0 0 0 0 .15 0 0 0 1.1 -.42'/></filter><rect width='260' height='260' filter='url(#f)'/></svg>";
+
+const AISLE = {
+	bright: "/img/wemart/aisle-bright.png",
+	mid: "/img/wemart/aisle-mid.png",
+	dim: "/img/wemart/aisle-dim.png",
+};
+const aisleImg: React.CSSProperties = { position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "50% 60%", maxWidth: "none" };
 
 function useCountdown() {
 	// null until mounted, so server and client markup match (no hydration mismatch).
@@ -60,13 +67,10 @@ export default function WEmartSite() {
 	const exitBunnyRef = useRef<HTMLDivElement>(null);
 	const engineKey = useRef({}).current;
 	const outroRef = useRef<HTMLElement>(null);
-	const interiorRef = useRef<HTMLDivElement>(null);
+	const mainRef = useRef<HTMLElement>(null);
+	const aisleMidRef = useRef<HTMLImageElement>(null);
+	const aisleDimRef = useRef<HTMLImageElement>(null);
 	const cd = useCountdown();
-
-	// Interior corridor SVG is generated client-side (it's large and starts invisible).
-	useEffect(() => {
-		if (interiorRef.current) interiorRef.current.innerHTML = buildInteriorSvg();
-	}, []);
 
 	// Scroll engine: storefront zoom, doors, aisle fade, bunnies.
 	// Each frame: read the hero/exit positions, compute targets, glide toward them
@@ -86,11 +90,17 @@ export default function WEmartSite() {
 	useFrame((_, dt) => {
 		// ---- read ----
 		const vh = window.innerHeight;
+		const vw = window.innerWidth;
 		const dr = doorRef.current;
-		const fill = dr && dr.offsetWidth ? Math.min((window.innerWidth * 0.94) / dr.offsetWidth, (vh - 120) / dr.offsetHeight) : 5;
+		const wrap = parts.current.wrap;
+		const fill = dr && dr.offsetWidth ? Math.min((vw * 0.94) / dr.offsetWidth, (vh - 120) / dr.offsetHeight) : 5;
 		const D = prefersReducedMotion() ? 0 : Math.max(0, fill - 1);
+		// Door centre in untransformed scene coordinates (offset* ignore transforms).
+		const dcx = dr && wrap ? wrap.offsetLeft + dr.offsetLeft + dr.offsetWidth / 2 : vw / 2;
+		const dcy = dr && wrap ? wrap.offsetTop + dr.offsetTop + dr.offsetHeight / 2 : vh * 0.8;
 		const hr = heroRef.current?.getBoundingClientRect();
 		const or = outroRef.current?.getBoundingClientRect();
+		const mr = mainRef.current?.getBoundingClientRect();
 
 		// ---- compute targets ----
 		let v: { zp: number; title: number; hint: number; door: number } | null = null;
@@ -115,12 +125,21 @@ export default function WEmartSite() {
 			mas = ease(c((p - 0.6) / 0.26));
 		}
 
+		// Aisle lighting through the store: bright at the doors, mid by the middle, dim by checkout.
+		const q = mr ? c(-mr.top / Math.max(1, mr.height - vh)) : 0;
+		let amid = ease(c((q - 0.15) / 0.3));
+		let adim = ease(c((q - 0.55) / 0.3));
+
 		// ---- glide + queue writes ----
 		const k = engineKey;
 		aisle = smooth(k, "aisle", aisle, dt);
 		big = smooth(k, "big", big, dt);
 		mas = smooth(k, "mas", mas, dt, 180);
 		oimg = smooth(k, "oimg", oimg, dt, 180);
+		amid = smooth(k, "amid", amid, dt, 240);
+		adim = smooth(k, "adim", adim, dt, 240);
+		setStyle(aisleMidRef.current, "opacity", amid.toFixed(4));
+		setStyle(aisleDimRef.current, "opacity", adim.toFixed(4));
 		setStyle(backdropRef.current, "opacity", aisle.toFixed(4));
 		setStyle(scrimRef.current, "opacity", (1 - big).toFixed(4));
 		setStyle(heroBunnyRef.current, "opacity", mas.toFixed(4));
@@ -135,7 +154,9 @@ export default function WEmartSite() {
 			const title = smooth(k, "title", v.title, dt);
 			const hint = smooth(k, "hint", v.hint, dt);
 			const door = smooth(k, "door", v.door, dt, 70); // short glide: each wheel click slides (~0.2s) instead of snapping
-			setStyle(P.inner, "transform", `translateY(${(zp * (55 - 0.275 * vh)).toFixed(2)}px) scale(${zoom.toFixed(4)})`);
+			// Scale about the door centre, then slide it to the middle of the screen below the nav.
+			setStyle(P.inner, "transform-origin", `${dcx.toFixed(1)}px ${dcy.toFixed(1)}px`);
+			setStyle(P.inner, "transform", `translate(${(zp * (vw / 2 - dcx)).toFixed(2)}px,${(zp * (60 + (vh - 60) / 2 - dcy)).toFixed(2)}px) scale(${zoom.toFixed(4)})`);
 			setStyle(P.poster, "transform", `rotate(-2deg) scale(${(0.5 + zp * 0.5).toFixed(4)})`);
 			setStyle(P.sticker, "transform", `rotate(8deg) scale(${(0.5 + zp * 0.5).toFixed(4)})`);
 			setStyle(P.title, "opacity", title.toFixed(4));
@@ -164,10 +185,12 @@ export default function WEmartSite() {
 			<Scene sceneRef={sceneRef} doorRef={doorRef} parts={parts} cd={cd} />
 			<Hero heroRef={heroRef} bunnyRef={heroBunnyRef} />
 
-			<main style={{ position: "relative", zIndex: 2 }}>
-				{/* Fixed interior-corridor backdrop (fades in with the aisle); cream scrim fades out */}
+			<main ref={mainRef} style={{ position: "relative", zIndex: 2 }}>
+				{/* Fixed aisle backdrop (fades in as the doors open); the cream scrim keeps sections readable */}
 				<div ref={backdropRef} aria-hidden style={{ position: "fixed", inset: 0, zIndex: -1, pointerEvents: "none", opacity: 0, background: "#F2EAD0", willChange: "opacity", transform: "translateZ(0)", contain: "strict" }}>
-					<div ref={interiorRef} style={{ position: "absolute", inset: 0, contain: "strict" }} />
+					<img src={AISLE.bright} alt="" style={aisleImg} />
+					<img ref={aisleMidRef} src={AISLE.mid} alt="" style={{ ...aisleImg, opacity: 0, willChange: "opacity" }} />
+					<img ref={aisleDimRef} src={AISLE.dim} alt="" style={{ ...aisleImg, opacity: 0, willChange: "opacity" }} />
 					<div
 						ref={scrimRef}
 						style={{

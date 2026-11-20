@@ -62,12 +62,12 @@ export default function RootLayout({
 	const page = (
 			<html lang="en">
 				<head>
-					{/* WEmart fonts: Yusei Magic, Zen Maru Gothic, IBM Plex Mono */}
+					{/* WEmart fonts: Yusei Magic, Zen Maru Gothic, IBM Plex Mono; Pinyon Script, Nunito and Barlow Condensed for the magazine covers */}
 					<link rel="preconnect" href="https://fonts.googleapis.com" />
 					<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
 					<link
 						rel="stylesheet"
-						href="https://fonts.googleapis.com/css2?family=Yusei+Magic&family=Zen+Maru+Gothic:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+						href="https://fonts.googleapis.com/css2?family=Yusei+Magic&family=Zen+Maru+Gothic:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&family=Pinyon+Script&family=Nunito:ital,wght@0,600;0,700;0,800;0,900;1,900&family=Barlow+Condensed:wght@500;600&display=swap"
 					/>
 					{/* google analytics tag */}
 					<Script

@@ -9,7 +9,7 @@ export const NEXT_YEAR = "2027";
 // a real photo instead of the striped placeholder, e.g.
 //   "officer-0": "/img/wemart/officers/president.jpg",
 //   "team-0": "/img/wemart/teams/tech.jpg",
-//   "mag-2026-cover": "/img/wemart/mags/2026-cover.jpg",   (also -p1, -p2, -p3)
+//   "mag-2026-cover": "/img/wemart/mags/2026-cover.jpg",   (and -p1 for the inside photo)
 export const photos: Record<string, string> = {};
 
 // ---------- 02 Ice cream / Officers ----------
@@ -32,15 +32,44 @@ export const sponsorTiers: { label: string; color: string; w: number; dome: numb
 ];
 
 // ---------- 04 Magazines / Past WEHacks ----------
-// NEWEST FIRST. Keep an even count (the rack is 2 columns). Volume numbers count down automatically.
-export const magazines: { year: string; title: string; bg: string; line: string; headline: string }[] = [
-	{ year: "2026", title: "Night at the Museum", bg: "#BCD5D8", line: "After-hours exhibits", headline: "Night at the Museum" },
-	{ year: "2025", title: "Timeless Moments Await", bg: "#EBD08A", line: "Moments worth keeping", headline: "Timeless Moments Await" },
-	{ year: "2024", title: "Enchanted to be Here", bg: "#E9A593", line: "Apps that captivate", headline: "Enchanted to be Here" },
-	{ year: "2023", title: "Adventure is Out There", bg: "#BCD5D8", line: "Travel, risk, bold ideas", headline: "Adventure is Out There" },
-	{ year: "2022", title: "The Future is Now", bg: "#F1D9C6", line: "Innovate, make change", headline: "The Future is Now" },
-	{ year: "2020", title: "Robotics", bg: "#EBD08A", line: "Inaugural issue · hardware + software", headline: "Robotics" },
+// NEWEST FIRST, exactly 6: one per magazine in the stand illustration (row by row, left then
+// right). Volume numbers count down automatically. `blurb` is the editor's letter in the viewer.
+// TODO(content): confirm each year and title against the real WEHack archive (was there a 2021?)
+// and replace every placeholder blurb with a short recap of that year.
+/** How a cover's title is lettered in the issue viewer, matching that magazine on the stand. */
+export type Lettering = "museum" | "timeless" | "enchanted" | "adventure" | "future" | "robotics";
+
+// `bg` and `lettering` match each magazine's look in magazine-stand.png.
+export const magazines: { year: string; title: string; bg: string; lettering: Lettering; line: string; headline: string; blurb: string }[] = [
+	{ year: "2026", title: "Night at the Museum", bg: "#f6e3ee", lettering: "museum", line: "After-hours exhibits", headline: "Night at the Museum", blurb: "TODO: a short recap of WEHack 2026: the theme, the vibe, the moment everyone still talks about." },
+	{ year: "2025", title: "Timeless Moments Await", bg: "#c5d9eb", lettering: "timeless", line: "Moments worth keeping", headline: "Timeless Moments Await", blurb: "TODO: a short recap of WEHack 2025." },
+	{ year: "2024", title: "Enchanted to be Here", bg: "#c5d9eb", lettering: "enchanted", line: "Apps that captivate", headline: "Enchanted to be Here", blurb: "TODO: a short recap of WEHack 2024." },
+	{ year: "2023", title: "Adventure is Out There", bg: "#f6f2cb", lettering: "adventure", line: "Travel, risk, bold ideas", headline: "Adventure is Out There", blurb: "TODO: a short recap of WEHack 2023." },
+	{ year: "2022", title: "The Future is Now", bg: "#f6f2cb", lettering: "future", line: "Innovate, make change", headline: "The Future is Now", blurb: "TODO: a short recap of WEHack 2022." },
+	{ year: "2020", title: "Robotics", bg: "#feebf6", lettering: "robotics", line: "Inaugural issue · hardware + software", headline: "Robotics", blurb: "TODO: a short recap of WEHack 2020, the inaugural issue." },
 ];
+
+// The magazine stand illustration (files in apps/web/public/img/wemart/).
+// A clean hover lift needs the art in layers. TODO(marketing): request
+//   • magazine-stand-empty.png: the same 1000×1500 canvas with the six magazines removed
+//   • six cover PNGs, each cropped to one magazine (newest first, same order as above)
+// then fill in `empty` and `covers`. Until all of them are set, the page uses the flat
+// illustration and lifts a cut-out of it on hover.
+export const magazineStand = {
+	flat: "/img/wemart/magazine-stand.png",
+	empty: "",
+	covers: ["", "", "", "", "", ""],
+	// Clickable area over each magazine, in % of the 1000×1500 illustration [left, top, width, height].
+	// Approximate. Check them by eye after any change to the art.
+	spots: [
+		[13.7, 14.5, 22.3, 20.3],
+		[51.5, 14.7, 23.3, 20.2],
+		[13.3, 36.5, 21.5, 20.3],
+		[49.4, 36.9, 25.8, 20.1],
+		[13.2, 59.0, 22.0, 20.2],
+		[47.8, 59.0, 24.0, 20.3],
+	] as [number, number, number, number][],
+};
 
 // ---------- 05 Shopping list / FAQ ----------
 // [question, answer]. Add or remove freely; the checkbox count adjusts automatically.

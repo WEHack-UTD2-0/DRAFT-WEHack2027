@@ -53,6 +53,32 @@ body:has(.wemart) {
 	to { opacity: 1; transform: none }
 }
 
+/* Hero lettering: the Japanese-style display face and dark navy from the hero mockup. */
+.wemart {
+	--wm-hero-font: "Yusei Magic", sans-serif;
+}
+.wemart .wm-hero-title {
+	margin: 0;
+	font-family: var(--wm-hero-font);
+	font-weight: 400;
+	font-size: clamp(34px, 6.6vw, 140px);
+	line-height: 1;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+	color: #00072d;
+	text-shadow: 0 0 2px #fff, 0 0 10px rgba(255, 255, 255, .95), 0 0 26px rgba(255, 255, 255, .7);
+	text-wrap: balance;
+}
+.wemart .wm-hero-date {
+	margin-top: clamp(14px, 3.4vw, 64px);
+	font-family: var(--wm-hero-font);
+	font-size: clamp(18px, 2.2vw, 44px);
+	letter-spacing: .03em;
+	text-transform: uppercase;
+	color: #4a86d4;
+	text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff, 0 3px 0 #fff;
+}
+
 /* Photo placeholder (replaces the prototype's <image-slot>) */
 .wm-photo {
 	position: relative;
@@ -71,6 +97,11 @@ body:has(.wemart) {
 	height: 100%;
 	object-fit: cover;
 }
+/* Flat, empty panel for art to drop into (issue viewer) */
+.wm-photo.plain {
+	background: transparent;
+	background-image: none;
+}
 .wm-photo span {
 	font: 500 8px "IBM Plex Mono", monospace;
 	padding: 4px;
@@ -83,14 +114,61 @@ body:has(.wemart) {
 	background: #f2ead0 !important;
 }
 
-/* Magazine cover hover lift */
-.mag-cover {
-	transform: rotate(var(--tilt));
-	transition: transform .25s ease;
+/* Magazine stand: one button over each magazine in the illustration */
+.mag-spot {
+	position: absolute;
+	padding: 0;
+	border: 0;
+	background: none;
+	cursor: pointer;
+	border-radius: 2px;
 }
-.mag-cover:hover,
-.mag-cover:focus-visible {
-	transform: translateY(-18px) rotate(0deg);
+/* The magazine itself (a cover image, or a cut-out of the flat illustration) */
+.mag-lift {
+	position: absolute;
+	inset: 0;
+	display: block;
+	background-repeat: no-repeat;
+	transform-origin: 50% 100%;
+	transition: transform .28s cubic-bezier(.3, .7, .4, 1.2), filter .28s ease;
+}
+.mag-spot:hover .mag-lift,
+.mag-spot:focus-visible .mag-lift {
+	transform: translateY(-9%) rotate(var(--tilt)) scale(1.04);
+	filter: drop-shadow(6px 10px 6px rgba(59, 53, 82, .35));
+}
+/* Flat art only: shade the spot the cut-out leaves, so it reads as an empty pocket */
+.mag-spot.flat::before {
+	content: "";
+	position: absolute;
+	inset: 2%;
+	border-radius: 3px;
+	background: rgba(74, 58, 48, .28);
+	opacity: 0;
+	transition: opacity .28s ease;
+}
+.mag-spot.flat:hover::before,
+.mag-spot.flat:focus-visible::before {
+	opacity: 1;
+}
+.mag-spot:focus-visible {
+	outline: 3px dashed #7ba3d6;
+	outline-offset: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+	/* No movement: mark the magazine with an outline instead */
+	.mag-spot:hover .mag-lift,
+	.mag-spot:focus-visible .mag-lift {
+		transform: none;
+		filter: none;
+	}
+	.mag-spot.flat::before {
+		display: none;
+	}
+	.mag-spot:hover {
+		outline: 3px solid #7ba3d6;
+		outline-offset: 2px;
+	}
 }
 
 /* Magazine book leaves */
@@ -118,10 +196,54 @@ body:has(.wemart) {
 	transform: rotateY(180deg);
 }
 
+/* Issue viewer buttons: pink wire pills, doubled like the stand's wire pockets */
+.wm-wire {
+	font: 800 15px "Nunito", "Zen Maru Gothic", sans-serif;
+	color: #645c5f;
+	background: #fffafc;
+	border: 2.5px solid #efb5d5;
+	border-radius: 999px;
+	padding: 9px 20px;
+	box-shadow: inset 0 0 0 2.5px #fff, inset 0 0 0 4.5px #efb5d5, 3px 4px 0 rgba(113, 102, 98, .25);
+	cursor: pointer;
+	transition: transform .15s ease, background .15s ease;
+}
+.wm-wire:hover:not(:disabled) {
+	background: #fde9f3;
+	transform: translateY(-2px);
+}
+.wm-wire:focus-visible {
+	outline: 3px dashed #7ba3d6;
+	outline-offset: 3px;
+}
+.wm-wire:disabled {
+	opacity: .45;
+}
+
+/* Scanner cursor (mouse/trackpad only). Hotspot is the front of the scan window. */
+@media (pointer: fine) {
+	.wemart,
+	.wm-viewer {
+		cursor: url("/img/wemart/cursor.png") 37 24, auto;
+	}
+	.wemart :is(a, button, [role="button"], label, summary),
+	.wm-viewer button {
+		cursor: url("/img/wemart/cursor.png") 37 24, pointer !important;
+	}
+	.wemart button:disabled,
+	.wm-viewer button:disabled {
+		cursor: url("/img/wemart/cursor.png") 37 24, not-allowed !important;
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.wemart *,
 	.wemart *::before,
-	.wemart *::after {
+	.wemart *::after,
+	.wm-viewer,
+	.wm-viewer *,
+	.wm-viewer *::before,
+	.wm-viewer *::after {
 		transition-duration: .01ms !important;
 		animation-duration: .01ms !important;
 	}
