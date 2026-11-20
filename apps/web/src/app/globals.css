@@ -129,90 +129,88 @@
 
 /* === containers === */
 html {
-    scroll-behavior: smooth;
-    overflow-x: hidden;
+	scroll-behavior: smooth;
+	overflow-x: clip;
 }
 body {
-    margin: 0;
-    overflow-x: hidden;
+	margin: 0;
+	overflow-x: clip;
 }
-
-
 
 .App {
-    background-image: url("/img/static/images/landing-page-background-2.webp");
-    background-size: 100% auto;
-    background-repeat: repeat;
-    background-position: center;
-    overflow-x: hidden;
-    height: 100vh;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    background-attachment: fixed;
+	background-image: url("/img/static/images/landing-page-background-2.webp");
+	background-size: 100% auto;
+	background-repeat: repeat;
+	background-position: center;
+	overflow-x: clip;
+	min-height: 100vh;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	background-attachment: fixed;
 	background-color: #1f1d31;
-	
 }
 
-.parent-container {    
-    /* width and height */
-    width: 100vw;
-    height: auto;
-    
-    /* flex */
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+.parent-container {
+	/* width and height */
+	width: 100vw;
+	height: auto;
 
-    /* spacing */
-    /* padding: top, right, bottom, left */
-    padding: 5rem 2.5rem 10rem 2.5rem
+	/* flex */
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	/* spacing */
+	/* padding: top, right, bottom, left */
+	padding: 5rem 2.5rem 10rem 2.5rem;
 }
 
 .child-container {
-    /* width and height */
-    width: 100%;
-    height: auto;
+	/* width and height */
+	width: 100%;
+	height: auto;
 
-    /* flex */
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
+	/* flex */
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
 
-    /* spacing */
-    /* margin: top, right, bottom, left */
-    margin: 1rem 0rem 0rem 0rem;
+	/* spacing */
+	/* margin: top, right, bottom, left */
+	margin: 1rem 0rem 0rem 0rem;
 }
 
 /* === fonts === */
 /* shoutout to anastasiia fr: 
 https://medium.com/@a.pirus/simplifying-multiple-fonts-styling-in-next-js-13-with-css-variables-cb57e9707693 */
 
-h1, h3 {
-    /* font-family:var(--font-inknut-antiqua); */
-    /* font-family: var(--font-junge); */
-    font-family: var(--font-cinzel-decorative);
-    
+h1,
+h3 {
+	/* font-family:var(--font-inknut-antiqua); */
+	/* font-family: var(--font-junge); */
+	font-family: var(--font-cinzel-decorative);
 }
 
-h2, p {
-    /* font-family: var(--font-julius-sans-one); */
-    font-family: var(--font-marcellus);
+h2,
+p {
+	/* font-family: var(--font-julius-sans-one); */
+	font-family: var(--font-marcellus);
 }
 
 p {
-    font-family:var(--font-marcellus);
+	font-family: var(--font-marcellus);
 }
 
 /* === media queries === */
 
 /* small */
 @media (min-width: 580px) {
-    /* .parent-container {
+	/* .parent-container {
         flex-direction: row; 
     }
     .child-container {
@@ -223,13 +221,13 @@ p {
 
 /* medium */
 @media (min-width: 768px) {
-    .parent-container {
-        flex-direction: row; /* changed here */
-    }
-    .child-container {
-        width:50%;
-        flex-direction: column;
-    }
+	.parent-container {
+		flex-direction: row; /* changed here */
+	}
+	.child-container {
+		width: 50%;
+		flex-direction: column;
+	}
 	.App {
 		background-repeat: no-repeat;
 		background-attachment: fixed;
@@ -238,13 +236,13 @@ p {
 
 /* large */
 @media (min-width: 1024px) {
-    .parent-container {
-        flex-direction: row; /* changed here */
-        /* padding: top, right, bottom, left */
-        padding: 10rem 2.5rem 12rem 2.5rem;
-    }
-    .child-container {
-        width:50%;
-        flex-direction: column;
-    }
+	.parent-container {
+		flex-direction: row; /* changed here */
+		/* padding: top, right, bottom, left */
+		padding: 10rem 2.5rem 12rem 2.5rem;
+	}
+	.child-container {
+		width: 50%;
+		flex-direction: column;
+	}
 }
