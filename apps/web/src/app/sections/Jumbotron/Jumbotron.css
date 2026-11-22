@@ -7,6 +7,13 @@
   background-position: top center;
 }
 
+.jumbotron-interior-layer {
+  background-image: url("/img/static/images/storelight.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
 .jumbotron-text-overlay {
   padding: 2rem 1rem;
   display: flex;
