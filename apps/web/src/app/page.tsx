@@ -1,5 +1,4 @@
 import Navbar from "@/components/shared/Navbar";
-import Jumbotron from "./sections/Jumbotron/Jumbotron";
 import About from "./sections/About/About";
 import Sponsor from "./sections/Sponsor/Sponsor";
 import MLHBadge from "@/components/landing/MLHBadge";
@@ -15,28 +14,30 @@ import Donations from "./sections/Donations/Donations";
 // import Schedule from "./sections/Schedule/Schedule";
 // import Livestream from "./sections/Livestream/Livestream";
 // import Menu from "./sections/Menu/Menu";
+import WEMartScrollExperience from "./sections/Jumbotron/WEMartScrollExperience";
 
 export default function Home() {
   return (
     // this is where all our components will go
-    <div className="App transform-gpu">
+    <div className="App">
       <Navbar />
-	    <MLHBadge />
-      <Jumbotron/>
-      {/* <Livestream/> */}
-      {/* <Schedule/> */}
-      {/* <Menu /> */}
-      {/* <Countdown/> */}
-      <About/>
-      {/* <FilmStrip/> */}
-      <Gallery/>
-      <Stats/>
-      <Testimonials/>
-      <Sponsor/>
-      <Donations/> 
-      <FAQ/> 
-      {/* <Team/> */}
-      <Footer/>
+      <MLHBadge />
+      <WEMartScrollExperience>
+        {/* <Livestream/> */}
+        {/* <Schedule/> */}
+        {/* <Menu /> */}
+        {/* <Countdown/> */}
+        <About />
+        {/* <FilmStrip/> */}
+        <Gallery />
+        <Stats />
+        <Testimonials />
+        <Sponsor />
+        <Donations />
+        <FAQ />
+        {/* <Team/> */}
+        <Footer />
+      </WEMartScrollExperience>
     </div>
   );
 }

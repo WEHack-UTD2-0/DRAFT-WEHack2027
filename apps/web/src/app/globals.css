@@ -38,10 +38,10 @@
 
 		--radius: 0.5rem;
 
-		--gradient-color-1: #2c3e66;
-		--gradient-color-2: #3a6ea5;
-		--gradient-color-3: #5aaaf0;
-		--gradient-color-4: #d1f4f3;
+		--gradient-color-1: #00072d;
+		--gradient-color-2: #538fdd;
+		--gradient-color-3: #c5d9eb;
+		--gradient-color-4: #efb5d5;
 	}
 
 	.dark {
@@ -84,7 +84,7 @@
 	}
 
 	body {
-		@apply bg-[#1A1C28] text-foreground;
+		@apply bg-[#00072D] text-foreground;
 	}
 }
 
@@ -107,15 +107,11 @@
 }
 
 .pulsatingDot {
-	/* animation: pulseDot 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955) -.4s infinite; */
-	/* border-radius: 50%; */
-	/* box-sizing: border-box; */
 	transform-origin: center;
 }
 
 .pulsatingDot:before {
 	animation: pulseRing 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-	/* background-color: var(--pulsating-dot, #00BEFF); */
 	background-color: hsl(var(--hackathon-primary));
 	border-radius: 45px;
 	content: "";
@@ -129,116 +125,77 @@
 
 /* === containers === */
 html {
-	scroll-behavior: smooth;
 	overflow-x: clip;
 }
+
 body {
 	margin: 0;
 	overflow-x: clip;
 }
 
 .App {
-	background-image: url("/img/static/images/landing-page-background-2.webp");
-	background-size: 100% auto;
-	background-repeat: repeat;
-	background-position: center;
 	overflow-x: clip;
 	min-height: 100vh;
 	width: 100%;
 	margin: 0;
 	padding: 0;
-	background-attachment: fixed;
-	background-color: #1f1d31;
+	background-color: transparent;
 }
 
 .parent-container {
-	/* width and height */
 	width: 100vw;
 	height: auto;
 
-	/* flex */
 	display: flex;
 	flex-wrap: wrap;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 
-	/* spacing */
-	/* padding: top, right, bottom, left */
 	padding: 5rem 2.5rem 10rem 2.5rem;
 }
 
 .child-container {
-	/* width and height */
 	width: 100%;
 	height: auto;
 
-	/* flex */
 	display: flex;
 	flex-wrap: wrap;
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
 
-	/* spacing */
-	/* margin: top, right, bottom, left */
 	margin: 1rem 0rem 0rem 0rem;
 }
 
 /* === fonts === */
-/* shoutout to anastasiia fr: 
-https://medium.com/@a.pirus/simplifying-multiple-fonts-styling-in-next-js-13-with-css-variables-cb57e9707693 */
-
 h1,
 h3 {
-	/* font-family:var(--font-inknut-antiqua); */
-	/* font-family: var(--font-junge); */
-	font-family: var(--font-cinzel-decorative);
+	font-family: var(--font-dela-gothic), var(--font-cinzel-decorative), sans-serif;
 }
 
-h2,
-p {
-	/* font-family: var(--font-julius-sans-one); */
-	font-family: var(--font-marcellus);
+h2 {
+	font-family: var(--font-zen-maru), var(--font-marcellus), sans-serif;
 }
 
 p {
-	font-family: var(--font-marcellus);
+	font-family: var(--font-ibm-plex-mono), var(--font-marcellus), monospace;
 }
 
 /* === media queries === */
-
-/* small */
-@media (min-width: 580px) {
-	/* .parent-container {
-        flex-direction: row; 
-    }
-    .child-container {
-        width:50%;
-        flex-direction: column;
-    } */
-}
-
-/* medium */
 @media (min-width: 768px) {
 	.parent-container {
-		flex-direction: row; /* changed here */
+		flex-direction: row;
 	}
 	.child-container {
 		width: 50%;
 		flex-direction: column;
 	}
-	.App {
-		background-repeat: no-repeat;
-		background-attachment: fixed;
-	}
 }
 
-/* large */
 @media (min-width: 1024px) {
 	.parent-container {
-		flex-direction: row; /* changed here */
-		/* padding: top, right, bottom, left */
+		flex-direction: row;
 		padding: 10rem 2.5rem 12rem 2.5rem;
 	}
 	.child-container {
