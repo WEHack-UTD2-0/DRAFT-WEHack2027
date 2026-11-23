@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useRef } from "react";
+import Link from "next/link";
 import "./Jumbotron.css";
 
 const clamp01 = (val: number) => Math.min(1, Math.max(0, val));
@@ -35,6 +36,9 @@ export default function WEMartScrollExperience({
   const yellowVeilRef = useRef<HTMLDivElement>(null);
   const whiteFlashRef = useRef<HTMLDivElement>(null);
   const thankYouRef = useRef<HTMLDivElement>(null);
+
+  // Final nighttime Jumbotron footer overlay
+  const closingFooterRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     let rafId: number | null = null;
@@ -86,6 +90,7 @@ export default function WEMartScrollExperience({
 
       let flashOpacity = 0;
       let thankYouOpacity = 0;
+      let footerOpacity = 0;
 
       // === BRANCH A: EXIT SEQUENCE ACTIVE (User reached bottom of page) ===
       if (pExit > 0) {
@@ -113,28 +118,28 @@ export default function WEMartScrollExperience({
           } else {
             storeDarkOpacity = 1;
           }
-        } else if (pExit < 0.56) {
+        } else if (pExit < 0.54) {
           // Dark store hold (~1.5s) + Farewell message
           storeDarkOpacity = 1;
           const fadeToBlack = easeInOut(clamp01((pExit - 0.34) / 0.1));
           darkTintOpacity = fadeToBlack * 0.78;
 
-          const textIn = clamp01((pExit - 0.37) / 0.07);
-          const textOut = 1 - clamp01((pExit - 0.51) / 0.05);
+          const textIn = clamp01((pExit - 0.37) / 0.06);
+          const textOut = 1 - clamp01((pExit - 0.49) / 0.05);
           thankYouOpacity = textIn * textOut;
         } else {
-          // 0.56 -> 1.00: Crossfade directly to nighttime Jumbotron (no posters or hero text) and zoom out to 1.0x
-          const revealExteriorT = easeInOut(clamp01((pExit - 0.56) / 0.12));
+          // 0.54 -> 0.86: Crossfade to nighttime Jumbotron & zoom out to 1.0x
+          const revealExteriorT = easeInOut(clamp01((pExit - 0.54) / 0.1));
           storeDarkOpacity = 1 - revealExteriorT;
           darkTintOpacity = (1 - revealExteriorT) * 0.78;
           exteriorOpacity = revealExteriorT;
-
-          // Deep Midnight Navy night tint over the exterior storefront
           exteriorNightOpacity = revealExteriorT * 0.68;
 
-          // Smoothly zoom out from 3.1x -> 1.0x
-          const zoomOutT = easeInOut(clamp01((pExit - 0.64) / 0.36));
+          const zoomOutT = easeInOut(clamp01((pExit - 0.6) / 0.26));
           exteriorScale = 3.1 - zoomOutT * 2.1;
+
+          // 0.84 -> 1.00: Fade in the WEMart 27' logo & footer over the nighttime Jumbotron
+          footerOpacity = easeInOut(clamp01((pExit - 0.84) / 0.12));
         }
       } else {
         // === BRANCH B: ENTRY RUNWAY + CONTENT SECTIONS ===
@@ -224,6 +229,13 @@ export default function WEMartScrollExperience({
       if (thankYouRef.current) {
         thankYouRef.current.style.opacity = String(thankYouOpacity);
       }
+
+      if (closingFooterRef.current) {
+        closingFooterRef.current.style.opacity = String(footerOpacity);
+        closingFooterRef.current.style.pointerEvents =
+          footerOpacity > 0.5 ? "auto" : "none";
+        closingFooterRef.current.style.transform = `translateY(${(1 - footerOpacity) * 24}px)`;
+      }
     };
 
     const onScroll = () => {
@@ -252,7 +264,7 @@ export default function WEMartScrollExperience({
       />
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@500;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=IBM+Plex+Mono:wght@400;500;600;700&family=Zen+Maru+Gothic:wght@500;700&display=swap"
       />
 
       {/* PERSISTENT FIXED VIEWPORT STAGE (z-index: 0) */}
@@ -422,11 +434,11 @@ export default function WEMartScrollExperience({
             opacity: 0,
             zIndex: 7,
             background:
-              "radial-gradient(circle at 50% 65%, rgba(0, 7, 45, 0.62) 0%, rgba(0, 5, 32, 0.84) 100%)",
+              "radial-gradient(circle at 50% 65%, rgba(0, 7, 45, 0.62) 0%, rgba(0, 5, 32, 0.86) 100%)",
           }}
         />
 
-        {/* 4. Hero Title Overlay ("A Trip to WEMart" — entry only) */}
+        {/* 4. Hero Title Overlay (Original Large Left-Aligned Text Moved Down Below Navbar) */}
         <div
           ref={heroTextRef}
           className="jumboText-container jumbotron-text-overlay absolute inset-0"
@@ -434,11 +446,13 @@ export default function WEMartScrollExperience({
             opacity: 1,
             transform: "translateY(0px)",
             zIndex: 8,
+            justifyContent: "flex-start",
+            alignItems: "flex-start",
           }}
         >
-          <div className="jumbo-group mt-10 flex flex-col items-start md:ml-[1rem] md:mt-[2.5rem]">
+          <div className="mt-24 flex flex-col items-start text-left sm:mt-28 md:ml-[1.5rem] md:mt-[7.5rem]">
             <h1
-              className="my-3 text-5xl tracking-wider sm:text-7xl md:text-8xl lg:text-9xl"
+              className="my-2 text-5xl tracking-wider sm:text-7xl md:text-8xl lg:text-9xl"
               style={{
                 fontFamily: "'Gang of Three', fantasy, cursive",
                 color: "#00072D",
@@ -459,7 +473,7 @@ export default function WEMartScrollExperience({
             </h1>
 
             <h2
-              className="mt-1 text-lg tracking-wider sm:text-2xl md:text-3xl lg:text-4xl"
+              className="mt-2 text-xl tracking-wider sm:text-2xl md:text-3xl lg:text-4xl"
               style={{
                 fontFamily: "'Gang of Three', fantasy, cursive",
                 color: "#538FDD",
@@ -526,6 +540,117 @@ export default function WEMartScrollExperience({
         />
       </div>
 
+      {/* =====================================================================
+          7. FINAL NIGHTTIME JUMBOTRON FOOTER OVERLAY (Clickable, z-index: 20)
+         ===================================================================== */}
+      <footer
+        ref={closingFooterRef}
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 20,
+          opacity: 0,
+          pointerEvents: "none",
+          transform: "translateY(24px)",
+        }}
+        className="w-full border-t-2 border-[#538FDD]/70 bg-[#00072D]/85 px-4 py-6 text-[#C5D9EB] backdrop-blur-md sm:px-6 sm:py-8"
+      >
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 md:flex-row">
+          {/* Left: Centered WEMart 27' Logo (2x Bigger) Above Made with <3 by WEHack */}
+          <div className="flex flex-col items-center justify-center gap-2 text-center">
+            <Link
+              href="#home"
+              className="flex items-center justify-center transition-transform duration-200 hover:scale-105"
+            >
+              <img
+                src="/img/static/images/WEMart%2027'%20logo.png"
+                alt="WEMart 2027 Logo"
+                className="h-28 w-auto object-contain drop-shadow-[0_0_14px_rgba(197,217,235,0.5)] sm:h-32"
+              />
+            </Link>
+            <p
+              className="text-xs font-medium tracking-wide text-[#EDD0E0] sm:text-sm"
+              style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+            >
+              Made with <span className="text-[#EFB5D5]">&lt;3</span> by{" "}
+              <span className="font-bold text-[#E4DFAA]">WEHack</span>
+            </p>
+          </div>
+
+          {/* Center: Quick Navigation Links */}
+          <div
+            className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-bold sm:gap-x-6 sm:text-sm"
+            style={{ fontFamily: "'Zen Maru Gothic', sans-serif" }}
+          >
+            <a
+              href="#about-wehack"
+              className="text-[#C5D9EB] transition-colors hover:text-[#EFB5D5]"
+            >
+              About
+            </a>
+            <a
+              href="#Sponsor"
+              className="text-[#C5D9EB] transition-colors hover:text-[#EFB5D5]"
+            >
+              Sponsors
+            </a>
+            <a
+              href="#FAQ"
+              className="text-[#C5D9EB] transition-colors hover:text-[#EFB5D5]"
+            >
+              FAQ
+            </a>
+            <a
+              href="http://hackp.ac/coc"
+              target="_blank"
+              rel="noreferrer"
+              className="text-[#C5D9EB] transition-colors hover:text-[#EFB5D5]"
+            >
+              MLH Code of Conduct
+            </a>
+            <a
+              href="mailto:wehackutd@gmail.com"
+              className="text-[#E4DFAA] transition-colors hover:text-[#EFB5D5]"
+            >
+              Contact Us
+            </a>
+          </div>
+
+          {/* Right: Socials */}
+          <div
+            className="flex flex-wrap items-center justify-center gap-3 text-xs font-semibold uppercase tracking-wider sm:gap-4"
+            style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+          >
+            <a
+              href="https://www.instagram.com/wehackutd/"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-lg border border-[#538FDD] bg-[#060F38] px-3 py-2 text-[#C5D9EB] transition-all hover:border-[#EFB5D5] hover:bg-[#EFB5D5] hover:text-[#00072D]"
+            >
+              Instagram
+            </a>
+            <a
+              href="https://www.linkedin.com/company/wehackutd/"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-lg border border-[#538FDD] bg-[#060F38] px-3 py-2 text-[#C5D9EB] transition-all hover:border-[#EFB5D5] hover:bg-[#EFB5D5] hover:text-[#00072D]"
+            >
+              LinkedIn
+            </a>
+            <a
+              href="https://discord.gg/wehack"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-lg border border-[#538FDD] bg-[#060F38] px-3 py-2 text-[#C5D9EB] transition-all hover:border-[#EFB5D5] hover:bg-[#EFB5D5] hover:text-[#00072D]"
+            >
+              Discord
+            </a>
+          </div>
+        </div>
+      </footer>
+
       {/* FOREGROUND SCROLLING FLOW (z-index: 10) */}
       <div style={{ position: "relative", zIndex: 10 }}>
         {/* ENTRY RUNWAY: Zoom in -> poster pause -> white flash -> 1.5s storelight hold */}
@@ -540,11 +665,11 @@ export default function WEMartScrollExperience({
           {children}
         </div>
 
-        {/* EXIT RUNWAY: Yellow veil clears -> store flickers -> dark + Thank you text -> nighttime Jumbotron zoom out */}
+        {/* EXIT RUNWAY: Yellow veil clears -> store flickers -> dark + Thank you text -> nighttime Jumbotron + Footer */}
         <section
           ref={exitRunwayRef}
           id="goodbye"
-          style={{ height: "380vh", width: "100%", pointerEvents: "none" }}
+          style={{ height: "420vh", width: "100%", pointerEvents: "none" }}
         />
       </div>
     </>

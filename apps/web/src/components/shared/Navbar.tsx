@@ -38,95 +38,100 @@ export default async function Navbar({ className }: NavbarProps) {
                 href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
             />
 
-            <div className="absolute z-50 w-screen pt-6">
-                <div className={cn(`relative top-0 z-50 h-16 w-screen`, className)}>
-                    <div className="mx-auto grid h-full w-full max-w-7xl grid-flow-col grid-cols-2 px-2 sm:px-6 lg:max-w-full lg:px-8">
-                        
-                        {/* Logo */}
-                        <div className="col-span-3 flex items-center justify-start gap-x-5 pl-4 md:pl-0">
-                            <Link
-                                href={"/"}
-                                className="mr-5 flex items-center gap-x-2"
-                            >
-                                <Image
-                                    src={"/img/static/images/white wehack logo.png"}
-                                    alt={c.hackathonName + " Logo"}
-                                    width={65}
-                                    height={65}
-                                    className={"drop-shadow-[0_0px_10px_rgba(239,181,213,0.35)] transform-gpu"}
-                                />
-                            </Link>
+            <div className="fixed left-0 right-0 top-0 z-50 px-3 pt-2.5 sm:px-6 lg:px-8">
+                <div
+                    className={cn(
+                        `relative mx-auto flex h-14 w-full max-w-7xl items-center justify-between rounded-2xl border-[1.5px] border-[#538FDD] bg-[#FFFDF7]/95 px-3 shadow-[3px_3px_0px_#538FDD] backdrop-blur-md sm:px-4 md:h-16 md:px-6`,
+                        className,
+                    )}
+                >
+                    {/* Logo (2x Bigger while keeping bar slim) */}
+                    <div className="flex items-center justify-start">
+                        <Link
+                            href={"/"}
+                            className="mr-2 flex items-center transition-transform duration-200 hover:scale-105"
+                        >
+                            <Image
+                                src={"/img/static/images/WEMart%2027'%20logo.png"}
+                                alt={c.hackathonName + " Logo"}
+                                width={160}
+                                height={160}
+                                className={
+                                    "h-20 w-auto sm:h-24 md:h-28 drop-shadow-[0_0px_10px_rgba(239,181,213,0.45)] transform-gpu"
+                                }
+                            />
+                        </Link>
+                    </div>
+
+                    {/* Navigation Links and Actions */}
+                    <div className="flex items-center justify-end gap-x-2.5 sm:gap-x-4 lg:gap-x-6">
+                        <div className="hidden items-center justify-end gap-x-5 lg:flex xl:gap-x-7">
+                            <NavBarLinksGrouper />
+                            {NAV_LINKS.map((link) => (
+                                <a
+                                    key={link.name}
+                                    className="text-xs xl:text-sm uppercase tracking-[0.12em] transition-colors duration-200 hover:opacity-75"
+                                    style={{
+                                        fontFamily: "'IBM Plex Mono', monospace",
+                                        fontWeight: 600,
+                                        color: "#00072D",
+                                    }}
+                                    href={link.href}
+                                    target={link.external ? "_blank" : undefined}
+                                    rel={
+                                        link.external
+                                            ? "noopener noreferrer"
+                                            : undefined
+                                    }
+                                >
+                                    {link.name}
+                                </a>
+                            ))}
                         </div>
 
-                        {/* Navigation Links and Actions */}
-                        <div className="flex items-center justify-between space-x-2 pr-4 md:justify-center md:pr-10 lg:pr-16">
-                            <div className="col-span-2 hidden items-center justify-end gap-x-5 lg:flex md:pr-6">
-                                <NavBarLinksGrouper />
-                                {NAV_LINKS.map((link) => (
-                                    <a
-                                        key={link.name}
-                                        className="text-xs uppercase tracking-[0.12em] transition-colors duration-200 hover:opacity-75"
+                        {/* Authentication / CTA Button */}
+                        <div className="hidden gap-x-3 lg:flex">
+                            {user ? (
+                                <Link
+                                    href={
+                                        registrationIsComplete
+                                            ? "/dash"
+                                            : "/register"
+                                    }
+                                >
+                                    <Button
+                                        className="h-9 rounded-xl border-[1.5px] border-[#00072D] bg-[#C5D9EB] px-4 py-1.5 text-xs xl:text-sm uppercase tracking-[0.12em] text-[#00072D] shadow-[2px_2px_0px_#00072D] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#EFB5D5] hover:shadow-[3px_3px_0px_#00072D]"
                                         style={{
-                                            fontFamily: "'IBM Plex Mono', monospace",
-                                            fontWeight: 500,
-                                            color: "#538FDD",
+                                            fontFamily:
+                                                "'IBM Plex Mono', monospace",
+                                            fontWeight: 700,
                                         }}
-                                        href={link.href}
-                                        target={link.external ? "_blank" : undefined}
-                                        rel={link.external ? "noopener noreferrer" : undefined}
                                     >
-                                        {link.name}
-                                    </a>
-                                ))}
-                            </div>
-
-                            {/* Authentication / CTA Button */}
-                            <div className="hidden gap-x-4 lg:flex">
-                                {user ? (
-                                    <Link
-                                        href={
-                                            registrationIsComplete
-                                                ? "/dash"
-                                                : "/register"
-                                        }
+                                        {registrationIsComplete
+                                            ? "Dashboard"
+                                            : "Complete Registration"}
+                                    </Button>
+                                </Link>
+                            ) : (
+                                <Link href={"/register"}>
+                                    <Button
+                                        className="h-9 rounded-xl border-[1.5px] border-[#00072D] bg-[#C5D9EB] px-4 py-1.5 text-xs xl:text-sm uppercase tracking-[0.12em] text-[#00072D] shadow-[2px_2px_0px_#00072D] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#EFB5D5] hover:shadow-[3px_3px_0px_#00072D]"
+                                        style={{
+                                            fontFamily:
+                                                "'IBM Plex Mono', monospace",
+                                            fontWeight: 700,
+                                        }}
                                     >
-                                        <Button 
-                                            className="w-full rounded-xl px-6 py-3 text-xs uppercase tracking-[0.12em] shadow-lg transition-all duration-200 hover:scale-[1.03] border-none hover:opacity-90"
-                                            style={{
-                                                fontFamily: "'IBM Plex Mono', monospace",
-                                                fontWeight: 600,
-                                                backgroundColor: "#538FDD",
-                                                color: "#C5D9EB",
-                                            }}
-                                        >
-                                            {registrationIsComplete
-                                                ? "Dashboard"
-                                                : "Complete Registration"}
-                                        </Button>
-                                    </Link>
-                                ) : (
-                                    <Link href={"/register"}>
-                                        <Button 
-                                            className="w-full rounded-xl px-6 py-3 text-xs uppercase tracking-[0.12em] shadow-lg transition-all duration-200 hover:scale-[1.03] border-none hover:opacity-90"
-                                            style={{
-                                                fontFamily: "'IBM Plex Mono', monospace",
-                                                fontWeight: 600,
-                                                backgroundColor: "#538FDD",
-                                                color: "#FFFFFF",
-                                            }}
-                                        >
-                                            Register
-                                        </Button>
-                                    </Link>
-                                )}
-                            </div>
-
-                            {/* Hamburger Menu & Profile Trigger */}
-                            <div className="relative">
-                                <ProfileButton />
-                            </div>
+                                        Register
+                                    </Button>
+                                </Link>
+                            )}
                         </div>
 
+                        {/* Hamburger Menu & Profile Trigger */}
+                        <div className="relative scale-105 md:scale-110 origin-right [&_svg]:h-6 [&_svg]:w-6">
+                            <ProfileButton />
+                        </div>
                     </div>
                 </div>
             </div>
