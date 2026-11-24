@@ -68,7 +68,7 @@ export default async function NavbarNonDash({
                                                 : "/register"
                                         }
                                     >
-                                        <Button className="primary-btn w-full bg-[#D09C51] px-5 py-3 text-[#FFE9D7] hover:bg-[#CCBA97]">
+                                        <Button className="primary-btn w-full bg-[#F0B6D6] px-5 py-3 text-[#F0D4E2] hover:bg-[#1F2A44]">
                                             {registrationIsComplete
                                                 ? "Dashboard"
                                                 : "Complete Registration"}
@@ -78,12 +78,12 @@ export default async function NavbarNonDash({
                             ) : (
                                 <>
                                     <Link href={"/sign-in"}>
-                                        <Button className="primary-btn w-full bg-[#A6CDC4] px-5 py-3 text-[#282738] hover:bg-[#6e8d85]">
+                                        <Button className="primary-btn w-full bg-[#C6DBEC] px-5 py-3 text-[#282738] hover:bg-[#6e8d85]">
                                             Sign In
                                         </Button>
                                     </Link>
                                     <Link href={"/register"}>
-                                        <Button className="primary-btn w-full bg-[#A6CDC4] px-5 py-3 text-[#282738] hover:bg-[#6e8d85]">
+                                        <Button className="primary-btn w-full bg-[#C6DBEC] px-5 py-3 text-[#282738] hover:bg-[#6e8d85]">
                                             Register
                                         </Button>
                                     </Link>

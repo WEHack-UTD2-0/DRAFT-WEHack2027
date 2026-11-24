@@ -124,8 +124,8 @@
 }
 
 .member-name {
-  color: #CCBA97;
-  font-family: 'Georgia', serif;
+  color: #1F2A44;
+  font-family: var(--font-zen-maru-gothic);
   font-size: 1.2rem;
   font-weight: 600;
   text-align: center;
@@ -134,7 +134,7 @@
 
 .member-title {
   color: #ccba97a7;
-  font-family: 'Georgia', serif;
+  font-family: var(--font-zen-maru-gothic);
   font-size: 1rem;
   font-weight: 550;
   text-align: center;

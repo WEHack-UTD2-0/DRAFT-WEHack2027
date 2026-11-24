@@ -30,7 +30,7 @@
 .header-2 h1 {
     color: #4C4C4C; /* Dark golden text */
     font-size: 2rem; /* Font size */
-    font-family: var(--font-cinzel-decorative); /* Decorative font */
+    font-family: var(--font-dela-gothic-one); /* Decorative font */
 }
 
 /* Responsive styles */
@@ -137,7 +137,7 @@
   left: -8px;
   right: 8px;
   bottom: 8px;
-  border: 3px solid #BDA8ED;
+  border: 3px solid #E4E0A8;
   z-index: -1;
   pointer-events: none;
 }
@@ -156,7 +156,7 @@
   line-height: 1.65;
   color: #2a2a2a;
   font-weight: 400;
-  font-family: 'Georgia', 'Times New Roman', serif;
+  font-family: var(--font-zen-maru-gothic);
   font-style: italic;
   letter-spacing: 0.3px;
 }
@@ -181,7 +181,7 @@
   display: inline-block;
   width: 1px;
   height: 46px;
-  background-color: #BDA8ED;
+  background-color: #E4E0A8;
 }
 
 .testimonial-author {

@@ -6,8 +6,8 @@ export default function Donations() {
       <div className="max-w-2xl mx-auto flex flex-col items-center gap-4">
         
         {/* Your original donations title */}
-        <h2 className="text-[#FFE9D7] text-3xl font-serif tracking-wide mb-2">
-          Donations
+        <h2 className="aisle-heading mb-2">
+          Aisle 6 · Donations
         </h2>
         
         {/* Clean, updated outreach message as plain, borderless text */}

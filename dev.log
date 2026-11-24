@@ -1,0 +1,44 @@
+
+> web@0.1.0 dev C:\Users\samee\OneDrive\Desktop\SameeraaDocs\AAAAA_UTD\8_Fall_2026\CLUBS\WEHack\DRAFT-WEHack2027\apps\web
+> pnpm with-env next dev
+
+
+> web@0.1.0 with-env C:\Users\samee\OneDrive\Desktop\SameeraaDocs\AAAAA_UTD\8_Fall_2026\CLUBS\WEHack\DRAFT-WEHack2027\apps\web
+> dotenv -e ../../.env -- "next" "dev"
+
+  ▲ Next.js 14.2.5
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 15.4s
+ ○ Compiling /src/middleware ...
+ ✓ Compiled /src/middleware in 1353ms (295 modules)
+Incoming request: GET /
+/ is a Public route
+Reject reason: Unauthorized - No user found
+ ○ Compiling / ...
+(node:27740) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ ✓ Compiled / in 30.7s (1413 modules)
+ GET / 200 in 33644ms
+ ✓ Compiled in 3.1s (478 modules)
+Incoming request: GET /
+/ is a Public route
+Reject reason: Unauthorized - No user found
+ GET / 200 in 380ms
+ ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
+ ○ Compiling /icon.ico ...
+ ✓ Compiled /icon.ico in 1120ms (815 modules)
+ GET /icon.ico?9cb601ed647aeaed 200 in 1433ms
+ GET /icon.ico?9cb601ed647aeaed 200 in 78ms
+Incoming request: GET /
+/ is a Public route
+Reject reason: Unauthorized - No user found
+ GET / 200 in 1488ms
+Incoming request: GET /
+/ is a Public route
+Reject reason: Unauthorized - No user found
+ GET / 200 in 1836ms

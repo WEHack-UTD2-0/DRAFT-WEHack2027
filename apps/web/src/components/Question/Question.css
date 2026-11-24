@@ -1,14 +1,14 @@
 summary {
-    font-family:var(--font-cormorant-garamond);
+    font-family:var(--font-zen-maru-gothic);
 }
 
 .question {
-    font-family:var(--font-cormorant-garamond);
+    font-family:var(--font-zen-maru-gothic);
 }
 
 summary::after {
     content: '\002B';
-    color: #301814;
+    color: #1F2A44;
     display: flex;
     align-items:start;
     transition: 0.2s;
@@ -24,22 +24,22 @@ summary::-webkit-details-marker {
 details {
     padding: 0.5rem;
     border-radius: 0px;
-    /* border: 2px solid #301814; */
-    /* filter: drop-shadow(-10px 10px #992444); */
+    /* border: 2px solid #1F2A44; */
+    /* filter: drop-shadow(-10px 10px #4F8EE0); */
     
 }
 details:hover {
-    box-shadow: 0rem 0rem 2rem #FFCB86;
+    box-shadow: 0rem 0rem 2rem #F0B6D6;
     transition: 0.4s ease-in-out;
 }
 
 details:active {
-    box-shadow: 0rem 0rem 2rem #FFCB86;
+    box-shadow: 0rem 0rem 2rem #F0B6D6;
 }
   
 details[open] summary {
-    background: #FFCB86;
-    color:#301814;
+    background: #F0B6D6;
+    color:#1F2A44;
 }
 
 details[open] summary:after{
@@ -47,8 +47,8 @@ details[open] summary:after{
 }
   
 details[open] .panel {
-    background: #FFCB86;
-    color:#301814;
+    background: #F0B6D6;
+    color:#1F2A44;
     padding: .5em 1em;
 }
 
@@ -57,7 +57,7 @@ details[open] .panel {
 }
 
 .panel {
-    font-family: var(--font-cormorant-garamond);
+    font-family: var(--font-zen-maru-gothic);
     font-weight: normal; /* match question weight if needed */
     font-size: 1.2rem;     /* adjust to match question or Figma */
     line-height: 1.5;    /* optional */

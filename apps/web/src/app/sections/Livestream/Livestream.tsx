@@ -8,11 +8,7 @@ function LiveStream() {
       <div className="title-container">
         <div className="header-container">
           <div className="header-img-wrap">
-            <img
-              src="img/static/images/Live_Stream_header.png"
-              className="header-img"
-              alt="Live Stream"
-            />
+            <h2 className="aisle-heading">Aisle 3 · Live Stream</h2>
           </div>
         </div>
       </div>
@@ -21,6 +17,38 @@ function LiveStream() {
         <p className="about-text livestream-text">
           Watch the event unfold in real time — tune in to WEHack 2026
         </p>
+
+        <h3 className="checkout-title">Ring it up</h3>
+
+        <div className="checkout">
+        <div className="checkout-tv">
+          <span className="recap-sign"><span className="jp-text">お会計</span> · Recap</span>
+          {/* iframe is positioned over the screen area of the TV png (541x455) */}
+          <img src="/img/static/images/wemart-tv.png" alt="" className="w-full h-auto block" />
+          <iframe
+            className="absolute bg-black"
+            style={{ left: '7.8%', top: '26.5%', width: '82.5%', height: '47%' }}
+            src="https://www.youtube.com/embed/HMght4Po7KM"
+            title="WEHack live stream"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+        </div>
+
+        {/* conveyor: items slide right to left toward the register under the TV; swap the `belt-move` left values to reverse */}
+        <div className="belt" aria-hidden="true">
+          <img src="/img/static/images/conveyor/belt.png" alt="" className="belt-img" />
+          {[1, 2, 3, 4, 5, 6, 7].map((n) => (
+            <img
+              key={n}
+              src={`/img/static/images/conveyor/item-${n}.png`}
+              alt=""
+              className="belt-item"
+              style={{ animationDelay: `${-(n - 1) * 2.5}s` }}
+            />
+          ))}
+        </div>
+        </div>
 
         <a
           href="https://www.youtube.com/@wehackutd7730/streams"

@@ -5,8 +5,8 @@ export default function Sponsors() {
     <section id="sponsors" className="py-16 text-center px-4">
       <div className="max-w-4xl mx-auto">
         {/* Section Title */}
-        <h2 className="text-[#FFE9D7] text-3xl font-serif mb-6 tracking-wide">
-          Our Sponsors
+        <h2 className="aisle-heading mb-6">
+          Aisle 5 · Our Sponsors
         </h2>
         
         {/* Clean Center-Aligned Outreach Line */}

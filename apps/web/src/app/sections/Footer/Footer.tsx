@@ -12,10 +12,10 @@ function Footer() {
 					alt="wehack logo"
 				></img>
 				<div className="gap-x-0">
-					<p className="about-text text-lg font-medium text-[#FFE9D7]">
+					<p className="about-text text-lg font-medium text-[#F0D4E2]">
 						Made with 💪🤍 by WEHack 2026
 					</p>
-					<p className="about-text text-lg font-medium text-[#FFE9D7]">
+					<p className="about-text text-lg font-medium text-[#F0D4E2]">
 						<a
 							href="https://github.com/acmutsa/HackKit"
 							target="_blank"
@@ -31,7 +31,7 @@ function Footer() {
 				<div className="flex flex-row gap-x-20 md:gap-x-10 lg:w-2/3">
 					{/* Navigation */}
 					<div className="navigation-container flex flex-col flex-wrap gap-y-1 lg:w-1/2">
-						<h1 className="about-title text-left text-xl font-medium text-[#FFE9D7]">
+						<h1 className="about-title text-left text-xl font-medium text-[#F0D4E2]">
 							Navigation
 						</h1>
 						<a className="nav-link" href="#home">
@@ -75,7 +75,7 @@ function Footer() {
 
 					{/* Contact Us */}
 					<div className="contact-container flex flex-col flex-wrap gap-y-1 md:content-start lg:w-1/2">
-						<h1 className="about-title text-left text-xl font-medium text-[#FFE9D7]">
+						<h1 className="about-title text-left text-xl font-medium text-[#F0D4E2]">
 							Contact Us
 						</h1>
 						<a
@@ -118,7 +118,7 @@ function Footer() {
 
 				{/* Other Hackathons */}
 				<div className="contact-container flex flex-col flex-wrap gap-y-1 lg:w-1/3">
-					<h1 className="about-title text-left text-xl font-medium text-[#FFE9D7]">
+					<h1 className="about-title text-left text-xl font-medium text-[#F0D4E2]">
 						Other Hackathons
 					</h1>
 					<a

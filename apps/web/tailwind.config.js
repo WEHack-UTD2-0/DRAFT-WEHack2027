@@ -23,11 +23,11 @@ module.exports = {
 					"radial-gradient(ellipse_at_center, var(--gradient-color-stops))",
 			},
 			colors: {
-				border: "#bda8ed",
-				input: "#D09C51",
+				border: "#E4E0A8",
+				input: "#F0B6D6",
 				ring: "hsl(var(--ring))",
-				background: "#1A1C28",
-				foreground: "#CCBA97", // changes font color
+				background: "#C6DBEC",
+				foreground: "#1F2A44", // changes font color
 				primary: {
 					DEFAULT: "hsl(var(--primary))",
 					foreground: "hsl(var(--primary-foreground))",
@@ -43,11 +43,11 @@ module.exports = {
 					foreground: "hsl(var(--destructive-foreground))",
 				},
 				muted: {
-					DEFAULT: "#D09C51",
-					foreground: "#D09C51",
+					DEFAULT: "#F0B6D6",
+					foreground: "#F0B6D6",
 				},
 				accent: {
-					DEFAULT: "#D09C51",
+					DEFAULT: "#F0B6D6",
 					foreground: "hsl(var(--accent-foreground))",
 				},
 				popover: {
@@ -55,7 +55,7 @@ module.exports = {
 					foreground: "hsl(var(--popover-foreground))",
 				},
 				card: {
-					DEFAULT: "#1A1C28",
+					DEFAULT: "#C6DBEC",
 					foreground: "hsl(var(--card-foreground))",
 				},
 			},

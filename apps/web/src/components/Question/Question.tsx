@@ -13,12 +13,12 @@ function Question({number, question, answer} : {number: number, question : Strin
     >
         
         <details 
-          className="bg-[#FFCB86] relative overflow-hidden"
+          className="bg-[#F0B6D6] relative overflow-hidden"
           open={open} 
           onToggle={() => setOpen(!open)}
         >
 
-            <summary className='flex flex-wrap justify-between list-none w-full bg-[#FFCB86] text-[#301814] p-2 text-[14px] md:text-base lg:text-base'>
+            <summary className='flex flex-wrap justify-between list-none w-full bg-[#F0B6D6] text-[#1F2A44] p-2 text-[14px] md:text-base lg:text-base'>
               <div className = 'flex items-center gap-3'>
                 <span className='number-circle flex items-center justify-center w-10 h-10 text-lg md:text-lg font-bold text-white bg-[#002366] rounded-full mr-3'>
                   {number}
