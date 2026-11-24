@@ -4,39 +4,40 @@
 
 @layer base {
 	:root {
-		--background: 0 0% 100%;
-		--foreground: 240 10% 3.9%;
+		/* Light Mode: Warm Cream (#FFFDF7) & Deep Navy (#00072D) */
+		--background: 45 100% 98%;
+		--foreground: 231 100% 9%;
 
-		--nav: 255, 255, 255;
-		--hackathon-primary: 206 86% 52%;
+		--nav: 255, 253, 247;
+		--hackathon-primary: 214 67% 60%;
 
-		--muted: 240 4.8% 95.9%;
-		--muted-foreground: 240 3.8% 46.1%;
+		--muted: 208 45% 92%;
+		--muted-foreground: 231 35% 35%;
 
-		--popover: 0 0% 100%;
-		--popover-foreground: 240 10% 3.9%;
+		--popover: 45 100% 98%;
+		--popover-foreground: 231 100% 9%;
 
-		--card: 0 0% 100%;
-		--card-foreground: 240 10% 3.9%;
+		--card: 45 100% 98%;
+		--card-foreground: 231 100% 9%;
 
-		--border: 240 5.9% 90%;
-		--input: 240 5.9% 90%;
+		--border: 214 55% 75%;
+		--input: 214 55% 75%;
 
-		--primary: 240 5.9% 10%;
-		--primary-foreground: 0 0% 98%;
+		--primary: 214 67% 60%;
+		--primary-foreground: 0 0% 100%;
 
-		--secondary: 240 4.8% 95.9%;
-		--secondary-foreground: 240 5.9% 10%;
+		--secondary: 55 52% 78%;
+		--secondary-foreground: 231 100% 9%;
 
-		--accent: 240 4.8% 95.9%;
-		--accent-foreground: 240 5.9% 10%;
+		--accent: 327 65% 82%;
+		--accent-foreground: 231 100% 9%;
 
 		--destructive: 0 84.2% 60.2%;
 		--destructive-foreground: 0 0% 98%;
 
-		--ring: 240 5% 64.9%;
+		--ring: 214 67% 60%;
 
-		--radius: 0.5rem;
+		--radius: 0.75rem;
 
 		--gradient-color-1: #00072d;
 		--gradient-color-2: #538fdd;
@@ -45,36 +46,43 @@
 	}
 
 	.dark {
-		--background: 240 10% 3.9%;
-		--foreground: 0 0% 98%;
+		/* Dark Mode (Default in HackKit): Deep Navy (#00072D), WEMart Blue (#538FDD), Soft Pink (#EFB5D5), Light Sky (#C5D9EB) */
+		--background: 231 100% 9%;
+		--foreground: 208 49% 85%;
 
-		--nav: 0, 0, 0;
+		--nav: 0, 7, 45;
+		--hackathon-primary: 214 67% 60%;
 
-		--muted: 240 3.7% 15.9%;
-		--muted-foreground: 240 5% 64.9%;
+		--muted: 230 65% 16%;
+		--muted-foreground: 208 35% 72%;
 
-		--popover: 240 10% 3.9%;
-		--popover-foreground: 0 0% 98%;
+		--popover: 230 78% 12%;
+		--popover-foreground: 208 49% 85%;
 
-		--card: 240 10% 3.9%;
-		--card-foreground: 0 0% 98%;
+		--card: 230 78% 12%;
+		--card-foreground: 208 49% 85%;
 
-		--border: 240 3.7% 15.9%;
-		--input: 240 3.7% 15.9%;
+		--border: 214 67% 60%;
+		--input: 214 55% 35%;
 
-		--primary: 0 0% 98%;
-		--primary-foreground: 240 5.9% 10%;
+		--primary: 214 67% 60%;
+		--primary-foreground: 0 0% 100%;
 
-		--secondary: 240 3.7% 15.9%;
-		--secondary-foreground: 0 0% 98%;
+		--secondary: 230 65% 18%;
+		--secondary-foreground: 55 52% 78%;
 
-		--accent: 240 3.7% 15.9%;
-		--accent-foreground: 0 0% 98%;
+		--accent: 327 65% 82%;
+		--accent-foreground: 231 100% 9%;
 
 		--destructive: 0 62.8% 30.6%;
 		--destructive-foreground: 0 85.7% 97.3%;
 
-		--ring: 240 3.7% 15.9%;
+		--ring: 327 65% 82%;
+
+		--gradient-color-1: #00072d;
+		--gradient-color-2: #538fdd;
+		--gradient-color-3: #efb5d5;
+		--gradient-color-4: #e4dfaa;
 	}
 }
 
@@ -85,6 +93,7 @@
 
 	body {
 		@apply bg-[#00072D] text-foreground;
+		font-family: var(--font-zen-maru), sans-serif;
 	}
 }
 

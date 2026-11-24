@@ -11,11 +11,13 @@ export default function RoleBadge({ role }: RoleBadgeProps) {
 		<Badge
 			style={{
 				backgroundColor: c.roleBadges[role].color,
+				borderColor: "#00072D33",
+				fontFamily: "'IBM Plex Mono', monospace",
 				width: role === "super_admin" ? "4.9rem" : "auto",
 				padding:
 					role === "super_admin" ? "0rem 0.5rem 0rem 0.5rem" : "auto",
 			}}
-			className={`${c.roleBadges[role].checked ? "px-1" : ""} gap-x-1`}
+			className={`${c.roleBadges[role].checked ? "px-1.5" : ""} gap-x-1 border font-bold tracking-wide`}
 		>
 			<span style={{ color: c.roleBadges[role].foreground }}>
 				{c.roleBadges[role].title}

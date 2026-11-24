@@ -780,10 +780,11 @@ const raceOptions = [
 
 const c = {
 	hackathonName: "WEHack",
-	itteration: "VI",
+	itteration: "VII",
 	siteUrl: "https://www.wehackutd.com", // Do not have a trailing slash
-	defaultMetaDataDescription: "WEHack 2026 is coming in April 2026",
-	rsvpDefaultLimit:500,
+	defaultMetaDataDescription:
+		"A Trip to WEMart — WEHack 2027 is coming April 17-18, 2027",
+	rsvpDefaultLimit: 500,
 	botName: "WEHack",
 	botParticipantRole: "Participant",
 	hackathonTimezone: "America/Chicago",
@@ -832,7 +833,7 @@ const c = {
 	},
 	issueEmail: "wehackutd@gmail.com",
 	links: {
-		discord: "https://discord.gg/er88cEJNDE", 
+		discord: "https://discord.gg/er88cEJNDE",
 		instagram: "https://www.instagram.com/wehackutd",
 		facebook: "https://www.facebook.com/WEHackUTD/",
 		twitter: "https://x.com/wehackutd",
@@ -840,10 +841,10 @@ const c = {
 		guide: "https://ultra-spell-68d.notion.site/WEHack-2026-Hacker-Guide-3150c60731128055a92cf2e6e1190852",
 	},
 	icon: {
-		sm: "/img/logo/wehack25-logo.svg",
-		md: "/img/logo/wehack25-logo.png",
-		lg: "/img/logo/wehack25-logo.png",
-		svg: "/img/logo/wehack25-logo.svg",
+		sm: "/img/static/images/WEMart 27' logo.png",
+		md: "/img/static/images/WEMart 27' logo.png",
+		lg: "/img/static/images/WEMart 27' logo.png",
+		svg: "/img/static/images/WEMart 27' logo.png",
 	},
 	dashPaths: {
 		dash: {
@@ -861,49 +862,47 @@ const c = {
 			"Hackathon Check-in": "/admin/check-in",
 			Toggles: "/admin/toggles",
 		},
-		// TODO: Can remove days? Pretty sure they're dynamic now.
 	},
 	eventTypes: {
-		Meal: "#D09C51",
-		Workshop: "#CCBA97",
-		Social: "#992444",
-		Required: "#F03C2D",
-		Other: "#301814",
-		Sponsor: "#A6CDC4",
+		Meal: "#E4DFAA",
+		Workshop: "#538FDD",
+		Social: "#EFB5D5",
+		Required: "#00072D",
+		Other: "#C5D9EB",
+		Sponsor: "#8BB8E8",
 	},
 	days: {
-		Saturday: new Date(2025, 3, 13),
+		Saturday: new Date(2027, 3, 3),
 	},
-	Sunday: new Date(2025, 3, 14),
+	Sunday: new Date(2027, 3, 4),
 	maxResumeSizeInBytes: 4194304,
 	maxProfilePhotoSizeInBytes: 3145728,
 	maxFileSizeInBytes: 4194304,
 	eventPassBgImage: "/img/dash/pass/bg.png",
 	noResumeProvidedURL:
 		"https://static.acmutsa.org/No%20Resume%20Provided.pdf",
-	// Come in and change this date to whenever the hackathon starts
-	startDate: new Date(new Date(2026, 3, 11).setHours(10)),
+	// April 3, 2027 at 9:00 AM
+	startDate: new Date(new Date(2027, 3, 3).setHours(9)),
 	prettyLocation: "Engineering and Computer Science West (ECSW)",
 	roleBadges: {
 		hacker: {
 			title: "Hacker",
-			color: "hsl(var(--hackathon-primary))",
-			foreground: "#ffffff",
+			color: "#538FDD",
+			foreground: "#FFFFFF",
 			checked: false,
 		},
 		volunteer: {
 			title: "Volunteer",
-			foreground: "#ffffff",
+			color: "#C5D9EB",
+			foreground: "#00072D",
 			checked: false,
-			color: "#4CAF50",
 		},
 		mentor: {
 			title: "Mentor",
-			color: "#9C27B0",
-			foreground: "#ffffff",
+			color: "#E4DFAA",
+			foreground: "#00072D",
 			checked: false,
 		},
-		// Why is the checked set to a color?
 		mlh: {
 			title: "MLH",
 			color: "#ffffff",
@@ -912,14 +911,14 @@ const c = {
 		},
 		admin: {
 			title: "Organizer",
-			color: "#f59e0b",
-			foreground: "#ffffff",
+			color: "#EFB5D5",
+			foreground: "#00072D",
 			checked: true,
 		},
 		super_admin: {
 			title: "Organizer",
-			foreground: "#ffffff",
-			color: "#f59e0b",
+			color: "#00072D",
+			foreground: "#EFB5D5",
 			checked: true,
 		},
 	},

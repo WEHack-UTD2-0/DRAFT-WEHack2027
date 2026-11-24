@@ -284,7 +284,7 @@ export default function Jumbotron() {
                   `,
                 }}
               >
-                April 3-4
+                April 17-18
               </h2>
             </div>
           </div>

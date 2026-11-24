@@ -1,80 +1,116 @@
 import c from "config";
-import Navbar from "@/components/shared/Navbar";
 import Link from "next/link";
 import { Button } from "@/components/shadcn/ui/button";
 import Image from "next/image";
 import React from "react";
 
 export default function Page() {
-    return (
-        <>
-            {/* Top Navigation Brand Logo Bar */}
-            <div className="z-50 w-screen pt-6">
-                <div className="relative top-0 z-50 h-16 w-screen">
-                    <div className="mx-auto grid h-full w-full max-w-7xl grid-flow-col grid-cols-2 px-2 sm:px-6 lg:max-w-full lg:px-8">
-                        <div className="col-span-3 flex items-center justify-start gap-x-5 pl-4 md:pl-0">
-                            <Link
-                                href={"/"}
-                                className="mr-5 flex items-center gap-x-2"
-                            >
-                                <Image
-                                    src={"/img/static/images/white wehack logo.png"}
-                                    alt={c.hackathonName + " Logo"}
-                                    width={60}
-                                    height={60}
-                                    className={"drop-shadow-[0_0px_0px_rgba(255,255,255,0.90)]"}
-                                />
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </div>
+	return (
+		<div className="min-h-screen w-full bg-[#00072D] text-[#C5D9EB]">
+			{/* Top Navigation Brand Logo Bar */}
+			<div className="z-50 w-screen pt-6">
+				<div className="relative top-0 z-50 h-16 w-screen">
+					<div className="mx-auto grid h-full w-full max-w-7xl grid-flow-col grid-cols-2 px-2 sm:px-6 lg:max-w-full lg:px-8">
+						<div className="col-span-3 flex items-center justify-start gap-x-5 pl-4 md:pl-0">
+							<Link
+								href="/"
+								className="mr-5 flex items-center gap-x-2 transition-transform duration-200 hover:scale-105"
+							>
+								<Image
+									src="/img/static/images/WEMart%2027'%20logo.png"
+									alt={`${c.hackathonName} 2027 Logo`}
+									width={84}
+									height={84}
+									className="object-contain drop-shadow-[0_0_12px_rgba(197,217,235,0.45)]"
+								/>
+							</Link>
+						</div>
+					</div>
+				</div>
+			</div>
 
-            {/* Main Center-Aligned 2027 Season Notice Layout */}
-            <main className="flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
-                <div className="relative z-10 flex w-full max-w-2xl flex-col items-center justify-center gap-y-6 rounded-2xl border border-[#D09C51] bg-[#1e1e1e] p-8 md:p-12 shadow-2xl">
-                    
-                    {/* Header Title */}
-                    <h1 className="text-4xl font-black text-hackathon md:text-6xl font-cinzel-decorative tracking-wide text-[#FFE9D7]">
-                        WEHack 2027
-                    </h1>
+			{/* Main Center-Aligned Registration Confirmation Card */}
+			<main className="flex min-h-[75vh] flex-col items-center justify-center px-4 text-center">
+				<div className="relative z-10 flex w-full max-w-2xl flex-col items-center justify-center gap-y-6 rounded-2xl border-2 border-[#538FDD] bg-[#060F38] p-8 shadow-[0_0_40px_rgba(83,143,221,0.2)] md:p-12">
+					{/* Status Pill */}
+					<span
+						className="rounded-full border border-[#EFB5D5] bg-[#EFB5D5]/15 px-4 py-1 text-xs font-bold uppercase tracking-widest text-[#EFB5D5]"
+						style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+					>
+						Registration Complete • April 17–18, 2027
+					</span>
 
-                    {/* Styled Separator line matching brand guidelines */}
-                    <div className="h-[2px] w-24 bg-[#D09C51] my-1" />
-                    
-                    {/* Required Structural Update Copy */}
-                    <p className="text-lg md:text-xl font-light leading-relaxed text-[#C9D5E3]">
-                        More information about WEHack 2027 will come out soon. In the meantime, 
-                        fill out our interest form to get updates from us.
-                    </p>
+					{/* Header Title */}
+					<h1
+						className="text-3xl font-black tracking-wide text-[#FFFDF7] md:text-5xl"
+						style={{
+							fontFamily:
+								"'Dela Gothic One', 'Zen Maru Gothic', sans-serif",
+							textShadow: "2px 2px 0px #538FDD",
+						}}
+					>
+						Thank You for Registering!
+					</h1>
 
-                    {/* Live MLH Registration Interest Form Link Button Action */}
-                    <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full justify-center">
-                        <Link 
-                            href="https://events.mlh.com/events/14391-wehack-2027" 
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            <Button className="px-8 py-6 text-lg font-bold text-[#1a1a1a] bg-[#D09C51] hover:bg-[#CCBA97] transition-all duration-200 transform hover:scale-[1.02] rounded-xl shadow-lg">
-                                Fill out the Interest Form!
-                            </Button>
-                        </Link>
+					{/* Styled Separator Line */}
+					<div className="my-1 h-[3px] w-24 rounded-full bg-gradient-to-r from-[#538FDD] via-[#EFB5D5] to-[#E4DFAA]" />
 
-                        <Link href={"/"}>
-                            <Button variant="outline" className="px-8 py-6 text-lg border-white/10 hover:bg-white/5 text-[#C9D5E3] rounded-xl">
-                                Return Home
-                            </Button>
-                        </Link>
-                    </div>
+					{/* Confirmation Copy */}
+					<p
+						className="text-base font-medium leading-relaxed text-[#C5D9EB] md:text-lg"
+						style={{ fontFamily: "'Zen Maru Gothic', sans-serif" }}
+					>
+						We&apos;ve received your application for{" "}
+						<span className="font-bold text-[#E4DFAA]">
+							WEHack 2027: A Trip to WEMart
+						</span>
+						! Our team is reviewing applications and we will send out
+						acceptance decisions via email soon.
+					</p>
 
-                    {/* Operational Support Contact Point footer */}
-                    <p className="text-sm text-[#C9D5E3]/60 mt-4">
-                        Running into an issue? Reach out to us at <b>wehackutd@gmail.com</b>
-                    </p>
-                </div>
-            </main>
-        </>
-    );
+					{/* Action Buttons */}
+					<div className="mt-4 flex w-full flex-col justify-center gap-4 sm:flex-row">
+						<Link href="/dash">
+							<Button
+								className="w-full rounded-xl bg-[#538FDD] px-8 py-6 text-base font-bold text-white shadow-lg transition-all duration-200 hover:scale-[1.02] hover:bg-[#EFB5D5] hover:text-[#00072D] sm:w-auto"
+								style={{
+									fontFamily: "'Zen Maru Gothic', sans-serif",
+								}}
+							>
+								Go to Hacker Dashboard
+							</Button>
+						</Link>
+
+						<Link href="/">
+							<Button
+								variant="outline"
+								className="w-full rounded-xl border-2 border-[#538FDD]/60 bg-transparent px-8 py-6 text-base font-bold text-[#C5D9EB] transition-colors hover:border-[#E4DFAA] hover:bg-[#E4DFAA]/10 hover:text-[#E4DFAA] sm:w-auto"
+								style={{
+									fontFamily: "'Zen Maru Gothic', sans-serif",
+								}}
+							>
+								Return Home
+							</Button>
+						</Link>
+					</div>
+
+					{/* Operational Support Contact Footer */}
+					<p
+						className="mt-4 text-xs text-[#C5D9EB]/75 sm:text-sm"
+						style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+					>
+						Running into an issue? Reach out to us at{" "}
+						<a
+							href={`mailto:${c.issueEmail}`}
+							className="font-bold text-[#E4DFAA] underline decoration-[#EFB5D5] underline-offset-4 hover:text-[#EFB5D5]"
+						>
+							{c.issueEmail}
+						</a>
+					</p>
+				</div>
+			</main>
+		</div>
+	);
 }
 
 export const runtime = "edge";

@@ -23,17 +23,17 @@ module.exports = {
 					"radial-gradient(ellipse_at_center, var(--gradient-color-stops))",
 			},
 			colors: {
-				border: "#bda8ed",
-				input: "#D09C51",
+				border: "hsl(var(--border))",
+				input: "hsl(var(--input))",
 				ring: "hsl(var(--ring))",
-				background: "#1A1C28",
-				foreground: "#CCBA97", // changes font color
+				background: "hsl(var(--background))",
+				foreground: "hsl(var(--foreground))",
 				primary: {
 					DEFAULT: "hsl(var(--primary))",
 					foreground: "hsl(var(--primary-foreground))",
 				},
 				nav: "hsl(var(--nav))",
-				hackathon: "#d1f4f3",
+				hackathon: "hsl(var(--hackathon-primary))",
 				secondary: {
 					DEFAULT: "hsl(var(--secondary))",
 					foreground: "hsl(var(--secondary-foreground))",
@@ -43,11 +43,11 @@ module.exports = {
 					foreground: "hsl(var(--destructive-foreground))",
 				},
 				muted: {
-					DEFAULT: "#D09C51",
-					foreground: "#D09C51",
+					DEFAULT: "hsl(var(--muted))",
+					foreground: "hsl(var(--muted-foreground))",
 				},
 				accent: {
-					DEFAULT: "#D09C51",
+					DEFAULT: "hsl(var(--accent))",
 					foreground: "hsl(var(--accent-foreground))",
 				},
 				popover: {
@@ -55,8 +55,16 @@ module.exports = {
 					foreground: "hsl(var(--popover-foreground))",
 				},
 				card: {
-					DEFAULT: "#1A1C28",
+					DEFAULT: "hsl(var(--card))",
 					foreground: "hsl(var(--card-foreground))",
+				},
+				wemart: {
+					navy: "#00072D",
+					blue: "#538FDD",
+					pink: "#EFB5D5",
+					lemon: "#E4DFAA",
+					sky: "#C5D9EB",
+					cream: "#FFFDF7",
 				},
 			},
 			borderRadius: {
@@ -79,7 +87,9 @@ module.exports = {
 				"accordion-up": "accordion-up 0.2s ease-out",
 			},
 			fontFamily: {
-				oswald: ["var(--font-oswald)"],
+				sans: ["var(--font-zen-maru)", "sans-serif"],
+				heading: ["var(--font-dela-gothic)", "sans-serif"],
+				mono: ["var(--font-ibm-plex-mono)", "monospace"],
 			},
 		},
 	},
@@ -91,7 +101,7 @@ module.exports = {
 					"translate-z": (value) => ({
 						"--tw-translate-z": value,
 						transform: ` translate3d(var(--tw-translate-x), var(--tw-translate-y), var(--tw-translate-z)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))`,
-					}), // this is actual CSS
+					}),
 				},
 				{ values: theme("translate"), supportsNegativeValues: true },
 			);
