@@ -12,9 +12,9 @@ import Gallery from "@/components/Gallery/Gallery";
 import Stats from "@/components/Stats/Stats";
 import Donations from "./sections/Donations/Donations";
 // import Team from "./sections/Team/Team";
-// import Schedule from "./sections/Schedule/Schedule";
-// import Livestream from "./sections/Livestream/Livestream";
-// import Menu from "./sections/Menu/Menu";
+import Schedule from "./sections/Schedule/Schedule";
+import Livestream from "./sections/Livestream/Livestream";
+import Menu from "./sections/Menu/Menu";
 
 export default function Home() {
   return (
@@ -23,29 +23,16 @@ export default function Home() {
       <Navbar />
 	    <MLHBadge />
       <Jumbotron/>
-<<<<<<< Updated upstream
-      {/* <Livestream/> */}
-      {/* <Schedule/> */}
-      {/* <Menu /> */}
-      {/* <Countdown/> */}
-      <About/>
-      {/* <FilmStrip/> */}
-      <Gallery/>
-      <Stats/>
-      <Testimonials/>
-      <Sponsor/>
-      <Donations/> 
-      <FAQ/> 
-      {/* <Team/> */}
-=======
       <About/>
       <Schedule/>
       <Livestream/>
       <Menu />
+      <Gallery/>
+      <Stats/>
+      <Testimonials/>
       <Sponsor/>
       <Donations/>
       <FAQ/>
->>>>>>> Stashed changes
       <Footer/>
     </div>
   );
