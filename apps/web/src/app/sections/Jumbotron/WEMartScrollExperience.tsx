@@ -11,6 +11,22 @@ interface WEMartScrollExperienceProps {
   children: React.ReactNode;
 }
 
+// Mathematically verified inner doorway bounds in wemart-hero.png:
+// Left inner jamb = 38.2% | Right inner jamb = 64.0% (width = 25.8%)
+// Top of light-blue door frame = 67.6% | Bottom threshold = 98.4% (height = 30.8%)
+// Exact center of the vertical dark-blue line between the two doors sits at 50.45% of the image,
+// which is 47.48% of DOOR_WIDTH (38.2 + 25.8 * 0.4748 = 50.45%).
+const DOOR_TOP = 67.6;
+const DOOR_LEFT = 38.2;
+const DOOR_WIDTH = 25.8;
+const DOOR_HEIGHT = 30.8;
+const DOOR_SPLIT_PCT = 47.48;
+const DOOR_CENTER_X = DOOR_LEFT + (DOOR_WIDTH * DOOR_SPLIT_PCT) / 100; // 50.45%
+
+// Fixed reference coordinate canvas for the left poster so line wraps & text positions are 100% locked
+const POSTER_BASE_W = 340;
+const POSTER_BASE_H = 440;
+
 export default function WEMartScrollExperience({
   children,
 }: WEMartScrollExperienceProps) {
@@ -22,9 +38,21 @@ export default function WEMartScrollExperience({
   const exteriorRef = useRef<HTMLDivElement>(null);
   const exteriorNightOverlayRef = useRef<HTMLDivElement>(null);
   const heroTextRef = useRef<HTMLDivElement>(null);
-  const postersContainerRef = useRef<HTMLDivElement>(null);
-  const leftPosterRef = useRef<HTMLDivElement>(null);
-  const rightPosterRef = useRef<HTMLDivElement>(null);
+
+  // Double-door container & real cropped illustrated door leaves
+  const doorsContainerRef = useRef<HTMLDivElement>(null);
+  const leftDoorLeafRef = useRef<HTMLDivElement>(null);
+  const rightDoorLeafRef = useRef<HTMLDivElement>(null);
+  const doorOpenInteriorRef = useRef<HTMLDivElement>(null);
+  const doorOpenInteriorImgRef = useRef<HTMLImageElement>(null);
+  const doorOpenDarkTintRef = useRef<HTMLDivElement>(null);
+
+  // Native 1:1 unscaled poster overlay layer
+  const sharpPostersOverlayRef = useRef<HTMLDivElement>(null);
+  const sharpLeftPosterRef = useRef<HTMLDivElement>(null);
+  const sharpRightPosterRef = useRef<HTMLDivElement>(null);
+  const leftPosterCardRef = useRef<HTMLDivElement>(null);
+  const leftPosterInnerRef = useRef<HTMLDivElement>(null);
 
   // Interior store lighting layers
   const storeLightRef = useRef<HTMLDivElement>(null);
@@ -54,6 +82,7 @@ export default function WEMartScrollExperience({
         return;
 
       const vh = window.innerHeight;
+      const vw = window.innerWidth;
 
       // 1. Entry runway progress (0 -> 1)
       const entryRect = entryRunwayRef.current.getBoundingClientRect();
@@ -74,13 +103,16 @@ export default function WEMartScrollExperience({
       // --- DEFAULT STATE VALUES ---
       let exteriorOpacity = 0;
       let exteriorScale = 1;
+      let exteriorOriginY = 92;
       let exteriorNightOpacity = 0;
       let heroOpacity = 0;
       let heroTranslateY = 0;
 
-      let showEntryPosters = false;
-      let posterOpacity = 0;
-      let posterSlide = 0;
+      let showDoorAssembly = false;
+      let doorLeafOpacity = 0;
+      let doorSlidePercent = 0;
+      let doorwayInteriorOpacity = 0;
+      let useDarkDoorwayInterior = false;
 
       let storeLightOpacity = 0;
       let storeDimOpacity = 0;
@@ -94,6 +126,8 @@ export default function WEMartScrollExperience({
 
       // === BRANCH A: EXIT SEQUENCE ACTIVE (User reached bottom of page) ===
       if (pExit > 0) {
+        useDarkDoorwayInterior = true;
+
         if (pExit < 0.16) {
           storeLightOpacity = 1;
         } else if (pExit < 0.34) {
@@ -118,43 +152,75 @@ export default function WEMartScrollExperience({
           } else {
             storeDarkOpacity = 1;
           }
-        } else if (pExit < 0.54) {
-          // Dark store hold (~1.5s) + Farewell message
+        } else if (pExit < 0.48) {
+          // Dark store hold + Farewell message
           storeDarkOpacity = 1;
-          const fadeToBlack = easeInOut(clamp01((pExit - 0.34) / 0.1));
+          const fadeToBlack = easeInOut(clamp01((pExit - 0.34) / 0.07));
           darkTintOpacity = fadeToBlack * 0.78;
 
-          const textIn = clamp01((pExit - 0.37) / 0.06);
-          const textOut = 1 - clamp01((pExit - 0.49) / 0.05);
+          const textIn = clamp01((pExit - 0.36) / 0.04);
+          const textOut = 1 - clamp01((pExit - 0.44) / 0.04);
           thankYouOpacity = textIn * textOut;
+        } else if (pExit < 0.54) {
+          // White flash across the screen right after the words disappear,
+          // revealing the storefront at a wider 2.65x framing so the full door frame is immediately visible
+          const flashT = (pExit - 0.48) / 0.06;
+          if (flashT < 0.5) {
+            flashOpacity = easeInOut(flashT * 2);
+            storeDarkOpacity = 1;
+            darkTintOpacity = 0.78;
+          } else {
+            flashOpacity = 1 - easeInOut((flashT - 0.5) * 2);
+            exteriorOpacity = 1;
+            exteriorScale = 2.65;
+            exteriorOriginY = 86.5;
+            exteriorNightOpacity = 0.35;
+            showDoorAssembly = true;
+            doorLeafOpacity = 1;
+            doorSlidePercent = 100;
+            doorwayInteriorOpacity = 1;
+          }
         } else {
-          // 0.54 -> 0.86: Crossfade to nighttime Jumbotron & zoom out to 1.0x
-          const revealExteriorT = easeInOut(clamp01((pExit - 0.54) / 0.1));
-          storeDarkOpacity = 1 - revealExteriorT;
-          darkTintOpacity = (1 - revealExteriorT) * 0.78;
-          exteriorOpacity = revealExteriorT;
-          exteriorNightOpacity = revealExteriorT * 0.68;
+          // Smoothly pull back from 2.65x -> 1.08x -> 1.0x
+          storeDarkOpacity = 0;
+          darkTintOpacity = 0;
+          exteriorOpacity = 1;
 
-          const zoomOutT = easeInOut(clamp01((pExit - 0.6) / 0.26));
-          exteriorScale = 3.1 - zoomOutT * 2.1;
+          const mainZoomOutT = easeInOut(clamp01((pExit - 0.54) / 0.24));
+          const finalSettleT = easeInOut(clamp01((pExit - 0.78) / 0.14));
+          exteriorScale = 2.65 - mainZoomOutT * 1.57 - finalSettleT * 0.08;
+          exteriorOriginY = 86.5 + mainZoomOutT * 5.5;
 
-          // 0.84 -> 1.00: Fade in the WEMart 27' logo & footer over the nighttime Jumbotron
-          footerOpacity = easeInOut(clamp01((pExit - 0.84) / 0.12));
+          // Real illustrated doors + posters meet dead-on the 50.45% middle dark-blue line
+          const doorCloseT = easeInOut(clamp01((pExit - 0.74) / 0.16));
+          showDoorAssembly = true;
+          doorLeafOpacity = 1;
+          doorSlidePercent = (1 - doorCloseT) * 100;
+          doorwayInteriorOpacity = doorCloseT < 0.998 ? 1 : 0;
+
+          // Bring in the exterior nighttime tint gradually as the storefront zooms out and doors close
+          exteriorNightOpacity = 0.35 + mainZoomOutT * 0.25 + doorCloseT * 0.1;
+
+          // Fade in the centered WEMart 27' logo & footer over the nighttime Jumbotron
+          footerOpacity = easeInOut(clamp01((pExit - 0.88) / 0.12));
         }
       } else {
         // === BRANCH B: ENTRY RUNWAY + CONTENT SECTIONS ===
+        useDarkDoorwayInterior = false;
+
         const approachT = easeInOut(clamp01(pEntry / 0.25));
         const doorOpenT = easeInOut(clamp01((pEntry - 0.45) / 0.25));
 
-        exteriorScale = 1 + approachT * 2.1 + doorOpenT * 0.75;
+        exteriorScale = 1 + approachT * 2.65 + doorOpenT * 0.85;
+        exteriorOriginY = 92 + approachT * 3;
         heroOpacity = clamp01(1 - pEntry / 0.2);
         heroTranslateY = -pEntry * 70;
 
-        showEntryPosters = pEntry < 0.72;
-        const posterFadeIn = clamp01((pEntry - 0.17) / 0.08);
+        showDoorAssembly = pEntry < 0.72;
         const posterFadeOut = 1 - clamp01((pEntry - 0.58) / 0.1);
-        posterOpacity = posterFadeIn * posterFadeOut;
-        posterSlide = doorOpenT * 115;
+        doorLeafOpacity = posterFadeOut;
+        doorSlidePercent = doorOpenT * 100;
+        doorwayInteriorOpacity = doorOpenT > 0.005 ? 1 : 0;
 
         if (pEntry >= 0.58 && pEntry <= 0.68) {
           flashOpacity = easeInOut((pEntry - 0.58) / 0.1);
@@ -173,6 +239,7 @@ export default function WEMartScrollExperience({
       // --- APPLY GPU-COMPOSITED STYLES DIRECTLY ---
       if (exteriorRef.current) {
         exteriorRef.current.style.opacity = String(exteriorOpacity);
+        exteriorRef.current.style.transformOrigin = `${DOOR_CENTER_X}% ${exteriorOriginY}%`;
         exteriorRef.current.style.transform = `scale(${exteriorScale})`;
       }
 
@@ -186,18 +253,86 @@ export default function WEMartScrollExperience({
         heroTextRef.current.style.transform = `translateY(${heroTranslateY}px)`;
       }
 
-      if (postersContainerRef.current) {
-        postersContainerRef.current.style.display = showEntryPosters
-          ? "flex"
+      if (doorsContainerRef.current) {
+        doorsContainerRef.current.style.display = showDoorAssembly
+          ? "block"
           : "none";
       }
-      if (leftPosterRef.current) {
-        leftPosterRef.current.style.opacity = String(posterOpacity);
-        leftPosterRef.current.style.transform = `translateX(-${posterSlide}%)`;
+      if (doorOpenInteriorRef.current) {
+        doorOpenInteriorRef.current.style.opacity = String(
+          doorwayInteriorOpacity,
+        );
       }
-      if (rightPosterRef.current) {
-        rightPosterRef.current.style.opacity = String(posterOpacity);
-        rightPosterRef.current.style.transform = `translateX(${posterSlide}%)`;
+      if (doorOpenInteriorImgRef.current) {
+        const targetSrc = useDarkDoorwayInterior
+          ? "/img/static/images/storedark.png"
+          : "/img/static/images/storelight.png";
+        if (!doorOpenInteriorImgRef.current.src.endsWith(targetSrc)) {
+          doorOpenInteriorImgRef.current.src = targetSrc;
+        }
+      }
+      if (doorOpenDarkTintRef.current) {
+        doorOpenDarkTintRef.current.style.opacity = useDarkDoorwayInterior
+          ? "0.78"
+          : "0";
+      }
+
+      if (leftDoorLeafRef.current) {
+        leftDoorLeafRef.current.style.opacity = String(doorLeafOpacity);
+        leftDoorLeafRef.current.style.transform = `translate3d(-${doorSlidePercent}%, 0, 0)`;
+      }
+      if (rightDoorLeafRef.current) {
+        rightDoorLeafRef.current.style.opacity = String(doorLeafOpacity);
+        rightDoorLeafRef.current.style.transform = `translate3d(${doorSlidePercent}%, 0, 0)`;
+      }
+
+      // --- UPDATE NATIVE 1:1 UNSCALED POSTER OVERLAY (FIXED-CANVAS TEXT = ZERO REFLOW/JITTER) ---
+      if (sharpPostersOverlayRef.current) {
+        const isVisible =
+          showDoorAssembly && exteriorOpacity > 0.01 && doorLeafOpacity > 0.01;
+        sharpPostersOverlayRef.current.style.display = isVisible
+          ? "block"
+          : "none";
+
+        if (isVisible) {
+          const projTop =
+            exteriorOriginY + (DOOR_TOP - exteriorOriginY) * exteriorScale;
+          const projLeft =
+            DOOR_CENTER_X + (DOOR_LEFT - DOOR_CENTER_X) * exteriorScale;
+          const projWidth = DOOR_WIDTH * exteriorScale;
+          const projHeight = DOOR_HEIGHT * exteriorScale;
+
+          sharpPostersOverlayRef.current.style.top = `${projTop}%`;
+          sharpPostersOverlayRef.current.style.left = `${projLeft}%`;
+          sharpPostersOverlayRef.current.style.width = `${projWidth}%`;
+          sharpPostersOverlayRef.current.style.height = `${projHeight}%`;
+          sharpPostersOverlayRef.current.style.opacity = String(
+            exteriorOpacity * doorLeafOpacity,
+          );
+          sharpPostersOverlayRef.current.style.setProperty(
+            "--poster-scale",
+            String(exteriorScale),
+          );
+
+          // Scale the fixed 340x440 left poster typography uniformly so text stays 100% locked in place
+          if (leftPosterInnerRef.current) {
+            const leftLeafPxW =
+              ((projWidth / 100) * vw * DOOR_SPLIT_PCT) / 100;
+            const leftLeafPxH = (projHeight / 100) * vh;
+            const cardPxW = leftLeafPxW * 0.62;
+            const cardPxH = leftLeafPxH * 0.54;
+            const scaleX = cardPxW / POSTER_BASE_W;
+            const scaleY = cardPxH / POSTER_BASE_H;
+            leftPosterInnerRef.current.style.transform = `scale(${scaleX}, ${scaleY})`;
+          }
+        }
+      }
+
+      if (sharpLeftPosterRef.current) {
+        sharpLeftPosterRef.current.style.transform = `translate3d(-${doorSlidePercent}%, 0, 0)`;
+      }
+      if (sharpRightPosterRef.current) {
+        sharpRightPosterRef.current.style.transform = `translate3d(${doorSlidePercent}%, 0, 0)`;
       }
 
       if (storeLightRef.current) {
@@ -255,6 +390,15 @@ export default function WEMartScrollExperience({
       window.removeEventListener("resize", onScroll);
     };
   }, []);
+
+  // Exact pixel-matched slice ratios split dead-on the 50.45% middle dark-blue line (47.48% / 52.52%)
+  const leftSplitPct = DOOR_SPLIT_PCT;
+  const rightSplitPct = 100 - DOOR_SPLIT_PCT;
+  const leftLeafW = (DOOR_WIDTH * leftSplitPct) / 100;
+  const rightLeafW = (DOOR_WIDTH * rightSplitPct) / 100;
+  const invLeftWidthPct = (100 / leftLeafW) * 100;
+  const invRightWidthPct = (100 / rightLeafW) * 100;
+  const invHeightPct = (100 / DOOR_HEIGHT) * 100;
 
   return (
     <>
@@ -365,59 +509,257 @@ export default function WEMartScrollExperience({
             inset: 0,
             opacity: 1,
             transform: "scale(1)",
-            transformOrigin: "50.5% 92%",
+            transformOrigin: `${DOOR_CENTER_X}% 92%`,
             zIndex: 6,
           }}
         >
-          {/* ENTRY DOORS: Two Posters on the Double Doors (hidden during exit zoom-out) */}
+          {/* EXACT INNER DOORWAY OPENING:
+              Left inner jamb = 38.2% | Middle dark-blue line = 50.45% | Right inner jamb = 64.0% */}
           <div
-            ref={postersContainerRef}
+            ref={doorsContainerRef}
             style={{
               position: "absolute",
-              top: "70.5%",
-              left: "38.2%",
-              width: "24.6%",
-              height: "20.5%",
+              top: `${DOOR_TOP}%`,
+              left: `${DOOR_LEFT}%`,
+              width: `${DOOR_WIDTH}%`,
+              height: `${DOOR_HEIGHT}%`,
+              overflow: "hidden",
+            }}
+          >
+            {/* Store Interior Preview */}
+            <div
+              ref={doorOpenInteriorRef}
+              style={{
+                position: "absolute",
+                inset: "2.8% 0% 0% 0%",
+                opacity: 0,
+                zIndex: 1,
+                overflow: "hidden",
+              }}
+            >
+              <img
+                ref={doorOpenInteriorImgRef}
+                src="/img/static/images/storelight.png"
+                alt=""
+                className="h-full w-full object-cover object-center"
+              />
+              <div
+                ref={doorOpenDarkTintRef}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  backgroundColor: "#00072D",
+                  opacity: 0,
+                }}
+              />
+            </div>
+
+            {/* LEFT SYMMETRICAL ILLUSTRATED DOOR LEAF (47.48% width — splits dead-on the 50.45% middle dark-blue line) */}
+            <div
+              ref={leftDoorLeafRef}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                zIndex: 2,
+                width: `${leftSplitPct}%`,
+                height: "100%",
+                overflow: "hidden",
+                willChange: "transform",
+                transform: "translate3d(0%, 0, 0)",
+              }}
+            >
+              <div
+                className="jumbotron-bg-layer"
+                style={{
+                  position: "absolute",
+                  top: `${(-DOOR_TOP / DOOR_HEIGHT) * 100}%`,
+                  left: `${(-DOOR_LEFT / leftLeafW) * 100}%`,
+                  width: `${invLeftWidthPct}%`,
+                  height: `${invHeightPct}%`,
+                  pointerEvents: "none",
+                }}
+              />
+            </div>
+
+            {/* RIGHT SYMMETRICAL ILLUSTRATED DOOR LEAF (52.52% width — meets dead-on the 50.45% middle dark-blue line) */}
+            <div
+              ref={rightDoorLeafRef}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: `${leftSplitPct}%`,
+                zIndex: 2,
+                width: `${rightSplitPct}%`,
+                height: "100%",
+                overflow: "hidden",
+                willChange: "transform",
+                transform: "translate3d(0%, 0, 0)",
+              }}
+            >
+              <div
+                className="jumbotron-bg-layer"
+                style={{
+                  position: "absolute",
+                  top: `${(-DOOR_TOP / DOOR_HEIGHT) * 100}%`,
+                  left: `${(-(DOOR_LEFT + leftLeafW) / rightLeafW) * 100}%`,
+                  width: `${invRightWidthPct}%`,
+                  height: `${invHeightPct}%`,
+                  pointerEvents: "none",
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* 3A. NATIVE 1:1 UNSCALED POSTER LAYER (z-index: 6):
+            Both posters centered directly inside the yellow glass panes of their respective doors */}
+        <div
+          ref={sharpPostersOverlayRef}
+          style={{
+            position: "absolute",
+            top: `${DOOR_TOP}%`,
+            left: `${DOOR_LEFT}%`,
+            width: `${DOOR_WIDTH}%`,
+            height: `${DOOR_HEIGHT}%`,
+            zIndex: 6,
+            overflow: "hidden",
+            pointerEvents: "none",
+            ["--poster-scale" as any]: "1",
+          }}
+        >
+          {/* Left Poster Carrier */}
+          <div
+            ref={sharpLeftPosterRef}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: `${leftSplitPct}%`,
+              height: "100%",
               display: "flex",
               alignItems: "center",
-              justifyContent: "space-between",
-              gap: "4%",
-              padding: "0 1.8%",
+              justifyContent: "center",
+              willChange: "transform",
+              transform: "translate3d(0%, 0, 0)",
             }}
           >
             <div
-              ref={leftPosterRef}
-              style={{ opacity: 0, transform: "translateX(0%)" }}
-              className="flex h-[76%] w-[46%] flex-col items-center justify-center rounded-sm border-[1.5px] border-[#00072D] bg-[#FFFDF7]/95 p-1.5 text-center shadow-md"
+              ref={leftPosterCardRef}
+              className="relative h-[54%] w-[62%] translate-x-[2%] translate-y-[4%] overflow-hidden rounded-[2px]"
             >
-              <span
-                className="text-[6.5px] font-bold uppercase tracking-wider text-[#538FDD]"
-                style={{ fontFamily: "'Zen Maru Gothic', sans-serif" }}
+              <img
+                src="/img/static/images/About%20WEHack-01.png"
+                alt="Dallas' Largest Inclusive Hackathon"
+                className="h-full w-full object-cover"
+              />
+              {/* Fixed 340x440 coordinate system scaled uniformly so text never reflows or jitters */}
+              <div
+                ref={leftPosterInnerRef}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: `${POSTER_BASE_W}px`,
+                  height: `${POSTER_BASE_H}px`,
+                  transformOrigin: "top left",
+                  transform: "scale(1, 1)",
+                  padding: "36px 26px 32px 26px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  gap: "14px",
+                  WebkitFontSmoothing: "antialiased",
+                }}
               >
-                WEHack 2027
-              </span>
-              <p
-                className="mt-0.5 text-[8.5px] font-bold leading-tight text-[#00072D]"
-                style={{ fontFamily: "'Zen Maru Gothic', sans-serif" }}
-              >
-                Poster 1 Content
-              </p>
-            </div>
+                <h3
+                  style={{
+                    fontFamily:
+                      "'Dela Gothic One', 'Zen Maru Gothic', sans-serif",
+                    color: "#00072D",
+                    fontSize: "21px",
+                    lineHeight: 1.15,
+                    letterSpacing: "0.02em",
+                    textAlign: "center",
+                    whiteSpace: "nowrap",
+                    textShadow: "1.5px 1.5px 0px #EFB5D5",
+                  }}
+                >
+                  Dallas&apos; Largest
+                  <br />
+                  Inclusive Hackathon
+                </h3>
 
-            <div
-              ref={rightPosterRef}
-              style={{ opacity: 0, transform: "translateX(0%)" }}
-              className="flex h-[76%] w-[46%] flex-col items-center justify-center rounded-sm border-[1.5px] border-[#00072D] bg-[#FFFDF7]/95 p-1.5 text-center shadow-md"
-            >
+                <p
+                  style={{
+                    fontFamily: "'Zen Maru Gothic', sans-serif",
+                    fontWeight: 700,
+                    color: "#538FDD",
+                    fontSize: "14px",
+                    lineHeight: 1.24,
+                  }}
+                >
+                  The purpose of WEHack is to create an inclusive and
+                  encouraging environment for women, nonbinary genders, and all
+                  underrepresented groups in technology so that they can gain
+                  the skills and confidence to excel in future hackathons and
+                  the tech world.
+                </p>
+
+                <p
+                  style={{
+                    fontFamily: "'Zen Maru Gothic', sans-serif",
+                    fontWeight: 700,
+                    color: "#538FDD",
+                    fontSize: "14px",
+                    lineHeight: 1.24,
+                    paddingRight: "44px",
+                  }}
+                >
+                  We aim to encourage more underrepresented individuals to
+                  harness their skills by creating software or hardware projects
+                  of their own. Whether it&apos;s networking with sponsors and
+                  hackers, gaining development and workshop experience, or
+                  competing against other teams for challenges and prizes,
+                  WEHack offers participants an opportunity to end the weekend
+                  with unique takeaways.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Poster Carrier */}
+          <div
+            ref={sharpRightPosterRef}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: `${leftSplitPct}%`,
+              width: `${rightSplitPct}%`,
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              willChange: "transform",
+              transform: "translate3d(0%, 0, 0)",
+            }}
+          >
+            <div className="flex h-[54%] w-[62%] -translate-x-[14%] translate-y-[4%] flex-col items-center justify-center rounded-[2px] border-[1.5px] border-[#00072D] bg-[#FFFDF7]/95 p-2 text-center">
               <span
-                className="text-[6.5px] font-bold uppercase tracking-wider text-[#E88D9C]"
-                style={{ fontFamily: "'Zen Maru Gothic', sans-serif" }}
+                className="font-bold uppercase tracking-wider text-[#E88D9C]"
+                style={{
+                  fontFamily: "'Zen Maru Gothic', sans-serif",
+                  fontSize: "calc(0.45vw * var(--poster-scale))",
+                }}
               >
                 Store Hours
               </span>
               <p
-                className="mt-0.5 text-[8.5px] font-bold leading-tight text-[#00072D]"
-                style={{ fontFamily: "'Zen Maru Gothic', sans-serif" }}
+                className="mt-1 font-bold leading-tight text-[#00072D]"
+                style={{
+                  fontFamily: "'Zen Maru Gothic', sans-serif",
+                  fontSize: "calc(0.56vw * var(--poster-scale))",
+                }}
               >
                 Poster 2 Content
               </p>
@@ -434,7 +776,7 @@ export default function WEMartScrollExperience({
             opacity: 0,
             zIndex: 7,
             background:
-              "radial-gradient(circle at 50% 65%, rgba(0, 7, 45, 0.62) 0%, rgba(0, 5, 32, 0.86) 100%)",
+              "radial-gradient(circle at 50% 65%, rgba(0, 7, 45, 0.52) 0%, rgba(0, 5, 32, 0.82) 100%)",
           }}
         />
 
@@ -665,11 +1007,11 @@ export default function WEMartScrollExperience({
           {children}
         </div>
 
-        {/* EXIT RUNWAY: Yellow veil clears -> store flickers -> dark + Thank you text -> nighttime Jumbotron + Footer */}
+        {/* EXIT RUNWAY: Yellow veil clears -> store flickers -> dark + Thank you text -> white flash -> zoom out with dark store -> doors close -> nighttime Jumbotron + Footer */}
         <section
           ref={exitRunwayRef}
           id="goodbye"
-          style={{ height: "420vh", width: "100%", pointerEvents: "none" }}
+          style={{ height: "440vh", width: "100%", pointerEvents: "none" }}
         />
       </div>
     </>
