@@ -20,13 +20,13 @@ type ScheduleEvent = {
 };
 
 const typeColors: Record<string, string> = {
-  Meal: "#D7B36B",
+  Meal: "#F0B6D6",
   Workshop: "#A6BCFF",
   Social: "#F36F63",
   Required: "#E1D4FF",
-  Logistics: "#A6CDC4",
-  Sponsor: "#FFCB86",
-  Other: "#CCBA97",
+  Logistics: "#C6DBEC",
+  Sponsor: "#F0B6D6",
+  Other: "#1F2A44",
 };
 
 const sampleSchedule: ScheduleEvent[] = [
@@ -312,7 +312,7 @@ function groupByDay(schedule: ScheduleEvent[]) {
 }
 
 function colorFor(event: ScheduleEvent) {
-  return event.accent ?? typeColors[event.type] ?? "#CCBA97";
+  return event.accent ?? typeColors[event.type] ?? "#1F2A44";
 }
 
 function hexToRgb(hex: string) {
@@ -354,86 +354,8 @@ const Schedule: React.FC = () => {
   return (
     <section className="schedule-section" id="Schedule">
       <div className="schedule-intro">
-        <h1 className="schedule-headline">Schedule</h1>
+        <h1 className="aisle-heading">Aisle 2 · Schedule</h1>
         <OrnateDivider className="my-4" />
-      </div>
-
-      <div className="schedule-table-wrapper">
-        <table className="schedule-table">
-          <tbody>
-            {groupByDay(sampleSchedule).map(([day, events]) => (
-              <React.Fragment key={day}>
-                <tr className="schedule-day-row">
-                  <td className="schedule-time-cell" />
-                  <td className="schedule-axis-cell">
-                    <div className="schedule-axis-line" />
-                  </td>
-                  <td className="schedule-day-cell">
-                    <h2>{day}</h2>
-                  </td>
-                </tr>
-
-                {events.map((event) => {
-                  const color = colorFor(event);
-                  const textColor = darkenHex(color, 0.45);
-
-                  return (
-                    <tr className="schedule-event-row" key={event.id}>
-                      <td className="schedule-time-cell">
-                        <span className="schedule-time">
-                          {event.end ? `${event.start} - ${event.end}` : event.start}
-                        </span>
-                      </td>
-
-                      <td className="schedule-axis-cell">
-                        <div className="schedule-axis-line" />
-                        <span
-                          className={`schedule-dot ${event.isLive ? "is-live" : ""}`}
-                          style={{ backgroundColor: color }}
-                        >
-                          {!event.isLive && <span className="schedule-dot-center" />}
-                        </span>
-                      </td>
-
-                      <td className="schedule-detail-cell">
-                        <div className="schedule-card">
-                          <div className="schedule-card-header">
-                            <div className="schedule-text-group">
-                              <p className="schedule-title">{event.title}</p>
-                              {event.description && (
-                                <p className="schedule-desc">{event.description}</p>
-                              )}
-                            </div>
-
-                            <span
-                              className="schedule-badge"
-                              style={{
-                                background: `linear-gradient(180deg, ${rgba(
-                                  color,
-                                  0.22
-                                )} 0%, ${rgba(color, 0.12)} 100%)`,
-                                color: textColor,
-                                border: `1px solid ${textColor}`, // SAME as text
-                              }}
-                            >
-                              {event.type}
-                            </span>
-                          </div>
-
-                          {event.location && (
-                            <p className="schedule-meta">
-                              Location: {event.location}
-                            </p>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
       </div>
     </section>
   );

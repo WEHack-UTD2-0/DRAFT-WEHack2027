@@ -27,10 +27,10 @@
 }
 
 .mentor-app {
-  filter: drop-shadow(0rem 0rem 0.7rem #A6CDC4);
+  filter: drop-shadow(0rem 0rem 0.7rem #C6DBEC);
 }
 .mentor-app:hover {
-  filter: drop-shadow(0rem 0rem 1rem #A6CDC4);
+  filter: drop-shadow(0rem 0rem 1rem #C6DBEC);
 }
 
 /* .jumbo-group {
@@ -64,7 +64,7 @@
 
 
 .jumbo-text {
-    font-family: var(--font-marcellus);
+    font-family: var(--font-zen-maru-gothic);
 }
 
 .countdown-container {
@@ -100,14 +100,14 @@
   border-radius: 50%;
   box-shadow: 0px 25px 101.5px #D2AF71;
   color: #755642;
-  font-family: var(--font-righteous);
+  font-family: var(--font-dela-gothic-one);
 }
 
 .label {
-  color: #CCBA97;
+  color: #1F2A44;
   margin-top: 1rem;
   font-size: 12px;
-  font-family: var(--font-darker-grotesque);
+  font-family: var(--font-zen-maru-gothic);
 }
 
 /* Circle Sizes & Text Sizes */
@@ -210,5 +210,5 @@
 }
 
 .circle p {
-  font-family: var(--font-junge);
+  font-family: var(--font-shojumaru);
 }

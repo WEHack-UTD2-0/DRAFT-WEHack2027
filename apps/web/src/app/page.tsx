@@ -23,6 +23,7 @@ export default function Home() {
       <Navbar />
 	    <MLHBadge />
       <Jumbotron/>
+<<<<<<< Updated upstream
       {/* <Livestream/> */}
       {/* <Schedule/> */}
       {/* <Menu /> */}
@@ -36,10 +37,19 @@ export default function Home() {
       <Donations/> 
       <FAQ/> 
       {/* <Team/> */}
+=======
+      <About/>
+      <Schedule/>
+      <Livestream/>
+      <Menu />
+      <Sponsor/>
+      <Donations/>
+      <FAQ/>
+>>>>>>> Stashed changes
       <Footer/>
     </div>
   );
 }
 
-export const runtime = "edge";
+// export const runtime = "edge";
 export const revalidate = 30;

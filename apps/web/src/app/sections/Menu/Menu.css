@@ -1,32 +1,32 @@
 .menu-title {
     /* text-shadow: 0rem 0rem 3rem white; */
       /* text-shadow: 0rem 0rem 3rem white; */
-      background-color: #A6CDC4;
+      background-color: #C6DBEC;
       padding:2rem;
       border-radius:20px;
-      border: 8px solid #992444;
-      filter: drop-shadow(-10px 10px #992444);
-      box-shadow: 0px 0px 40px #992444;
+      border: 8px solid #4F8EE0;
+      filter: drop-shadow(-10px 10px #4F8EE0);
+      box-shadow: 0px 0px 40px #4F8EE0;
   }
 
 /* Shared card styling so Menu matches the site-wide navy + gold palette */
 .menu-card {
   /* background:
     radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.06), transparent 38%),
-    linear-gradient(145deg, rgba(31, 34, 51, 0.9), rgba(18, 26, 46, 0.92)); */
-  background: rgba(31, 34, 51, 0.9);
-  border: 2px solid #d7b36b; /* gold accent from schedule section */
+    linear-gradient(145deg, rgba(79, 142, 224, 0.9), rgba(18, 26, 46, 0.92)); */
+  background: rgba(79, 142, 224, 0.9);
+  border: 2px solid #F0B6D6; /* gold accent from schedule section */
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(6px);
-  color: #f6f1ea;
+  color: #F0D4E2;
 }
 
 .menu-heading {
-  color: #E4CAFF; /* matches hero/subhead tint */
+  color: #E4E0A8; /* matches hero/subhead tint */
 }
 
 .menu-chip {
-  color: #f6f1ea;
+  color: #F0D4E2;
   background: rgba(228, 202, 255, 0.08);
 }
 
@@ -36,11 +36,11 @@
 }
 
 .menu-card h1 {
-  color: #E4CAFF;
+  color: #E4E0A8;
 }
 
 .menu-card h2 {
-  color: #f6f1ea;
+  color: #F0D4E2;
 }
 
 .menu-card p {
@@ -55,7 +55,7 @@
   }
   
   .glow-menu {
-    /* filter: drop-shadow(0 0 20px #992444); */
+    /* filter: drop-shadow(0 0 20px #4F8EE0); */
     transform: rotate(-3deg);
   }
 

@@ -96,7 +96,7 @@
 
 /* ── Description text ── */
 .livestream-text {
-  color: #CCBA97;
+  color: #1F2A44;
   font-weight: 500;
   font-size: 1.125rem;
   line-height: 1.75rem;
@@ -124,7 +124,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
-  background: linear-gradient(90deg, #E39939, #f0b55a, #E39939);
+  background: linear-gradient(90deg, #F0B6D6, #f0b55a, #F0B6D6);
   background-size: 200% auto;
   color: #fff;
   font-size: 0.875rem;
@@ -187,4 +187,110 @@
 @keyframes shimmer {
   0%   { transform: translateX(-100%) skewX(-20deg); }
   100% { transform: translateX(250%) skewX(-20deg); }
+}
+/* belt crop: shows only the strip of belt.png (2420x1668) around the belt, sized in % of its width */
+.belt {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2220 / 490;
+  overflow: hidden;
+}
+
+.belt-img {
+  position: absolute;
+  width: 109%;
+  max-width: none;
+  left: -4.5%;
+  top: -114.5%;
+}
+
+.belt-item {
+  position: absolute;
+  width: 5%;
+  top: 38%;
+  left: -8%;
+  image-rendering: pixelated;
+  animation: belt-move 17.5s linear infinite;
+}
+
+@keyframes belt-move {
+  from { left: 86%; opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  to { left: 6%; opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .belt-item { animation: none; }
+}
+
+/* TV (left) + belt (right) side by side, belt tucked against the TV desk */
+.checkout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.checkout-tv {
+  position: relative;
+  width: 100%;
+  max-width: 40rem;
+}
+
+.recap-sign {
+  position: absolute;
+  top: -1.25rem;
+  left: 0.5rem;
+  z-index: 1;
+  padding: 0.25rem 0.75rem;
+  background: #fff;
+  color: #1F2A44;
+  border: 3px solid #1F2A44;
+  border-radius: 0.5rem;
+  font-family: var(--font-zen-maru-gothic);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.checkout-title {
+  font-family: var(--font-dela-gothic-one);
+  color: #1F2A44;
+  font-size: clamp(2rem, 6vw, 4rem);
+}
+
+@media (min-width: 768px) {
+  .checkout {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+
+  .checkout-tv {
+    flex: 0 0 48%;
+    max-width: none;
+  }
+
+  .belt {
+    flex: 1 1 0;
+    margin-left: -3%;
+    margin-bottom: 4%;
+  }
+}
+
+/* scale the whole checkout scene up: wider content column, bigger belt items and title */
+@media (min-width: 768px) {
+  .livestream-content { max-width: 100rem; padding: 0 2rem; }
+  .checkout { width: 100%; max-width: 96rem; }
+  .belt-item { width: 9%; top: 16%; }
+}
+
+.checkout-title { font-size: clamp(1.75rem, 4vw, 3rem); }
+.recap-sign { font-size: 1.25rem; top: -1.75rem; }
+
+/* belt's left end tucks behind the register/TV unit so the two read as connected */
+.checkout-tv { z-index: 2; }
+.belt { z-index: 1; }
+
+@media (min-width: 768px) {
+  .belt { margin-left: -15%; margin-bottom: 0; }
 }

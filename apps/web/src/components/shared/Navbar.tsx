@@ -124,7 +124,7 @@ export default async function Navbar({ className }: NavbarProps) {
 												: "/register"
 										}
 									>
-										<Button className="primary-btn w-full bg-[#A6CDC4] px-5 py-3 text-[#282738] hover:bg-[#6e8d85]">
+										<Button className="primary-btn w-full bg-[#C6DBEC] px-5 py-3 text-[#282738] hover:bg-[#6e8d85]">
 											{registrationIsComplete
 												? "Dashboard"
 												: "Complete Registration"}
@@ -134,12 +134,12 @@ export default async function Navbar({ className }: NavbarProps) {
 							) : (
 								<>
 									{/* <Link href={"/sign-in"}>
-										<Button className="primary-btn w-full bg-[#A6CDC4] px-5 py-3 text-[#282738] hover:bg-[#6e8d85]">
+										<Button className="primary-btn w-full bg-[#C6DBEC] px-5 py-3 text-[#282738] hover:bg-[#6e8d85]">
 											Sign In
 										</Button>
 									</Link> */}
 									<Link href={"/register"}>
-										<Button className="primary-btn w-full bg-[#A6CDC4] px-5 py-3 text-[#282738] hover:bg-[#6e8d85]">
+										<Button className="primary-btn w-full bg-[#C6DBEC] px-5 py-3 text-[#282738] hover:bg-[#6e8d85]">
 											Register
 										</Button>
 									</Link>

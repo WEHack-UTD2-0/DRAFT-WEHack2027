@@ -1,14 +1,14 @@
 .FAQ-title {
     /* text-shadow: 0rem 0rem 3rem white; */
-    background-color: #A6CDC4;
+    background-color: #C6DBEC;
     padding:2rem;
     border-radius:20px;
-    border: 8px solid #992444;
-    filter: drop-shadow(-10px 10px #992444);
+    border: 8px solid #4F8EE0;
+    filter: drop-shadow(-10px 10px #4F8EE0);
 }
 
 .glow {
-    filter: drop-shadow(0 0 20px #992444);
+    filter: drop-shadow(0 0 20px #4F8EE0);
     transform: rotate(6deg);
 }
 

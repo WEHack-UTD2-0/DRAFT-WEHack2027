@@ -5,47 +5,15 @@ import { Analytics } from "@vercel/analytics/react";
 import { defaultTheme } from "config";
 import { neobrutalism } from "@clerk/themes";
 import Script from "next/script";
-import { Inknut_Antiqua, Nunito, Junge, Julius_Sans_One, Righteous, Darker_Grotesque, Sriracha, Cinzel_Decorative, Gantari, Marcellus, Cormorant_Garamond} from "next/font/google";
+import { Shojumaru, Dela_Gothic_One, Zen_Maru_Gothic, IBM_Plex_Mono } from "next/font/google";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-const righteous = Righteous({
-	subsets: ['latin'],
-	variable: '--font-righteous',
-	weight: '400'
-  });
-  
-const darker_grotesque = Darker_Grotesque({
-	subsets: ['latin'],
-	variable: '--font-darker-grotesque',
-  });
-
-const cinzel_decorative = Cinzel_Decorative({
-	subsets: ['latin'],
-	variable: '--font-cinzel-decorative',
-	weight: ['400']
-  });
-
-const marcellus = Marcellus({
-	subsets: ['latin'],
-	variable: '--font-marcellus',
-	weight: '400'
-  });
-
-const gantari = Gantari({
-	subsets: ['latin'],
-	variable: '--font-gantari',
-	weight: ['100', '700']
-  });
-
-const cormorant_garamond = Cormorant_Garamond({
-	subsets: ['latin'],
-	variable: '--font-cormorant-garamond',
-	weight: ['300', '400', '700']
-  });
-
-
+const shojumaru = Shojumaru({ subsets: ["latin"], variable: "--font-shojumaru", weight: "400" });
+const dela_gothic_one = Dela_Gothic_One({ subsets: ["latin"], variable: "--font-dela-gothic-one", weight: "400" });
+const zen_maru_gothic = Zen_Maru_Gothic({ subsets: ["latin"], variable: "--font-zen-maru-gothic", weight: ["400", "700"] });
+const ibm_plex_mono = IBM_Plex_Mono({ subsets: ["latin"], variable: "--font-ibm-plex-mono", weight: ["400", "500"] });
 
 export const metadata: Metadata = {
 	title: "WEHack",
@@ -79,7 +47,7 @@ export default function RootLayout({
 					</Script>
 				</head>
 				<body
-					className={`${cinzel_decorative.variable} ${marcellus.variable} ${cormorant_garamond.variable} ${gantari.variable}`}
+					className={`${shojumaru.variable} ${dela_gothic_one.variable} ${zen_maru_gothic.variable} ${ibm_plex_mono.variable}`}
 				>
 					{children}
 					<Analytics />
@@ -89,4 +57,4 @@ export default function RootLayout({
 	);
 }
 
-export const runtime = "edge";
+// export const runtime = "edge";

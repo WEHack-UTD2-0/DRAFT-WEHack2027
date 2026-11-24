@@ -9,30 +9,10 @@ function FAQ() {
         <div className="title-container flex flex-col">      
             <div className="header-container pb-1 md:pb-1 lg:pb-2 flex flex-col md:flex-row gap-x-10">
                 <div className="flex justify-start pb-2 -ml-8">
-                    <img src="img/static/images/FAQ.webp" className="h-auto w-full max-w-[800px] md:max-w-[1000px] lg:max-w-[1200px]"></img>
+                    <h2 className="aisle-heading">Aisle 7 · FAQ</h2>
                 </div>
             </div>
         </div>
-
-        <div className='drop-down-container gap-0 mt-3 lg:-mt-8 lg:gap-0 lg:px-14'>
-            <div className='column-right w-full lg:w-2/2'>
-                <div className='questions-container flex flex-col items-stretch justify-start gap-0 w-full'>
-                    {dataColOne.map((FAQ, index) => (
-                        <div className='flex flex-wrap items-center justify-center w-full' key={index}>
-                            <Question number={index + 1} question={FAQ.question} answer={FAQ.answer}/>
-                        </div>
-                    ))}
-                </div>
-                
-            </div>
-        </div>
-
-        <div className="vinyl-blue-container flex justify-center md:justify-end lg:justify-end md:-ml-[10rem] lg:-ml-[25rem] xl:-ml-[45rem] pt-20 pb-72 md:pt-16 md:pb-72">
-            <img className="vinyl" src="img/static/images/minutes1 2 (2).png" width="300px" height="300px"></img>    
-        </div>
-        
-        
-        
     </div>
   )
 }
