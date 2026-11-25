@@ -33,7 +33,7 @@ const ibm_plex_mono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
 	title: "WEHack 2027 — A Trip to WEMart",
-	description: "A Trip to WEMart — WEHack 2027 (April 3–4, 2027)",
+	description: "A Trip to WEMart — WEHack 2027 (April 17–18, 2027)",
 };
 
 export default function RootLayout({
