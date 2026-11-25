@@ -34,6 +34,9 @@ export default function WEMartScrollExperience({
   const contentWrapperRef = useRef<HTMLDivElement>(null);
   const exitRunwayRef = useRef<HTMLElement>(null);
 
+  // Persistent fixed stage (lifts smoothly upward once exit runway finishes so footer stays below)
+  const stageRef = useRef<HTMLDivElement>(null);
+
   // Fixed background layers
   const exteriorRef = useRef<HTMLDivElement>(null);
   const exteriorNightOverlayRef = useRef<HTMLDivElement>(null);
@@ -64,9 +67,6 @@ export default function WEMartScrollExperience({
   const yellowVeilRef = useRef<HTMLDivElement>(null);
   const whiteFlashRef = useRef<HTMLDivElement>(null);
   const thankYouRef = useRef<HTMLDivElement>(null);
-
-  // Final nighttime Jumbotron footer overlay
-  const closingFooterRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     let rafId: number | null = null;
@@ -100,6 +100,13 @@ export default function WEMartScrollExperience({
       const exitScrollable = Math.max(1, exitRect.height - vh);
       const pExit = clamp01(-exitRect.top / exitScrollable);
 
+      // Distance scrolled past the end of the exit runway into the footer:
+      // Lifts the fixed stage upward in 1:1 lockstep so the footer sits cleanly below the Jumbotron
+      const footerScrollPx = Math.max(0, vh - exitRect.bottom);
+      if (stageRef.current) {
+        stageRef.current.style.transform = `translate3d(0, -${footerScrollPx}px, 0)`;
+      }
+
       // --- DEFAULT STATE VALUES ---
       let exteriorOpacity = 0;
       let exteriorScale = 1;
@@ -122,7 +129,6 @@ export default function WEMartScrollExperience({
 
       let flashOpacity = 0;
       let thankYouOpacity = 0;
-      let footerOpacity = 0;
 
       // === BRANCH A: EXIT SEQUENCE ACTIVE (User reached bottom of page) ===
       if (pExit > 0) {
@@ -200,9 +206,6 @@ export default function WEMartScrollExperience({
 
           // Bring in the exterior nighttime tint gradually as the storefront zooms out and doors close
           exteriorNightOpacity = 0.35 + mainZoomOutT * 0.25 + doorCloseT * 0.1;
-
-          // Fade in the centered WEMart 27' logo & footer over the nighttime Jumbotron
-          footerOpacity = easeInOut(clamp01((pExit - 0.88) / 0.12));
         }
       } else {
         // === BRANCH B: ENTRY RUNWAY + CONTENT SECTIONS ===
@@ -364,13 +367,6 @@ export default function WEMartScrollExperience({
       if (thankYouRef.current) {
         thankYouRef.current.style.opacity = String(thankYouOpacity);
       }
-
-      if (closingFooterRef.current) {
-        closingFooterRef.current.style.opacity = String(footerOpacity);
-        closingFooterRef.current.style.pointerEvents =
-          footerOpacity > 0.5 ? "auto" : "none";
-        closingFooterRef.current.style.transform = `translateY(${(1 - footerOpacity) * 24}px)`;
-      }
     };
 
     const onScroll = () => {
@@ -411,8 +407,9 @@ export default function WEMartScrollExperience({
         href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=IBM+Plex+Mono:wght@400;500;600;700&family=Zen+Maru+Gothic:wght@500;700&display=swap"
       />
 
-      {/* PERSISTENT FIXED VIEWPORT STAGE (z-index: 0) */}
+      {/* PERSISTENT FIXED VIEWPORT STAGE (z-index: 0, lifts upward when footer scrolls in) */}
       <div
+        ref={stageRef}
         aria-hidden="true"
         style={{
           position: "fixed",
@@ -421,6 +418,7 @@ export default function WEMartScrollExperience({
           overflow: "hidden",
           pointerEvents: "none",
           backgroundColor: "#00072D",
+          willChange: "transform",
         }}
       >
         {/* 1A. Bright Store Interior (storelight.png) */}
@@ -833,7 +831,7 @@ export default function WEMartScrollExperience({
                 `,
               }}
             >
-              April 3-4
+              April 17-18
             </h2>
           </div>
         </div>
@@ -882,117 +880,6 @@ export default function WEMartScrollExperience({
         />
       </div>
 
-      {/* =====================================================================
-          7. FINAL NIGHTTIME JUMBOTRON FOOTER OVERLAY (Clickable, z-index: 20)
-         ===================================================================== */}
-      <footer
-        ref={closingFooterRef}
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 20,
-          opacity: 0,
-          pointerEvents: "none",
-          transform: "translateY(24px)",
-        }}
-        className="w-full border-t-2 border-[#538FDD]/70 bg-[#00072D]/85 px-4 py-6 text-[#C5D9EB] backdrop-blur-md sm:px-6 sm:py-8"
-      >
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 md:flex-row">
-          {/* Left: Centered WEMart 27' Logo (2x Bigger) Above Made with <3 by WEHack */}
-          <div className="flex flex-col items-center justify-center gap-2 text-center">
-            <Link
-              href="#home"
-              className="flex items-center justify-center transition-transform duration-200 hover:scale-105"
-            >
-              <img
-                src="/img/static/images/WEMart%2027'%20logo.png"
-                alt="WEMart 2027 Logo"
-                className="h-28 w-auto object-contain drop-shadow-[0_0_14px_rgba(197,217,235,0.5)] sm:h-32"
-              />
-            </Link>
-            <p
-              className="text-xs font-medium tracking-wide text-[#EDD0E0] sm:text-sm"
-              style={{ fontFamily: "'IBM Plex Mono', monospace" }}
-            >
-              Made with <span className="text-[#EFB5D5]">&lt;3</span> by{" "}
-              <span className="font-bold text-[#E4DFAA]">WEHack</span>
-            </p>
-          </div>
-
-          {/* Center: Quick Navigation Links */}
-          <div
-            className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-bold sm:gap-x-6 sm:text-sm"
-            style={{ fontFamily: "'Zen Maru Gothic', sans-serif" }}
-          >
-            <a
-              href="#about-wehack"
-              className="text-[#C5D9EB] transition-colors hover:text-[#EFB5D5]"
-            >
-              About
-            </a>
-            <a
-              href="#Sponsor"
-              className="text-[#C5D9EB] transition-colors hover:text-[#EFB5D5]"
-            >
-              Sponsors
-            </a>
-            <a
-              href="#FAQ"
-              className="text-[#C5D9EB] transition-colors hover:text-[#EFB5D5]"
-            >
-              FAQ
-            </a>
-            <a
-              href="http://hackp.ac/coc"
-              target="_blank"
-              rel="noreferrer"
-              className="text-[#C5D9EB] transition-colors hover:text-[#EFB5D5]"
-            >
-              MLH Code of Conduct
-            </a>
-            <a
-              href="mailto:wehackutd@gmail.com"
-              className="text-[#E4DFAA] transition-colors hover:text-[#EFB5D5]"
-            >
-              Contact Us
-            </a>
-          </div>
-
-          {/* Right: Socials */}
-          <div
-            className="flex flex-wrap items-center justify-center gap-3 text-xs font-semibold uppercase tracking-wider sm:gap-4"
-            style={{ fontFamily: "'IBM Plex Mono', monospace" }}
-          >
-            <a
-              href="https://www.instagram.com/wehackutd/"
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-lg border border-[#538FDD] bg-[#060F38] px-3 py-2 text-[#C5D9EB] transition-all hover:border-[#EFB5D5] hover:bg-[#EFB5D5] hover:text-[#00072D]"
-            >
-              Instagram
-            </a>
-            <a
-              href="https://www.linkedin.com/company/wehackutd/"
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-lg border border-[#538FDD] bg-[#060F38] px-3 py-2 text-[#C5D9EB] transition-all hover:border-[#EFB5D5] hover:bg-[#EFB5D5] hover:text-[#00072D]"
-            >
-              LinkedIn
-            </a>
-            <a
-              href="https://discord.gg/wehack"
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-lg border border-[#538FDD] bg-[#060F38] px-3 py-2 text-[#C5D9EB] transition-all hover:border-[#EFB5D5] hover:bg-[#EFB5D5] hover:text-[#00072D]"
-            >
-              Discord
-            </a>
-          </div>
-        </div>
-      </footer>
-
       {/* FOREGROUND SCROLLING FLOW (z-index: 10) */}
       <div style={{ position: "relative", zIndex: 10 }}>
         {/* ENTRY RUNWAY: Zoom in -> poster pause -> white flash -> 1.5s storelight hold */}
@@ -1007,12 +894,108 @@ export default function WEMartScrollExperience({
           {children}
         </div>
 
-        {/* EXIT RUNWAY: Yellow veil clears -> store flickers -> dark + Thank you text -> white flash -> zoom out with dark store -> doors close -> nighttime Jumbotron + Footer */}
+        {/* EXIT RUNWAY: Yellow veil clears -> store flickers -> dark + Thank you text -> white flash -> zoom out with dark store -> doors close -> full nighttime Jumbotron */}
         <section
           ref={exitRunwayRef}
           id="goodbye"
           style={{ height: "440vh", width: "100%", pointerEvents: "none" }}
         />
+
+        {/* 7. CLOSING FOOTER IN NORMAL FLOW BELOW THE ZOOM-OUT (Stays completely below the Jumbotron) */}
+        <footer className="relative z-20 w-full border-t-2 border-[#538FDD]/70 bg-[#00072D] px-4 py-8 text-[#C5D9EB] sm:px-6 sm:py-10">
+          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 md:flex-row">
+            {/* Left: Centered WEMart 27' Logo (2x Bigger) Above Made with <3 by WEHack */}
+            <div className="flex flex-col items-center justify-center gap-2 text-center">
+              <Link
+                href="#home"
+                className="flex items-center justify-center transition-transform duration-200 hover:scale-105"
+              >
+                <img
+                  src="/img/static/images/WEMart%2027'%20logo.png"
+                  alt="WEMart 2027 Logo"
+                  className="h-28 w-auto object-contain drop-shadow-[0_0_14px_rgba(197,217,235,0.5)] sm:h-32"
+                />
+              </Link>
+              <p
+                className="text-xs font-medium tracking-wide text-[#EDD0E0] sm:text-sm"
+                style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+              >
+                Made with <span className="text-[#EFB5D5]">&lt;3</span> by{" "}
+                <span className="font-bold text-[#E4DFAA]">WEHack</span>
+              </p>
+            </div>
+
+            {/* Center: Quick Navigation Links */}
+            <div
+              className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-bold sm:gap-x-6 sm:text-sm"
+              style={{ fontFamily: "'Zen Maru Gothic', sans-serif" }}
+            >
+              <a
+                href="#about-wehack"
+                className="text-[#C5D9EB] transition-colors hover:text-[#EFB5D5]"
+              >
+                About
+              </a>
+              <a
+                href="#Sponsor"
+                className="text-[#C5D9EB] transition-colors hover:text-[#EFB5D5]"
+              >
+                Sponsors
+              </a>
+              <a
+                href="#FAQ"
+                className="text-[#C5D9EB] transition-colors hover:text-[#EFB5D5]"
+              >
+                FAQ
+              </a>
+              <a
+                href="http://hackp.ac/coc"
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#C5D9EB] transition-colors hover:text-[#EFB5D5]"
+              >
+                MLH Code of Conduct
+              </a>
+              <a
+                href="mailto:wehackutd@gmail.com"
+                className="text-[#E4DFAA] transition-colors hover:text-[#EFB5D5]"
+              >
+                Contact Us
+              </a>
+            </div>
+
+            {/* Right: Socials */}
+            <div
+              className="flex flex-wrap items-center justify-center gap-3 text-xs font-semibold uppercase tracking-wider sm:gap-4"
+              style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+            >
+              <a
+                href="https://www.instagram.com/wehackutd/"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-lg border border-[#538FDD] bg-[#060F38] px-3 py-2 text-[#C5D9EB] transition-all hover:border-[#EFB5D5] hover:bg-[#EFB5D5] hover:text-[#00072D]"
+              >
+                Instagram
+              </a>
+              <a
+                href="https://www.linkedin.com/company/wehackutd/"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-lg border border-[#538FDD] bg-[#060F38] px-3 py-2 text-[#C5D9EB] transition-all hover:border-[#EFB5D5] hover:bg-[#EFB5D5] hover:text-[#00072D]"
+              >
+                LinkedIn
+              </a>
+              {/* <a
+                href="https://discord.gg/wehack"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-lg border border-[#538FDD] bg-[#060F38] px-3 py-2 text-[#C5D9EB] transition-all hover:border-[#EFB5D5] hover:bg-[#EFB5D5] hover:text-[#00072D]"
+              >
+                Discord
+              </a> */}
+            </div>
+          </div>
+        </footer>
       </div>
     </>
   );
