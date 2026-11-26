@@ -11,21 +11,24 @@ interface WEMartScrollExperienceProps {
   children: React.ReactNode;
 }
 
-// Mathematically verified inner doorway bounds in wemart-hero.png:
-// Left inner jamb = 38.2% | Right inner jamb = 64.0% (width = 25.8%)
-// Top of light-blue door frame = 67.6% | Bottom threshold = 98.4% (height = 30.8%)
-// Exact center of the vertical dark-blue line between the two doors sits at 50.45% of the image,
-// which is 47.48% of DOOR_WIDTH (38.2 + 25.8 * 0.4748 = 50.45%).
-const DOOR_TOP = 67.6;
-const DOOR_LEFT = 38.2;
-const DOOR_WIDTH = 25.8;
-const DOOR_HEIGHT = 30.8;
-const DOOR_SPLIT_PCT = 47.48;
+// Pixel-exact INNER doorway opening inside the blue vertical jambs of wemart-hero.png:
+// Left inner jamb = 41.9% | Right inner jamb = 59.3% (width = 17.4%)
+// Top inner header = 69.8% | Bottom threshold = 96.4% (height = 26.6%)
+// Center vertical seam sits at 50.60% of the image = 50.0% of DOOR_WIDTH (41.9 + 17.4 * 0.50 = 50.60%).
+const DOOR_TOP = 69.4;
+const DOOR_LEFT = 42.25;
+const DOOR_WIDTH = 17.05;
+const DOOR_HEIGHT = 26.95;
+// Exact split on the 50.45% vertical seam: (50.45 - 42.25) / 17.05 * 100 = 48.094%
+const DOOR_SPLIT_PCT = 47.094;
 const DOOR_CENTER_X = DOOR_LEFT + (DOOR_WIDTH * DOOR_SPLIT_PCT) / 100; // 50.45%
 
-// Fixed reference coordinate canvas for the left poster so line wraps & text positions are 100% locked
+// Fixed reference coordinate canvases for both posters (locked aspect ratio matching the door glass panes)
 const POSTER_BASE_W = 340;
 const POSTER_BASE_H = 440;
+
+// Default natural aspect ratio fallback for wemart-hero.png (auto-updated on image load)
+const DEFAULT_HERO_ASPECT = 16 / 10;
 
 export default function WEMartScrollExperience({
   children,
@@ -33,6 +36,9 @@ export default function WEMartScrollExperience({
   const entryRunwayRef = useRef<HTMLElement>(null);
   const contentWrapperRef = useRef<HTMLDivElement>(null);
   const exitRunwayRef = useRef<HTMLElement>(null);
+
+  // Track natural aspect ratio of wemart-hero.png so cover-rect math is 100% pixel-exact
+  const heroAspectRef = useRef<number>(DEFAULT_HERO_ASPECT);
 
   // Persistent fixed stage (lifts smoothly upward once exit runway finishes so footer stays below)
   const stageRef = useRef<HTMLDivElement>(null);
@@ -54,8 +60,8 @@ export default function WEMartScrollExperience({
   const sharpPostersOverlayRef = useRef<HTMLDivElement>(null);
   const sharpLeftPosterRef = useRef<HTMLDivElement>(null);
   const sharpRightPosterRef = useRef<HTMLDivElement>(null);
-  const leftPosterCardRef = useRef<HTMLDivElement>(null);
   const leftPosterInnerRef = useRef<HTMLDivElement>(null);
+  const rightPosterInnerRef = useRef<HTMLDivElement>(null);
 
   // Interior store lighting layers
   const storeLightRef = useRef<HTMLDivElement>(null);
@@ -72,6 +78,16 @@ export default function WEMartScrollExperience({
     let rafId: number | null = null;
     let ticking = false;
 
+    // Preload wemart-hero.png to lock its exact natural aspect ratio
+    const probeImg = new window.Image();
+    probeImg.src = "/img/static/images/wemart-hero.png";
+    probeImg.onload = () => {
+      if (probeImg.naturalWidth > 0 && probeImg.naturalHeight > 0) {
+        heroAspectRef.current = probeImg.naturalWidth / probeImg.naturalHeight;
+        updateFrame();
+      }
+    };
+
     const updateFrame = () => {
       ticking = false;
       if (
@@ -83,6 +99,37 @@ export default function WEMartScrollExperience({
 
       const vh = window.innerHeight;
       const vw = window.innerWidth;
+      const imgAspect = heroAspectRef.current;
+
+      // Compute exact rendered cover-fit rectangle of wemart-hero.png inside vw x vh.
+      let imgW: number;
+      let imgH: number;
+      let imgLeft: number;
+      let imgTop: number;
+
+      if (vw / vh > imgAspect) {
+        imgW = vw;
+        imgH = vw / imgAspect;
+        imgLeft = 0;
+        imgTop = (vh - imgH) / 2;
+      } else {
+        imgH = vh;
+        imgW = vh * imgAspect;
+        imgTop = 0;
+        imgLeft = (vw - imgW) / 2;
+      }
+
+      // On narrow/portrait mobile viewports, shift horizontal focus toward DOOR_CENTER_X (50.60%)
+      if (vw < vh) {
+        const doorCenterPx = imgLeft + (imgW * DOOR_CENTER_X) / 100;
+        const desiredCenterPx = vw * 0.5;
+        const maxShift = Math.max(0, (imgW - vw) / 2);
+        const shift = Math.max(
+          -maxShift,
+          Math.min(maxShift, desiredCenterPx - doorCenterPx),
+        );
+        imgLeft += shift;
+      }
 
       // 1. Entry runway progress (0 -> 1)
       const entryRect = entryRunwayRef.current.getBoundingClientRect();
@@ -101,7 +148,6 @@ export default function WEMartScrollExperience({
       const pExit = clamp01(-exitRect.top / exitScrollable);
 
       // Distance scrolled past the end of the exit runway into the footer:
-      // Lifts the fixed stage upward in 1:1 lockstep so the footer sits cleanly below the Jumbotron
       const footerScrollPx = Math.max(0, vh - exitRect.bottom);
       if (stageRef.current) {
         stageRef.current.style.transform = `translate3d(0, -${footerScrollPx}px, 0)`;
@@ -137,7 +183,6 @@ export default function WEMartScrollExperience({
         if (pExit < 0.16) {
           storeLightOpacity = 1;
         } else if (pExit < 0.34) {
-          // Rapid fluorescent flicker across 6 steps
           const f = (pExit - 0.16) / 0.18;
           if (f < 0.18) {
             storeLightOpacity = 1;
@@ -159,7 +204,6 @@ export default function WEMartScrollExperience({
             storeDarkOpacity = 1;
           }
         } else if (pExit < 0.48) {
-          // Dark store hold + Farewell message
           storeDarkOpacity = 1;
           const fadeToBlack = easeInOut(clamp01((pExit - 0.34) / 0.07));
           darkTintOpacity = fadeToBlack * 0.78;
@@ -168,8 +212,6 @@ export default function WEMartScrollExperience({
           const textOut = 1 - clamp01((pExit - 0.44) / 0.04);
           thankYouOpacity = textIn * textOut;
         } else if (pExit < 0.54) {
-          // White flash across the screen right after the words disappear,
-          // revealing the storefront at a wider 2.65x framing so the full door frame is immediately visible
           const flashT = (pExit - 0.48) / 0.06;
           if (flashT < 0.5) {
             flashOpacity = easeInOut(flashT * 2);
@@ -187,24 +229,24 @@ export default function WEMartScrollExperience({
             doorwayInteriorOpacity = 1;
           }
         } else {
-          // Smoothly pull back from 2.65x -> 1.08x -> 1.0x
           storeDarkOpacity = 0;
           darkTintOpacity = 0;
           exteriorOpacity = 1;
 
           const mainZoomOutT = easeInOut(clamp01((pExit - 0.54) / 0.24));
           const finalSettleT = easeInOut(clamp01((pExit - 0.78) / 0.14));
-          exteriorScale = 2.65 - mainZoomOutT * 1.57 - finalSettleT * 0.08;
+          exteriorScale = Math.max(
+            1,
+            2.65 - mainZoomOutT * 1.57 - finalSettleT * 0.08,
+          );
           exteriorOriginY = 86.5 + mainZoomOutT * 5.5;
 
-          // Real illustrated doors + posters meet dead-on the 50.45% middle dark-blue line
           const doorCloseT = easeInOut(clamp01((pExit - 0.74) / 0.16));
           showDoorAssembly = true;
           doorLeafOpacity = 1;
           doorSlidePercent = (1 - doorCloseT) * 100;
           doorwayInteriorOpacity = doorCloseT < 0.998 ? 1 : 0;
 
-          // Bring in the exterior nighttime tint gradually as the storefront zooms out and doors close
           exteriorNightOpacity = 0.35 + mainZoomOutT * 0.25 + doorCloseT * 0.1;
         }
       } else {
@@ -239,8 +281,13 @@ export default function WEMartScrollExperience({
         interiorScale = 1.04 - settleT * 0.04;
       }
 
-      // --- APPLY GPU-COMPOSITED STYLES DIRECTLY ---
+      // --- APPLY EXACT ARTWORK-LOCKED GEOMETRY TO EXTERIOR STAGE ---
       if (exteriorRef.current) {
+        exteriorRef.current.style.left = `${imgLeft}px`;
+        exteriorRef.current.style.top = `${imgTop}px`;
+        exteriorRef.current.style.width = `${imgW}px`;
+        exteriorRef.current.style.height = `${imgH}px`;
+        exteriorRef.current.style.backgroundSize = "100% 100%";
         exteriorRef.current.style.opacity = String(exteriorOpacity);
         exteriorRef.current.style.transformOrigin = `${DOOR_CENTER_X}% ${exteriorOriginY}%`;
         exteriorRef.current.style.transform = `scale(${exteriorScale})`;
@@ -289,7 +336,7 @@ export default function WEMartScrollExperience({
         rightDoorLeafRef.current.style.transform = `translate3d(${doorSlidePercent}%, 0, 0)`;
       }
 
-      // --- UPDATE NATIVE 1:1 UNSCALED POSTER OVERLAY (FIXED-CANVAS TEXT = ZERO REFLOW/JITTER) ---
+      // --- UPDATE NATIVE 1:1 UNSCALED POSTER OVERLAY (LOCKED TO RENDERED ARTWORK RECTANGLE) ---
       if (sharpPostersOverlayRef.current) {
         const isVisible =
           showDoorAssembly && exteriorOpacity > 0.01 && doorLeafOpacity > 0.01;
@@ -298,35 +345,51 @@ export default function WEMartScrollExperience({
           : "none";
 
         if (isVisible) {
-          const projTop =
-            exteriorOriginY + (DOOR_TOP - exteriorOriginY) * exteriorScale;
-          const projLeft =
-            DOOR_CENTER_X + (DOOR_LEFT - DOOR_CENTER_X) * exteriorScale;
-          const projWidth = DOOR_WIDTH * exteriorScale;
-          const projHeight = DOOR_HEIGHT * exteriorScale;
+          const doorXInImg =
+            (DOOR_CENTER_X + (DOOR_LEFT - DOOR_CENTER_X) * exteriorScale) /
+            100;
+          const doorYInImg =
+            (exteriorOriginY + (DOOR_TOP - exteriorOriginY) * exteriorScale) /
+            100;
+          const doorWInImg = (DOOR_WIDTH * exteriorScale) / 100;
+          const doorHInImg = (DOOR_HEIGHT * exteriorScale) / 100;
 
-          sharpPostersOverlayRef.current.style.top = `${projTop}%`;
-          sharpPostersOverlayRef.current.style.left = `${projLeft}%`;
-          sharpPostersOverlayRef.current.style.width = `${projWidth}%`;
-          sharpPostersOverlayRef.current.style.height = `${projHeight}%`;
+          const projLeftPx = imgLeft + doorXInImg * imgW;
+          const projTopPx = imgTop + doorYInImg * imgH;
+          const projWidthPx = doorWInImg * imgW;
+          const projHeightPx = doorHInImg * imgH;
+
+          sharpPostersOverlayRef.current.style.left = `${projLeftPx}px`;
+          sharpPostersOverlayRef.current.style.top = `${projTopPx}px`;
+          sharpPostersOverlayRef.current.style.width = `${projWidthPx}px`;
+          sharpPostersOverlayRef.current.style.height = `${projHeightPx}px`;
           sharpPostersOverlayRef.current.style.opacity = String(
             exteriorOpacity * doorLeafOpacity,
           );
-          sharpPostersOverlayRef.current.style.setProperty(
-            "--poster-scale",
-            String(exteriorScale),
-          );
 
-          // Scale the fixed 340x440 left poster typography uniformly so text stays 100% locked in place
+          // Uniform isotropic scale locked strictly to the rendered yellow glass pane dimensions
+          const leftLeafPxW = (projWidthPx * DOOR_SPLIT_PCT) / 100;
+          const rightLeafPxW = (projWidthPx * (100 - DOOR_SPLIT_PCT)) / 100;
+          const leafPxH = projHeightPx;
+
           if (leftPosterInnerRef.current) {
-            const leftLeafPxW =
-              ((projWidth / 100) * vw * DOOR_SPLIT_PCT) / 100;
-            const leftLeafPxH = (projHeight / 100) * vh;
-            const cardPxW = leftLeafPxW * 0.62;
-            const cardPxH = leftLeafPxH * 0.54;
-            const scaleX = cardPxW / POSTER_BASE_W;
-            const scaleY = cardPxH / POSTER_BASE_H;
-            leftPosterInnerRef.current.style.transform = `scale(${scaleX}, ${scaleY})`;
+            const targetW = leftLeafPxW * 0.64;
+            const targetH = leafPxH * 0.56;
+            const uniformScale = Math.min(
+              targetW / POSTER_BASE_W,
+              targetH / POSTER_BASE_H,
+            );
+            leftPosterInnerRef.current.style.transform = `translate(-50%, -50%) scale(${uniformScale})`;
+          }
+
+          if (rightPosterInnerRef.current) {
+            const targetW = rightLeafPxW * 0.64;
+            const targetH = leafPxH * 0.56;
+            const uniformScale = Math.min(
+              targetW / POSTER_BASE_W,
+              targetH / POSTER_BASE_H,
+            );
+            rightPosterInnerRef.current.style.transform = `translate(-50%, -50%) scale(${uniformScale})`;
           }
         }
       }
@@ -387,7 +450,7 @@ export default function WEMartScrollExperience({
     };
   }, []);
 
-  // Exact pixel-matched slice ratios split dead-on the 50.45% middle dark-blue line (47.48% / 52.52%)
+  // Exact pixel-matched slice ratios split dead-on the 50.60% middle dark-blue line
   const leftSplitPct = DOOR_SPLIT_PCT;
   const rightSplitPct = 100 - DOOR_SPLIT_PCT;
   const leftLeafW = (DOOR_WIDTH * leftSplitPct) / 100;
@@ -498,21 +561,25 @@ export default function WEMartScrollExperience({
           }}
         />
 
-        {/* 3. Exterior Storefront Layer (wemart-hero.png) */}
+        {/* 3. Exterior Storefront Layer (wemart-hero.png) — sized to exact cover-fit image box */}
         <div
           ref={exteriorRef}
           className="jumbotron-bg-layer"
           style={{
             position: "absolute",
-            inset: 0,
+            left: 0,
+            top: 0,
+            width: "100%",
+            height: "100%",
+            backgroundSize: "100% 100%",
             opacity: 1,
             transform: "scale(1)",
             transformOrigin: `${DOOR_CENTER_X}% 92%`,
             zIndex: 6,
           }}
         >
-          {/* EXACT INNER DOORWAY OPENING:
-              Left inner jamb = 38.2% | Middle dark-blue line = 50.45% | Right inner jamb = 64.0% */}
+          {/* EXACT INNER DOORWAY OPENING (clipped strictly inside the inner blue vertical jambs):
+              Left inner jamb = 41.9% | Middle dark-blue seam = 50.60% | Right inner jamb = 59.3% */}
           <div
             ref={doorsContainerRef}
             style={{
@@ -524,12 +591,12 @@ export default function WEMartScrollExperience({
               overflow: "hidden",
             }}
           >
-            {/* Store Interior Preview */}
+            {/* Store Interior Preview — strictly clipped to inner doorway opening */}
             <div
               ref={doorOpenInteriorRef}
               style={{
                 position: "absolute",
-                inset: "2.8% 0% 0% 0%",
+                inset: "0%",
                 opacity: 0,
                 zIndex: 1,
                 overflow: "hidden",
@@ -552,7 +619,7 @@ export default function WEMartScrollExperience({
               />
             </div>
 
-            {/* LEFT SYMMETRICAL ILLUSTRATED DOOR LEAF (47.48% width — splits dead-on the 50.45% middle dark-blue line) */}
+            {/* LEFT SYMMETRICAL ILLUSTRATED DOOR LEAF */}
             <div
               ref={leftDoorLeafRef}
               style={{
@@ -575,12 +642,13 @@ export default function WEMartScrollExperience({
                   left: `${(-DOOR_LEFT / leftLeafW) * 100}%`,
                   width: `${invLeftWidthPct}%`,
                   height: `${invHeightPct}%`,
+                  backgroundSize: "100% 100%",
                   pointerEvents: "none",
                 }}
               />
             </div>
 
-            {/* RIGHT SYMMETRICAL ILLUSTRATED DOOR LEAF (52.52% width — meets dead-on the 50.45% middle dark-blue line) */}
+            {/* RIGHT SYMMETRICAL ILLUSTRATED DOOR LEAF */}
             <div
               ref={rightDoorLeafRef}
               style={{
@@ -603,6 +671,7 @@ export default function WEMartScrollExperience({
                   left: `${(-(DOOR_LEFT + leftLeafW) / rightLeafW) * 100}%`,
                   width: `${invRightWidthPct}%`,
                   height: `${invHeightPct}%`,
+                  backgroundSize: "100% 100%",
                   pointerEvents: "none",
                 }}
               />
@@ -611,7 +680,7 @@ export default function WEMartScrollExperience({
         </div>
 
         {/* 3A. NATIVE 1:1 UNSCALED POSTER LAYER (z-index: 6):
-            Both posters centered directly inside the yellow glass panes of their respective doors */}
+            Both posters locked to fixed 340x440 canvases and dead-centered inside each yellow glass pane */}
         <div
           ref={sharpPostersOverlayRef}
           style={{
@@ -623,7 +692,6 @@ export default function WEMartScrollExperience({
             zIndex: 6,
             overflow: "hidden",
             pointerEvents: "none",
-            ["--poster-scale" as any]: "1",
           }}
         >
           {/* Left Poster Carrier */}
@@ -635,39 +703,41 @@ export default function WEMartScrollExperience({
               left: 0,
               width: `${leftSplitPct}%`,
               height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
               willChange: "transform",
               transform: "translate3d(0%, 0, 0)",
             }}
           >
             <div
-              ref={leftPosterCardRef}
-              className="relative h-[54%] w-[62%] translate-x-[2%] translate-y-[4%] overflow-hidden rounded-[2px]"
+              ref={leftPosterInnerRef}
+              style={{
+                position: "absolute",
+                top: "49.5%",
+                left: "47.0%",
+                width: `${POSTER_BASE_W}px`,
+                height: `${POSTER_BASE_H}px`,
+                transformOrigin: "center center",
+                transform: "translate(-50%, -50%) scale(1)",
+                borderRadius: "2px",
+                overflow: "hidden",
+                WebkitFontSmoothing: "antialiased",
+              }}
             >
               <img
                 src="/img/static/images/About%20WEHack-01.png"
                 alt="Dallas' Largest Inclusive Hackathon"
-                className="h-full w-full object-cover"
+                className="absolute inset-0 h-full w-full object-cover"
               />
-              {/* Fixed 340x440 coordinate system scaled uniformly so text never reflows or jitters */}
               <div
-                ref={leftPosterInnerRef}
                 style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: `${POSTER_BASE_W}px`,
-                  height: `${POSTER_BASE_H}px`,
-                  transformOrigin: "top left",
-                  transform: "scale(1, 1)",
+                  position: "relative",
+                  zIndex: 1,
+                  width: "100%",
+                  height: "100%",
                   padding: "36px 26px 32px 26px",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
                   gap: "14px",
-                  WebkitFontSmoothing: "antialiased",
                 }}
               >
                 <h3
@@ -726,7 +796,7 @@ export default function WEMartScrollExperience({
             </div>
           </div>
 
-          {/* Right Poster Carrier */}
+          {/* Right Poster Carrier (dead-centered inside right yellow glass pane) */}
           <div
             ref={sharpRightPosterRef}
             style={{
@@ -735,28 +805,52 @@ export default function WEMartScrollExperience({
               left: `${leftSplitPct}%`,
               width: `${rightSplitPct}%`,
               height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
               willChange: "transform",
               transform: "translate3d(0%, 0, 0)",
             }}
           >
-            <div className="flex h-[54%] w-[62%] -translate-x-[14%] translate-y-[4%] flex-col items-center justify-center rounded-[2px] border-[1.5px] border-[#00072D] bg-[#FFFDF7]/95 p-2 text-center">
+            <div
+              ref={rightPosterInnerRef}
+              style={{
+                position: "absolute",
+                top: "49.5%",
+                left: "51.5%",
+                width: `${POSTER_BASE_W}px`,
+                height: `${POSTER_BASE_H}px`,
+                transformOrigin: "center center",
+                transform: "translate(-50%, -50%) scale(1)",
+                borderRadius: "2px",
+                border: "2px solid #00072D",
+                backgroundColor: "rgba(255, 253, 247, 0.96)",
+                padding: "32px 24px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+                WebkitFontSmoothing: "antialiased",
+              }}
+            >
               <span
-                className="font-bold uppercase tracking-wider text-[#E88D9C]"
                 style={{
                   fontFamily: "'Zen Maru Gothic', sans-serif",
-                  fontSize: "calc(0.45vw * var(--poster-scale))",
+                  fontWeight: 700,
+                  fontSize: "16px",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "#E88D9C",
                 }}
               >
                 Store Hours
               </span>
               <p
-                className="mt-1 font-bold leading-tight text-[#00072D]"
                 style={{
+                  marginTop: "10px",
                   fontFamily: "'Zen Maru Gothic', sans-serif",
-                  fontSize: "calc(0.56vw * var(--poster-scale))",
+                  fontWeight: 700,
+                  fontSize: "20px",
+                  lineHeight: 1.25,
+                  color: "#00072D",
                 }}
               >
                 Poster 2 Content
@@ -985,14 +1079,6 @@ export default function WEMartScrollExperience({
               >
                 LinkedIn
               </a>
-              {/* <a
-                href="https://discord.gg/wehack"
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-lg border border-[#538FDD] bg-[#060F38] px-3 py-2 text-[#C5D9EB] transition-all hover:border-[#EFB5D5] hover:bg-[#EFB5D5] hover:text-[#00072D]"
-              >
-                Discord
-              </a> */}
             </div>
           </div>
         </footer>
