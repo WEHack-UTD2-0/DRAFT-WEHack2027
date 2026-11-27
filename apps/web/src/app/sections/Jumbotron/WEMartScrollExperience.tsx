@@ -759,7 +759,7 @@ export default function WEMartScrollExperience({
               style={{
                 position: "absolute",
                 top: "50%",
-                left: "50%",
+                left: "48.5%",
                 width: `${POSTER_BASE_W}px`,
                 height: `${POSTER_BASE_H}px`,
                 transformOrigin: "center center",
