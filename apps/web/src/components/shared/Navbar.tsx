@@ -14,16 +14,14 @@ interface NavbarProps {
 }
 
 const NAV_LINKS = [
-    { name: "About", href: "#about-wehack" },
     { name: "Sponsors", href: "#Sponsor" },
-    { name: "Donations", href: "#Donations" },
     { name: "FAQ", href: "#FAQ" },
     { name: "MLH Conduct", href: "http://hackp.ac/coc", external: true },
-    {
-        name: "Hackerpack",
-        href: "https://ultra-spell-68d.notion.site/WEHack-2026-Hacker-Guide-3150c60731128055a92cf2e6e1190852",
-        external: true,
-    },
+    // {
+    //     name: "Hackerpack",
+    //     href: "https://app.notion.com/p/WEHack-2027-Hacker-Guide-4220c607311280c08f47c950299935ef?source=copy_link",
+    //     external: true,
+    // },
 ];
 
 export default async function Navbar({ className }: NavbarProps) {
