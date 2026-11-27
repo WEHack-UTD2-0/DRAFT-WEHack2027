@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react'
+// @ts-ignore -- CSS side-effect imports are handled by the framework bundler.
 import './Countdown.css'
 
 function Countdown() {

@@ -8,7 +8,7 @@
 .countdown-heading {
   text-align: left;
   color: #F5E6C8;
-  font-family: var(--font-marcellus);
+  font-family: var(--font-dela-gothic);
   font-size: 2.2rem;
   letter-spacing: 1px;
 
@@ -31,7 +31,7 @@
 /* Shared text style */
 .count-text {
   position: absolute;
-  font-family: var(--font-marcellus);
+  font-family: var(--font-plex-mono);
   font-weight: 400;
   color: #fff;
   text-align: center;
@@ -57,6 +57,7 @@
   left: 77.5%;
   font-size: 3rem;
   transform: translate(-50%, -50%);
+  font-family: var(--font-zen-maru);
 }
 
 /* HOURS - middle right Art Nouveau clock */
@@ -65,6 +66,7 @@
   left: 65%;
   font-size: 3rem;;
   transform: translate(-50%, -50%);
+  font-family: var(--font-zen-maru);
 }
 
 /* SECONDS - bottom right pocket watch */
@@ -73,6 +75,7 @@
   left: 79.5%;
   font-size: 3rem;
   transform: translate(-50%, -50%);
+  font-family: var(--font-zen-maru);
 }
 
 /* DAYS - big main clock on left */
@@ -81,6 +84,7 @@
   left: 34%;
   font-size: 3rem;
   transform: translate(-50%, -50%);
+  font-family: var(--font-zen-maru);
 }
 
 /* ------------------------- */

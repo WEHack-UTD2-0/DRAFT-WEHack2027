@@ -1,3 +1,4 @@
+// @ts-expect-error CSS imports are handled by Next.js.
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { cookies } from "next/headers";
@@ -5,10 +6,28 @@ import { Analytics } from "@vercel/analytics/react";
 import { defaultTheme } from "config";
 import { neobrutalism } from "@clerk/themes";
 import Script from "next/script";
-import { Inknut_Antiqua, Nunito, Junge, Julius_Sans_One, Righteous, Darker_Grotesque, Sriracha, Cinzel_Decorative, Gantari, Marcellus, Cormorant_Garamond} from "next/font/google";
+import { Inknut_Antiqua, Nunito, Junge, Julius_Sans_One, Righteous, Darker_Grotesque, Sriracha, Cinzel_Decorative, Gantari, Marcellus, Cormorant_Garamond, Dela_Gothic_One, Zen_Maru_Gothic, IBM_Plex_Mono } from "next/font/google";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+
+const delaGothic = Dela_Gothic_One({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-dela-gothic",
+});
+
+const zenMaru = Zen_Maru_Gothic({
+  weight: ["400", "500", "700"],
+  subsets: ["latin"],
+  variable: "--font-zen-maru",
+});
+
+const plexMono = IBM_Plex_Mono({
+  weight: ["400", "500", "700"],
+  subsets: ["latin"],
+  variable: "--font-plex-mono",
+});
 
 const righteous = Righteous({
 	subsets: ['latin'],
@@ -79,7 +98,7 @@ export default function RootLayout({
 					</Script>
 				</head>
 				<body
-					className={`${cinzel_decorative.variable} ${marcellus.variable} ${cormorant_garamond.variable} ${gantari.variable}`}
+					className={`${cinzel_decorative.variable} ${marcellus.variable} ${cormorant_garamond.variable} ${gantari.variable} ${delaGothic.variable} ${zenMaru.variable} ${plexMono.variable}`}
 				>
 					{children}
 					<Analytics />

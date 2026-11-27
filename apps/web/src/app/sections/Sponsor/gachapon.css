@@ -1,0 +1,283 @@
+.gachapon-grid {
+    --gold-w: clamp(120px, 17vw, 210px);
+    --silver-w: clamp(115px, 16vw, 200px);
+    --bronze-w: clamp(105px, 14vw, 175px);
+
+    width: 100%;
+    max-width: 80rem;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 5vw, 4rem);
+}
+
+/* A row of tier groups (gold + silver share one row) */
+.tier-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-end;
+    gap: clamp(1.5rem, 5vw, 5rem);
+}
+
+/* Tier pill on top, machines below */
+.tier-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.tier-machines {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(0.75rem, 2.5vw, 2rem);
+}
+
+.tier-pill {
+    font-family: var(--font-plex-mono), monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    color: #2f3d5c;
+    background: #fdfaf0;
+    border: 2px solid #2f3d5c;
+    border-radius: 999px;
+    padding: 0.25rem 1rem;
+}
+
+/* One machine */
+.gachapon {
+    position: relative;          /* so the name plate can sit on top */
+    display: block;
+    container-type: inline-size; /* lets the name use cqw units */
+    filter: drop-shadow(4px 6px 0 rgba(0, 0, 0, 0.18));
+    transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.gachapon-gold   { width: var(--gold-w); }
+.gachapon-silver { width: var(--gold-w); }
+.gachapon-bronze { width: var(--gold-w); }
+
+.gachapon:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(6px 10px 0 rgba(0, 0, 0, 0.2));
+}
+
+.gachapon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    user-select: none;
+}
+
+/* Sponsor name, laid over the label that has the tier word baked in */
+.gachapon-plate {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 3cqw;
+    padding: 0 3cqw;
+    overflow: hidden;
+
+    font-family: var(--font-zen-maru), sans-serif;
+    line-height: 1;
+    color: #2f3d5c;
+    white-space: nowrap;
+}
+
+/* Mobile: all tiers the same size, two per row */
+@media (max-width: 640px) {
+    .gachapon-grid {
+        --gold-w: 40vw;
+        --silver-w: 40vw;
+        --bronze-w: 40vw;
+    }
+}
+
+/* ---------------------------------------------------------------- */
+/* "Become a sponsor" polaroid (Polaroid 2.png, 2000 x 2667)         */
+/* Positions below are % of the image, measured from the asset:      */
+/*   white window: left 8.3%, top 8%, width 80.9%, height 43.9%      */
+/*   front card ends at ~97% wide / ~96.5% tall (rest is shadow)     */
+/* ---------------------------------------------------------------- */
+.sponsor-polaroid {
+    position: relative;
+    width: clamp(200px, 24vw, 300px);
+    aspect-ratio: 2000 / 2667;
+    container-type: inline-size; /* lets text use cqw units */
+    transform: rotate(2deg);
+    transition: transform 0.25s ease; /* same smooth slide as the gachapons */
+}
+
+.sponsor-polaroid:hover {
+    transform: rotate(-1.5deg) translateY(-6px) scale(1.08);
+}
+
+.sponsor-polaroid-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    user-select: none;
+    z-index: 1; /* frame on top of the white window */
+}
+
+/* White photo window (transparent area of the image) */
+.sponsor-polaroid-window {
+    position: absolute;
+    left: 8.3%;
+    top: 8%;
+    width: 80.9%;
+    height: 43.9%;
+    background-color: #fdfaf0; /* same off-white as the button */
+    /* yellow dot pattern so it isn't flat */
+    background-image: radial-gradient(rgba(228, 223, 170, 0.5) 1.6px, transparent 1.6px);
+    background-size: 5cqw 5cqw;
+    overflow: hidden;
+    z-index: 0;
+}
+
+/* Coins: gold in front, silver + bronze tucked behind on each side */
+.polaroid-coin {
+    position: absolute;
+    height: auto;
+    user-select: none;
+    filter: drop-shadow(0.8cqw 1cqw 0 rgba(0, 0, 0, 0.12));
+    transition: transform 0.35s ease, filter 0.35s ease;
+}
+
+.polaroid-coin-gold {
+    width: 34cqw;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -46%) rotate(-6deg);
+    z-index: 3;
+}
+
+.polaroid-coin-silver {
+    width: 26cqw;
+    left: 8%;
+    top: 14%;
+    transform: rotate(-14deg);
+    z-index: 2;
+}
+
+.polaroid-coin-bronze {
+    width: 24cqw;
+    right: 8%;
+    bottom: 10%;
+    transform: rotate(12deg);
+    z-index: 2;
+}
+
+/* Hover: gold pops forward, silver + bronze fan out to the sides */
+.sponsor-polaroid:hover .polaroid-coin-gold {
+    transform: translate(-50%, -54%) rotate(8deg) scale(1.15);
+}
+.sponsor-polaroid:hover .polaroid-coin-silver {
+    transform: translate(-4cqw, -3cqw) rotate(-28deg) scale(1.08);
+}
+.sponsor-polaroid:hover .polaroid-coin-bronze {
+    transform: translate(4cqw, 3cqw) rotate(26deg) scale(1.08);
+}
+.sponsor-polaroid:hover .polaroid-coin {
+    filter: drop-shadow(1.6cqw 2cqw 0 rgba(0, 0, 0, 0.16));
+}
+
+/* Sparkles grow and spin a little on hover */
+.sponsor-polaroid:hover .polaroid-sparkle {
+    transform: scale(1.4) rotate(45deg);
+}
+
+.polaroid-sparkle {
+    position: absolute;
+    color: #538FDD;
+    line-height: 1;
+    z-index: 1;
+    transition: transform 0.35s ease;
+}
+.polaroid-sparkle-1 { font-size: 5cqw; right: 14%; top: 12%; }
+.polaroid-sparkle-2 { font-size: 3.5cqw; left: 12%; bottom: 14%; color: #EFB5D5; }
+.polaroid-sparkle-3 { font-size: 3cqw; right: 30%; top: 6%; color: #EFB5D5; }
+
+/* Green strip above the window (top 8% of the image) — holds the tag */
+.sponsor-polaroid-top {
+    z-index: 2;
+    position: absolute;
+    left: 8.3%;
+    top: 0;
+    width: 80.9%;
+    height: 8%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.sponsor-polaroid-title {
+    font-family: var(--font-dela-gothic), sans-serif;
+    font-size: 6cqw;
+    line-height: 1;
+    color: #1f2a40;
+    margin: 0;
+}
+
+.sponsor-polaroid-tag {
+    font-family: var(--font-plex-mono), monospace;
+    font-size: 2.6cqw;
+    letter-spacing: 0.05em;
+    color: #1f2a40;
+    border: 1.5px solid #1f2a40;
+    padding: 0.4cqw 1.4cqw;
+    white-space: nowrap;
+}
+
+.sponsor-polaroid-body {
+    z-index: 2;
+    position: absolute;
+    left: 8.3%;
+    top: 57%;              /* a little gap under the window (ends at ~52%) */
+    width: 80.9%;
+    height: 36%;           /* down to ~93%, card bottom is ~96.5% */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* title / text / button spread evenly */
+    align-items: flex-start;
+}
+
+.sponsor-polaroid-text {
+    font-family: var(--font-zen-maru), sans-serif;
+    font-size: 5.5cqw;
+    line-height: 1.3;
+    color: #1f2a40;
+    margin: 0;
+}
+
+.sponsor-polaroid-btn {
+    font-family: var(--font-zen-maru), sans-serif;
+    font-size: 5cqw;
+    font-weight: 700;
+    color: #1f2a40;
+    background: #fdfaf0;
+    border: 2px solid #1f2a40;
+    border-radius: 999px;
+    padding: 2cqw 5cqw;
+    box-shadow: 2px 3px 0 #1f2a40;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.sponsor-polaroid-btn:hover {
+    transform: translate(1px, 2px);
+    box-shadow: 1px 1px 0 #1f2a40;
+}
+
+@media (max-width: 640px) {
+    .sponsor-polaroid {
+        width: 70vw;
+    }
+}

@@ -1,5 +1,3 @@
-/* --- General and Large Screen Styles (Existing Code) --- */
-
 /* General container background */
 .Sponsor-container {
     background-size: cover;
@@ -16,8 +14,8 @@
 }
 
 .Sponsor-title {
-    font-family: 'Garamond', 'Times New Roman', serif; 
-    color: #E0E0E0;
+    font-family: var(--font-dela-gothic), sans-serif;
+    color: #e4dfaa;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
@@ -97,8 +95,19 @@
     filter: brightness(1.2);
 }
 
-.sponsor-text-container .sponsor-text {
-    font-family: var(--font-marcellus), sans-serif;
+/* NEW Heading text */
+.sponsor-text-container .sponsor-heading {
+    font-family: var(--font-dela-gothic), sans-serif;
+}
+
+/* NEW Subheading text */
+.sponsor-text-container .sponsor-subtitle {
+    font-family: var(--font-zen-maru), sans-serif;
+}
+
+/* NEW Body text */
+.sponsor-text-container .sponsor-body {
+    font-family: var(--font-plex-mono), monospace;
 }
 
 /* ---------------------------------------------------------------- */

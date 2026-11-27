@@ -1,217 +1,181 @@
 import React from 'react';
+// @ts-ignore -- CSS side-effect imports are handled by the framework bundler.
+import './Sponsor.css';
+// @ts-ignore -- gachapon styles live in their own file
+import './gachapon.css';
 
-// --- VASE ASSET PATHS (absolute to avoid 404s on nested routes) ---
-// Include both webp and png so older browsers that lack webp support still render.
+type Tier = 'gold' | 'silver' | 'bronze';
 
-const VASE_A2 = {
-    webp: '/img/static/images/sponsor_vases/A2-trimmed.webp',
-    png: '/img/static/images/sponsor_vases/A2-trimmed.png'
-};
-const VASE_A3 = {
-    webp: '/img/static/images/sponsor_vases/A3-trimmed.webp',
-    png: '/img/static/images/sponsor_vases/A3-trimmed.png'
-};
-const VASE_A4 = {
-    webp: '/img/static/images/sponsor_vases/A4-trimmed.webp',
-    png: '/img/static/images/sponsor_vases/A4-trimmed.png'
-};
-const VASE_A5 = {
-    webp: '/img/static/images/sponsor_vases/A5-trimmed.webp',
-    png: '/img/static/images/sponsor_vases/A5-trimmed.png'
-};
-const VASE_A6 = {
-    webp: '/img/static/images/sponsor_vases/A6-trimmed.webp',
-    png: '/img/static/images/sponsor_vases/A6-trimmed.png'
-};
-const VASE_A7 = {
-    webp: '/img/static/images/sponsor_vases/A7-trimmed.webp',
-    png: '/img/static/images/sponsor_vases/A7-trimmed.png'
-};
-const VASE_A8 = {
-    webp: '/img/static/images/sponsor_vases/A8-trimmed.webp',
-    png: '/img/static/images/sponsor_vases/A8-trimmed.png'
-};
-
-const LOGO_STATEFARM = {
-    webp: '/img/static/images/sponsors/statefarm_bronze.webp',
-    png: '/img/static/images/sponsors/statefarm_bronze.png'
-};
-const LOGO_CBRE = {
-    webp: '/img/static/images/sponsors/cbre_gold.webp',
-    png: '/img/static/images/sponsors/cbre_gold.png'
-};
-const LOGO_FIDELITY = {
-    // Fidelity art is already PNG only.
-    webp: '/img/static/images/sponsors/fidelity_logo_white.png',
-    png: '/img/static/images/sponsors/fidelity_logo_white.png'
-};
-const LOGO_CAPITAL_ONE = {
-    webp: '/img/static/images/sponsors/capital_one_silver.webp',
-    png: '/img/static/images/sponsors/capital_one_silver.png'
-};
-
-// Define grid item structure
-interface GridItem {
-    id: number;
-    type: 'vase' | 'box';
-    imagePath: {
-        webp: string;
-        png: string;
-    };
-    vaseClass?: string;
+interface SponsorItem {
+    name: string;
+    tier: Tier;
+    url?: string;
 }
 
-// Row tier labels
-const rowTitles: Record<number, string | null> = {
-    1: "GOLD SPONSORS",
-    2: "SILVER SPONSOR",
-    3: "BRONZE SPONSORS",
-    4: null
-};
-
-// --- GRID ITEMS ---
-const dummySponsors: GridItem[] = [
-    { id: 2, type: 'vase', imagePath: VASE_A5, vaseClass: 'vase-style-6' },
-    { id: 4, type: 'box', imagePath: LOGO_CBRE },
-    { id: 5, type: 'box', imagePath: LOGO_FIDELITY },
-    { id: 3, type: 'box', imagePath: LOGO_STATEFARM },
-    { id: 1, type: 'vase', imagePath: VASE_A7, vaseClass: 'vase-style-6' },
-
-    { id: 6, type: 'vase', imagePath: VASE_A6, vaseClass: 'vase-style-6' },
-    { id: 10, type: 'vase', imagePath: VASE_A2, vaseClass: 'vase-style-6' },
-    { id: 9, type: 'box', imagePath: LOGO_CAPITAL_ONE },
-    { id: 7, type: 'vase', imagePath: VASE_A3, vaseClass: 'vase-style-6' },
-    { id: 8, type: 'vase', imagePath: VASE_A8, vaseClass: 'vase-style-6' },
+// Placeholder names from the mockup — swap in the real 2027 sponsors.
+const SPONSORS: SponsorItem[] = [
+    { name: '??', tier: 'gold' },
+    { name: '??', tier: 'silver' },
+    { name: '??', tier: 'bronze' },
 ];
 
-// Size rules
-const getBoxSizeClass = (id: number, type: 'vase' | 'box'): string => {
-    const row = Math.ceil(id / 5);
 
-    if (type === 'box') {
-        switch (row) {
-            case 1:
-                return 'h-64 md:h-72 lg:h-64 w-72';
+const GACHAPON_DIR = '/img/static/images/sponsors/2026-2027%20WEHack';
 
-            case 2:
-                return 'h-48 md:h-56 lg:h-64 w-72';
 
-            default:
-                return 'h-20';
-        }
+const MACHINES: Record<
+    Tier,
+    {
+        src: string;
+        aspect: string;
+        plate: { left: number; top: number; width: number; height: number; color: string };
     }
-
-    if (type === 'vase') {
-        switch (row) {
-            case 1: return 'h-48 md:h-64 lg:h-80';
-            case 2: return 'h-44 md:h-60 lg:h-72';
-            default: return 'h-48 md:h-64';
-        }
-    }
-
-    return '';
+> = {
+    gold: {
+        src: `${GACHAPON_DIR}/gold_gachapon.png`,
+        aspect: '405 / 776',
+        plate: { left: 13.1, top: 51.4, width: 63.4, height: 6.7, color: '#e6dfa9' },
+    },
+    silver: {
+        src: `${GACHAPON_DIR}/silver_gachapon.png`,
+        aspect: '410 / 776',
+        plate: { left: 13.9, top: 50.4, width: 63.7, height: 7.1, color: '#e4dfab' },
+    },
+    bronze: {
+        src: `${GACHAPON_DIR}/bronze_gachapon.png`,
+        aspect: '417 / 776',
+        plate: { left: 13.2, top: 49.5, width: 60.7, height: 7.1, color: '#e8b0d1' },
+    },
 };
 
-// Group items into rows
-const groupedSponsors = dummySponsors.reduce((acc, item) => {
-    const row = Math.ceil(item.id / 5);
-    if (!acc[row]) acc[row] = [];
-    acc[row].push(item);
-    return acc;
-}, {} as Record<number, GridItem[]>);
+// ---------------------------------------------------------------
+// 3. ONE MACHINE
+// ---------------------------------------------------------------
+const Gachapon: React.FC<SponsorItem> = ({ name, tier, url }) => {
+    const m = MACHINES[tier];
 
+    // Font size in cqw (1cqw = 1% of the machine's width), shrunk for
+    // long names so they fit the plate.
+    const fontSize = Math.min(8.5, 75 / Math.max(name.length, 1));
+
+    const content = (
+        <>
+            <img src={m.src} alt="" className="gachapon-img" draggable={false} />
+            <span
+                className="gachapon-plate"
+                style={{
+                    left: `${m.plate.left}%`,
+                    top: `${m.plate.top}%`,
+                    width: `${m.plate.width}%`,
+                    height: `${m.plate.height}%`,
+                    backgroundColor: m.plate.color,
+                    fontSize: `${fontSize.toFixed(2)}cqw`,
+                }}
+            >
+                {name}
+            </span>
+        </>
+    );
+
+    const className = `gachapon gachapon-${tier}`;
+    const style = { aspectRatio: m.aspect };
+
+    return url ? (
+        <a href={url} target="_blank" rel="noopener noreferrer" className={className} style={style} aria-label={name}>
+            {content}
+        </a>
+    ) : (
+        <div className={className} style={style} role="img" aria-label={`${name} (${tier} sponsor)`}>
+            {content}
+        </div>
+    );
+};
+
+// ---------------------------------------------------------------
+// 4. ONE TIER — filters SPONSORS by tier, renders a machine for each
+// ---------------------------------------------------------------
+const TierGroup: React.FC<{ tier: Tier; label: string }> = ({ tier, label }) => {
+    const items = SPONSORS.filter((s) => s.tier === tier);
+    if (items.length === 0) return null;
+
+    return (
+        <div className="tier-group">
+            <span className="tier-pill">{label}</span>
+            <div className="tier-machines">
+                {items.map((s) => (
+                    <Gachapon key={s.name} {...s} />
+                ))}
+            </div>
+        </div>
+    );
+};
+
+// ---------------------------------------------------------------
+// 5. "BECOME A SPONSOR" POLAROID — sits at the end of the tier row
+// ---------------------------------------------------------------
+const SponsorPolaroid: React.FC = () => (
+    <div className="sponsor-polaroid">
+        {/* White photo window with the coins — sits BEHIND the polaroid
+            image so the frame's outline stays on top */}
+        <div className="sponsor-polaroid-window" aria-hidden="true">
+            <span className="polaroid-sparkle polaroid-sparkle-1">✦</span>
+            <span className="polaroid-sparkle polaroid-sparkle-2">✦</span>
+            <span className="polaroid-sparkle polaroid-sparkle-3">✦</span>
+            <img src={`${GACHAPON_DIR}/Silver%20Coin.png`} alt="" className="polaroid-coin polaroid-coin-silver" draggable={false} />
+            <img src={`${GACHAPON_DIR}/Bronze%20Coin.png`} alt="" className="polaroid-coin polaroid-coin-bronze" draggable={false} />
+            <img src={`${GACHAPON_DIR}/Gold%20Coin.png`} alt="" className="polaroid-coin polaroid-coin-gold" draggable={false} />
+        </div>
+
+        <img
+            src={`${GACHAPON_DIR}/Polaroid%202.png`}
+            alt=""
+            className="sponsor-polaroid-img"
+            draggable={false}
+        />
+
+        {/* Green strip above the window — tag in the top right */}
+        <div className="sponsor-polaroid-top">
+            <span className="sponsor-polaroid-tag">AGES 18+</span>
+        </div>
+
+        {/* Green area under the window */}
+        <div className="sponsor-polaroid-body">
+            <p className="sponsor-polaroid-title">CAPSULE TOYS</p>
+            <p className="sponsor-polaroid-text">
+                Cool new sponsor-themed toys for just 75¢. Collect them all!
+            </p>
+            {/* Placeholder — no action yet */}
+            <button type="button" className="sponsor-polaroid-btn">
+                Become a sponsor →
+            </button>
+        </div>
+    </div>
+);
+
+// ---------------------------------------------------------------
+// 6. THE SECTION
+// ---------------------------------------------------------------
 const Sponsor: React.FC = () => {
     return (
         <div className='Sponsor-container w-full h-auto flex flex-col items-center p-6 py-20' id="Sponsor">
-
-            {/* <div className="header-3">
-                <h1>2026 Sponsors</h1>
-            </div> */}
-
-            {/* Grid & Row Rendering */}
-            {/* <div className='Sponsor-grid-wrapper w-full max-w-7xl mx-auto flex flex-col gap-6 md:gap-16 lg:gap-20'>
-
-                {Object.keys(groupedSponsors).map((rowKey) => {
-                    const rowId = parseInt(rowKey);
-                    const rowItems = groupedSponsors[rowId];
-
-                    return (
-                        <React.Fragment key={rowId}>
-
-                            {rowTitles[rowId] && (
-                                <div className="Sponsor-title-wrapper w-full text-center mb-6">
-                                    <h1 className='Sponsor-title text-3xl md:text-4xl tracking-widest'>
-                                        {rowTitles[rowId]}
-                                    </h1>
-                                </div>
-                            )}
-
-                            <div className='Sponsor-row grid grid-cols-5 gap-5 md:gap-10 lg:gap-12 w-full'>
-                                {rowItems.map((item) => {
-
-                                    const row = Math.ceil(item.id / 5);
-                                    const sizeClass = getBoxSizeClass(item.id, item.type);
-
-                                    const commonClasses = `
-                                        relative
-                                        w-full
-                                        flex items-center justify-center
-                                        transition-all duration-300 ease-in-out
-                                        ${item.type === 'box' ? 'sponsor-box rounded-lg' : ''}
-                                        ${sizeClass}
-                                        ${item.type === 'box' && row === 2 ? 'sponsor-row-2-box' : ''}
-                                        ${item.type === 'box' && row === 3 ? 'sponsor-row-3-box' : ''}
-                                    `;
-
-                                    return (
-                                        <div
-                                            key={item.id}
-                                            className={`Sponsor-placeholder ${item.type === 'vase' ? 'has-vase' : ''} ${commonClasses}`}
-                                        >
-
-                                            {item.type === 'vase' ? (
-                                                <picture className={`Vase-item ${item.vaseClass}`}>
-                                                    <source srcSet={item.imagePath.webp} type="image/webp" />
-                                                    <source srcSet={item.imagePath.png} type="image/png" />
-                                                    <img
-                                                        src={item.imagePath.png}
-                                                        alt={`Sponsor vase ${item.id}`}
-                                                        className='w-full h-full object-contain'
-                                                    />
-                                                </picture>
-                                            ) : (
-                                                <div className="Box-content w-full h-full p-4 flex items-center justify-center">
-                                                    <picture>
-                                                        <source srcSet={item.imagePath.webp} type="image/webp" />
-                                                        <source srcSet={item.imagePath.png} type="image/png" />
-                                                        <img
-                                                            src={item.imagePath.png}
-                                                            alt={`Sponsor ${item.id}`}
-                                                            className='max-w-[90%] max-h-[80%] object-contain opacity-70 transition-opacity duration-300'
-                                                        />
-                                                    </picture>
-                                                </div>
-                                            )}
-
-                                        </div>
-                                    );
-                                })}
-                            </div> 
-
-                        </React.Fragment>
-                    );
-                })}
-
-            </div> */}
-     
             {/* Contact Info */}
-            <div className="sponsor-text-container flex flex-col gap-y-5 flex-wrap items-center justify-center mt-20 font-gantari">
-                <p className='sponsor-text text-[#CCBA97] font-medium text-4xl md:text-5xl'>
+            <div className="sponsor-text-container flex flex-col gap-y-5 flex-wrap items-center justify-center mb-16">
+                <p className='sponsor-heading text-[#e4dfaa] font-medium text-4xl md:text-5xl'>
                     2027 Sponsors Coming Soon
                 </p>
-                <p className='sponsor-text text-[#CCBA97] font-medium text-2xl md:text-3xl text-center'>
+                <p className='sponsor-subtitle text-[#e4dfaa] font-medium text-2xl md:text-xl text-center max-w-4xl'>
                     Interested in sponsoring WEHack 2027? Contact us at wehackutd@gmail.com!
                 </p>
+            </div>
+
+
+            <div className="gachapon-grid">
+                <div className="tier-row">
+                    <TierGroup tier="gold" label="GOLD TIER" />
+                    <TierGroup tier="silver" label="SILVER TIER" />
+                    <TierGroup tier="bronze" label="BRONZE TIER" />
+                    <SponsorPolaroid />
+                </div>
             </div>
 
         </div>
