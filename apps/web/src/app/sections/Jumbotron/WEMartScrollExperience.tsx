@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import "./Jumbotron.css";
 
@@ -12,20 +12,39 @@ interface WEMartScrollExperienceProps {
 }
 
 // Pixel-exact INNER doorway opening inside the blue vertical jambs of wemart-hero.png:
-// Left inner jamb = 41.9% | Right inner jamb = 59.3% (width = 17.4%)
-// Top inner header = 69.8% | Bottom threshold = 96.4% (height = 26.6%)
-// Center vertical seam sits at 50.60% of the image = 50.0% of DOOR_WIDTH (41.9 + 17.4 * 0.50 = 50.60%).
 const DOOR_TOP = 69.4;
 const DOOR_LEFT = 42.25;
 const DOOR_WIDTH = 17.05;
 const DOOR_HEIGHT = 26.95;
-// Exact split on the 50.45% vertical seam: (50.45 - 42.25) / 17.05 * 100 = 48.094%
 const DOOR_SPLIT_PCT = 47.094;
-const DOOR_CENTER_X = DOOR_LEFT + (DOOR_WIDTH * DOOR_SPLIT_PCT) / 100; // 50.45%
+const DOOR_CENTER_X = DOOR_LEFT + (DOOR_WIDTH * DOOR_SPLIT_PCT) / 100;
 
-// Fixed reference coordinate canvases for both posters (locked aspect ratio matching the door glass panes)
+// Fixed reference coordinate canvases for both posters
 const POSTER_BASE_W = 340;
 const POSTER_BASE_H = 440;
+
+// Base width for Countdown-Updated.png (height computed from natural aspect ratio on load)
+const COUNTDOWN_BASE_W = 440;
+const DEFAULT_COUNTDOWN_ASPECT = 4 / 3;
+
+// Target: April 17, 2027 at 9:00 AM CDT (-05:00)
+const EVENT_TARGET_MS = new Date("2027-04-17T09:00:00-05:00").getTime();
+
+function getCountdownDigits(nowMs: number) {
+  const diff = Math.max(0, EVENT_TARGET_MS - nowMs);
+  const totalMinutes = Math.floor(diff / 60000);
+  const days = Math.floor(totalMinutes / (60 * 24));
+  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+  const mins = totalMinutes % 60;
+
+  return {
+    days,
+    h1: Math.floor(hours / 10),
+    h2: hours % 10,
+    m1: Math.floor(mins / 10),
+    m2: mins % 10,
+  };
+}
 
 // Default natural aspect ratio fallback for wemart-hero.png (auto-updated on image load)
 const DEFAULT_HERO_ASPECT = 16 / 10;
@@ -37,8 +56,13 @@ export default function WEMartScrollExperience({
   const contentWrapperRef = useRef<HTMLDivElement>(null);
   const exitRunwayRef = useRef<HTMLElement>(null);
 
-  // Track natural aspect ratio of wemart-hero.png so cover-rect math is 100% pixel-exact
+  const [countdown, setCountdown] = useState(() =>
+    getCountdownDigits(Date.now()),
+  );
+
+  // Track natural aspect ratios of wemart-hero.png and Countdown-Updated.png so cover/overlay math is 100% pixel-exact
   const heroAspectRef = useRef<number>(DEFAULT_HERO_ASPECT);
+  const countdownAspectRef = useRef<number>(DEFAULT_COUNTDOWN_ASPECT);
 
   // Persistent fixed stage (lifts smoothly upward once exit runway finishes so footer stays below)
   const stageRef = useRef<HTMLDivElement>(null);
@@ -74,19 +98,17 @@ export default function WEMartScrollExperience({
   const whiteFlashRef = useRef<HTMLDivElement>(null);
   const thankYouRef = useRef<HTMLDivElement>(null);
 
+  // Live countdown ticker
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setCountdown(getCountdownDigits(Date.now()));
+    }, 1000);
+    return () => window.clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     let rafId: number | null = null;
     let ticking = false;
-
-    // Preload wemart-hero.png to lock its exact natural aspect ratio
-    const probeImg = new window.Image();
-    probeImg.src = "/img/static/images/wemart-hero.png";
-    probeImg.onload = () => {
-      if (probeImg.naturalWidth > 0 && probeImg.naturalHeight > 0) {
-        heroAspectRef.current = probeImg.naturalWidth / probeImg.naturalHeight;
-        updateFrame();
-      }
-    };
 
     const updateFrame = () => {
       ticking = false;
@@ -119,7 +141,7 @@ export default function WEMartScrollExperience({
         imgLeft = (vw - imgW) / 2;
       }
 
-      // On narrow/portrait mobile viewports, shift horizontal focus toward DOOR_CENTER_X (50.60%)
+      // On narrow/portrait mobile viewports, shift horizontal focus toward DOOR_CENTER_X
       if (vw < vh) {
         const doorCenterPx = imgLeft + (imgW * DOOR_CENTER_X) / 100;
         const desiredCenterPx = vw * 0.5;
@@ -383,12 +405,14 @@ export default function WEMartScrollExperience({
           }
 
           if (rightPosterInnerRef.current) {
-            const targetW = rightLeafPxW * 0.64;
+            const cdW = COUNTDOWN_BASE_W;
+            const cdH = COUNTDOWN_BASE_W / countdownAspectRef.current;
+            rightPosterInnerRef.current.style.width = `${cdW}px`;
+            rightPosterInnerRef.current.style.height = `${cdH}px`;
+
+            const targetW = rightLeafPxW * 0.78;
             const targetH = leafPxH * 0.56;
-            const uniformScale = Math.min(
-              targetW / POSTER_BASE_W,
-              targetH / POSTER_BASE_H,
-            );
+            const uniformScale = Math.min(targetW / cdW, targetH / cdH);
             rightPosterInnerRef.current.style.transform = `translate(-50%, -50%) scale(${uniformScale})`;
           }
         }
@@ -432,6 +456,27 @@ export default function WEMartScrollExperience({
       }
     };
 
+    // Preload wemart-hero.png to lock its exact natural aspect ratio
+    const probeImg = new window.Image();
+    probeImg.src = "/img/static/images/wemart-hero.png";
+    probeImg.onload = () => {
+      if (probeImg.naturalWidth > 0 && probeImg.naturalHeight > 0) {
+        heroAspectRef.current = probeImg.naturalWidth / probeImg.naturalHeight;
+        updateFrame();
+      }
+    };
+
+    // Preload Countdown-Updated.png to lock its exact natural aspect ratio
+    const probeCountdown = new window.Image();
+    probeCountdown.src = "/img/static/images/Countdown-Updated.png";
+    probeCountdown.onload = () => {
+      if (probeCountdown.naturalWidth > 0 && probeCountdown.naturalHeight > 0) {
+        countdownAspectRef.current =
+          probeCountdown.naturalWidth / probeCountdown.naturalHeight;
+        updateFrame();
+      }
+    };
+
     const onScroll = () => {
       if (!ticking) {
         ticking = true;
@@ -450,7 +495,7 @@ export default function WEMartScrollExperience({
     };
   }, []);
 
-  // Exact pixel-matched slice ratios split dead-on the 50.60% middle dark-blue line
+  // Exact pixel-matched slice ratios
   const leftSplitPct = DOOR_SPLIT_PCT;
   const rightSplitPct = 100 - DOOR_SPLIT_PCT;
   const leftLeafW = (DOOR_WIDTH * leftSplitPct) / 100;
@@ -458,6 +503,9 @@ export default function WEMartScrollExperience({
   const invLeftWidthPct = (100 / leftLeafW) * 100;
   const invRightWidthPct = (100 / rightLeafW) * 100;
   const invHeightPct = (100 / DOOR_HEIGHT) * 100;
+
+  const daysStr = String(countdown.days).padStart(2, "0");
+  const isThreeDigitDays = daysStr.length >= 3;
 
   return (
     <>
@@ -467,7 +515,7 @@ export default function WEMartScrollExperience({
       />
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=IBM+Plex+Mono:wght@400;500;600;700&family=Zen+Maru+Gothic:wght@500;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=IBM+Plex+Mono:wght@400;500;600;700&family=Zen+Maru+Gothic:wght@500;700;900&display=swap"
       />
 
       {/* PERSISTENT FIXED VIEWPORT STAGE (z-index: 0, lifts upward when footer scrolls in) */}
@@ -578,8 +626,7 @@ export default function WEMartScrollExperience({
             zIndex: 6,
           }}
         >
-          {/* EXACT INNER DOORWAY OPENING (clipped strictly inside the inner blue vertical jambs):
-              Left inner jamb = 41.9% | Middle dark-blue seam = 50.60% | Right inner jamb = 59.3% */}
+          {/* EXACT INNER DOORWAY OPENING */}
           <div
             ref={doorsContainerRef}
             style={{
@@ -680,7 +727,7 @@ export default function WEMartScrollExperience({
         </div>
 
         {/* 3A. NATIVE 1:1 UNSCALED POSTER LAYER (z-index: 6):
-            Both posters locked to fixed 340x440 canvases and dead-centered inside each yellow glass pane */}
+            Left poster & right live countdown centered inside each yellow glass pane */}
         <div
           ref={sharpPostersOverlayRef}
           style={{
@@ -711,8 +758,8 @@ export default function WEMartScrollExperience({
               ref={leftPosterInnerRef}
               style={{
                 position: "absolute",
-                top: "49.5%",
-                left: "47.0%",
+                top: "50%",
+                left: "50%",
                 width: `${POSTER_BASE_W}px`,
                 height: `${POSTER_BASE_H}px`,
                 transformOrigin: "center center",
@@ -733,24 +780,35 @@ export default function WEMartScrollExperience({
                   zIndex: 1,
                   width: "100%",
                   height: "100%",
-                  padding: "36px 26px 32px 26px",
+                  boxSizing: "border-box",
+                  padding: "32px 24px",
                   display: "flex",
                   flexDirection: "column",
+                  alignItems: "center",
                   justifyContent: "center",
-                  gap: "14px",
+                  textAlign: "center",
+                  gap: "13px",
                 }}
               >
                 <h3
                   style={{
+                    width: "100%",
+                    margin: 0,
                     fontFamily:
                       "'Dela Gothic One', 'Zen Maru Gothic', sans-serif",
-                    color: "#00072D",
-                    fontSize: "21px",
-                    lineHeight: 1.15,
+                    color: "#538FDD",
+                    fontSize: "22px",
+                    lineHeight: 1.14,
                     letterSpacing: "0.02em",
                     textAlign: "center",
                     whiteSpace: "nowrap",
-                    textShadow: "1.5px 1.5px 0px #EFB5D5",
+                    textShadow: `
+                      -1.5px -1.5px 0 #FFFDF7,
+                       1.5px -1.5px 0 #FFFDF7,
+                      -1.5px  1.5px 0 #FFFDF7,
+                       1.5px  1.5px 0 #FFFDF7,
+                       3px    3px   0 #EFB5D5
+                    `,
                   }}
                 >
                   Dallas&apos; Largest
@@ -760,43 +818,70 @@ export default function WEMartScrollExperience({
 
                 <p
                   style={{
+                    width: "100%",
+                    margin: 0,
                     fontFamily: "'Zen Maru Gothic', sans-serif",
-                    fontWeight: 700,
-                    color: "#538FDD",
+                    fontWeight: 900,
+                    color: "#00072D",
                     fontSize: "14px",
                     lineHeight: 1.24,
+                    textAlign: "center",
+                    textShadow: "0.75px 0.75px 0px rgba(255, 253, 247, 0.9)",
                   }}
                 >
-                  The purpose of WEHack is to create an inclusive and
-                  encouraging environment for women, nonbinary genders, and all
-                  underrepresented groups in technology so that they can gain
-                  the skills and confidence to excel in future hackathons and
-                  the tech world.
+                  The purpose of{" "}
+                  <span
+                    style={{
+                      color: "#D63384",
+                      textShadow: "0.75px 0.75px 0px #FFFDF7",
+                    }}
+                  >
+                    WEHack
+                  </span>{" "}
+                  is to create an{" "}
+                  <span style={{ color: "#2563EB" }}>
+                    inclusive and encouraging environment
+                  </span>{" "}
+                  for women, nonbinary genders, and all underrepresented groups
+                  in technology so that they can gain the skills and confidence
+                  to excel in future hackathons and the tech world.
                 </p>
 
                 <p
                   style={{
+                    width: "100%",
+                    margin: 0,
                     fontFamily: "'Zen Maru Gothic', sans-serif",
-                    fontWeight: 700,
-                    color: "#538FDD",
+                    fontWeight: 900,
+                    color: "#00072D",
                     fontSize: "14px",
                     lineHeight: 1.24,
-                    paddingRight: "44px",
+                    textAlign: "center",
+                    textShadow: "0.75px 0.75px 0px rgba(255, 253, 247, 0.9)",
                   }}
                 >
-                  We aim to encourage more underrepresented individuals to
-                  harness their skills by creating software or hardware projects
-                  of their own. Whether it&apos;s networking with sponsors and
-                  hackers, gaining development and workshop experience, or
-                  competing against other teams for challenges and prizes,
-                  WEHack offers participants an opportunity to end the weekend
-                  with unique takeaways.
+                  We aim to empower underrepresented individuals to harness
+                  their skills by building{" "}
+                  <span style={{ color: "#2563EB" }}>
+                    software or hardware projects
+                  </span>{" "}
+                  of their own. Whether it&apos;s networking with sponsors,
+                  attending workshops, or competing for{" "}
+                  <span
+                    style={{
+                      color: "#D63384",
+                      textShadow: "0.75px 0.75px 0px #FFFDF7",
+                    }}
+                  >
+                    challenges and prizes
+                  </span>
+                  , WEHack offers unique takeaways all weekend.
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Right Poster Carrier (dead-centered inside right yellow glass pane) */}
+          {/* Right Poster Carrier (Live Countdown centered on right yellow door glass) */}
           <div
             ref={sharpRightPosterRef}
             style={{
@@ -815,46 +900,134 @@ export default function WEMartScrollExperience({
                 position: "absolute",
                 top: "49.5%",
                 left: "51.5%",
-                width: `${POSTER_BASE_W}px`,
-                height: `${POSTER_BASE_H}px`,
+                width: `${COUNTDOWN_BASE_W}px`,
+                height: `${COUNTDOWN_BASE_W / DEFAULT_COUNTDOWN_ASPECT}px`,
                 transformOrigin: "center center",
                 transform: "translate(-50%, -50%) scale(1)",
-                borderRadius: "2px",
-                border: "2px solid #00072D",
-                backgroundColor: "rgba(255, 253, 247, 0.96)",
-                padding: "32px 24px",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                textAlign: "center",
                 WebkitFontSmoothing: "antialiased",
               }}
             >
-              <span
-                style={{
-                  fontFamily: "'Zen Maru Gothic', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "16px",
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  color: "#E88D9C",
-                }}
-              >
-                Store Hours
-              </span>
-              <p
-                style={{
-                  marginTop: "10px",
-                  fontFamily: "'Zen Maru Gothic', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "20px",
-                  lineHeight: 1.25,
-                  color: "#00072D",
-                }}
-              >
-                Poster 2 Content
-              </p>
+              {/* Layer 0: Countdown Starburst Artwork */}
+              <img
+                src="/img/static/images/Countdown-Updated.png"
+                alt="Countdown to WEHack April 17, 2027"
+                className="absolute inset-0 h-full w-full object-fill"
+                style={{ zIndex: 0 }}
+              />
+
+              {/* Layer 1: 3 #C5D9EB Rectangles covering all yellow boxes & black outlines while leaving both ':' colons visible */}
+              {[
+                { left: "11.2%", width: "24.8%" }, // DAYS boxes
+                { left: "39.4%", width: "24.6%" }, // HOURS boxes
+                { left: "67.8%", width: "23.8%" }, // MINS boxes
+              ].map((rect, idx) => (
+                <div
+                  key={`cover-${idx}`}
+                  style={{
+                    position: "absolute",
+                    top: "42.2%",
+                    left: rect.left,
+                    width: rect.width,
+                    height: "15.2%",
+                    backgroundColor: "#C5D9EB",
+                    borderRadius: "4px",
+                    zIndex: 1,
+                    pointerEvents: "none",
+                  }}
+                />
+              ))}
+
+              {/* Layer 2: Live Countdown Digits with identical 8.0% spacing across DAYS, HOURS, and MINS */}
+              {isThreeDigitDays ? (
+                <>
+                  {[
+                    { val: daysStr[0], left: "15.6%" },
+                    { val: daysStr[1], left: "23.6%" },
+                    { val: daysStr[2], left: "31.6%" },
+                  ].map((slot, idx) => (
+                    <div
+                      key={`day-${idx}`}
+                      style={{
+                        position: "absolute",
+                        top: "49.8%",
+                        left: slot.left,
+                        transform: "translate(-50%, -50%)",
+                        fontFamily:
+                          "'Dela Gothic One', 'IBM Plex Mono', sans-serif",
+                        fontSize: "30px",
+                        fontWeight: 700,
+                        lineHeight: 1,
+                        color: "#00072D",
+                        textShadow: "1px 1px 0px #EFB5D5",
+                        textAlign: "center",
+                        userSelect: "none",
+                        zIndex: 2,
+                      }}
+                    >
+                      {slot.val}
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <>
+                  {[
+                    { val: daysStr[0], left: "19.6%" },
+                    { val: daysStr[1], left: "27.6%" },
+                  ].map((slot, idx) => (
+                    <div
+                      key={`day2-${idx}`}
+                      style={{
+                        position: "absolute",
+                        top: "49.8%",
+                        left: slot.left,
+                        transform: "translate(-50%, -50%)",
+                        fontFamily:
+                          "'Dela Gothic One', 'IBM Plex Mono', sans-serif",
+                        fontSize: "30px",
+                        fontWeight: 700,
+                        lineHeight: 1,
+                        color: "#00072D",
+                        textShadow: "1px 1px 0px #EFB5D5",
+                        textAlign: "center",
+                        userSelect: "none",
+                        zIndex: 2,
+                      }}
+                    >
+                      {slot.val}
+                    </div>
+                  ))}
+                </>
+              )}
+
+              {/* HOURS & MINS digits with matching 8.0% spacing centered inside their #C5D9EB rectangles */}
+              {[
+                { val: countdown.h1, left: "47.0%" },
+                { val: countdown.h2, left: "55.0%" },
+                { val: countdown.m1, left: "75.7%" },
+                { val: countdown.m2, left: "83.7%" },
+              ].map((slot, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    position: "absolute",
+                    top: "49.8%",
+                    left: slot.left,
+                    transform: "translate(-50%, -50%)",
+                    fontFamily:
+                      "'Dela Gothic One', 'IBM Plex Mono', sans-serif",
+                    fontSize: "30px",
+                    fontWeight: 700,
+                    lineHeight: 1,
+                    color: "#00072D",
+                    textShadow: "1px 1px 0px #EFB5D5",
+                    textAlign: "center",
+                    userSelect: "none",
+                    zIndex: 2,
+                  }}
+                >
+                  {slot.val}
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -1024,12 +1197,6 @@ export default function WEMartScrollExperience({
               className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-bold sm:gap-x-6 sm:text-sm"
               style={{ fontFamily: "'Zen Maru Gothic', sans-serif" }}
             >
-              <a
-                href="#about-wehack"
-                className="text-[#C5D9EB] transition-colors hover:text-[#EFB5D5]"
-              >
-                About
-              </a>
               <a
                 href="#Sponsor"
                 className="text-[#C5D9EB] transition-colors hover:text-[#EFB5D5]"
