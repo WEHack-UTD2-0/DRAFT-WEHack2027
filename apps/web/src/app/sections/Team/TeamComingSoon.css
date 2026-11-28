@@ -1,0 +1,200 @@
+/* ============================================================
+   "Meet the staff!" — COMING SOON placeholder
+   Builds on Team.css (heading, chip, basket, receipt); only the
+   new pieces live here. All classes start with tcs-.
+   ============================================================ */
+
+.tcs-section {
+  height: 260vh; /* shorter scroll than the full team section */
+}
+
+/* ---------- coming-soon note (left column) ---------- */
+.tcs-soon {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.tcs-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 700 14px var(--tm-mono);
+  letter-spacing: 0.16em;
+  color: var(--tm-ink);
+  background: var(--tm-butter);
+  border: 2px solid var(--tm-ink);
+  border-radius: 30px;
+  padding: 7px 16px 7px 13px;
+  box-shadow: 0 3px 0 var(--tm-blue);
+}
+.tcs-pill-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--tm-pink);
+  border: 1.5px solid var(--tm-ink);
+  animation: tcs-blink 1.4s ease-in-out infinite;
+}
+
+.tcs-note {
+  margin: 0;
+  max-width: 34ch;
+  font: 500 16px/1.55 var(--tm-maru);
+  color: var(--tm-pink-light);
+}
+
+/* ---------- COMING SOON receipt ---------- */
+.tcs-receipt {
+  transform: rotate(-3deg);
+  filter: drop-shadow(1px 3px 3px rgba(31, 29, 49, 0.35));
+}
+.tcs-r-title {
+  font-size: 9cqw;
+  letter-spacing: 0.02em;
+}
+
+.tcs-photo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5cqw;
+  background: var(--tm-pink-light);
+  color: var(--tm-plum);
+  font-family: var(--tm-maru);
+}
+.tcs-photo svg {
+  width: 14cqw;
+  height: 14cqw;
+}
+.tcs-photo-label {
+  font-size: 5.6cqw;
+  font-weight: 700;
+}
+.tcs-photo-sub {
+  font: 500 4.4cqw var(--tm-mono);
+  letter-spacing: 0.06em;
+}
+.tcs-dots i {
+  font-style: normal;
+  animation: tcs-dot 1.2s infinite;
+}
+.tcs-dots i:nth-child(2) { animation-delay: 0.2s; }
+.tcs-dots i:nth-child(3) { animation-delay: 0.4s; }
+
+/* little rubber stamp in the photo corner */
+.tcs-stamp {
+  position: absolute;
+  top: 4cqw;
+  right: 3cqw;
+  font: 400 4.6cqw var(--tm-title);
+  letter-spacing: 0.08em;
+  color: var(--tm-blue);
+  border: 0.8cqw solid var(--tm-blue);
+  border-radius: 2cqw;
+  padding: 0.8cqw 2cqw;
+  transform: rotate(12deg);
+  opacity: 0.9;
+}
+
+/* ---------- mascots ---------- */
+.tcs-mascot-pos {
+  position: absolute;
+  will-change: transform;
+}
+
+.tcs-mascot {
+  position: relative;
+  pointer-events: auto;
+  cursor: pointer;
+  outline: none;
+  transform: rotate(var(--tilt, 0deg));
+  animation: tcs-bob 3.2s ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+.tcs-mascot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  filter: drop-shadow(0 6px 6px rgba(31, 29, 49, 0.3));
+  transition: transform 0.35s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.tcs-mascot:hover img,
+.tcs-mascot:focus-visible img,
+.tcs-mascot.is-talking img {
+  transform: scale(1.06) rotate(-2deg);
+}
+.tcs-mascot:focus-visible img {
+  filter: drop-shadow(0 0 6px var(--tm-pink)) drop-shadow(0 6px 6px rgba(31, 29, 49, 0.3));
+}
+
+/* speech bubble */
+.tcs-bubble {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% - 6px);
+  z-index: 2;
+  width: max-content;
+  max-width: 270px;
+  padding: 9px 14px;
+  font: 700 17px/1.3 var(--tm-maru);
+  text-align: center;
+  color: var(--tm-ink);
+  background: #fff;
+  border: 2px solid var(--tm-ink);
+  border-radius: 16px;
+  box-shadow: 3px 3px 0 var(--tm-pink);
+  opacity: 0;
+  transform: translate(-50%, 8px) rotate(calc(var(--tilt, 0deg) * -1)) scale(0.85);
+  transform-origin: 50% 100%;
+  transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.3, 1.5, 0.5, 1);
+  pointer-events: none;
+}
+.tcs-bubble::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-right: 2px solid var(--tm-ink);
+  border-bottom: 2px solid var(--tm-ink);
+  transform: translate(-50%, -6px) rotate(45deg);
+}
+.tcs-mascot.is-talking .tcs-bubble {
+  opacity: 1;
+  transform: translate(-50%, 0) rotate(calc(var(--tilt, 0deg) * -1)) scale(1);
+}
+
+/* ---------- small screens ---------- */
+@media (max-width: 767px) {
+  .tcs-soon { align-items: center; gap: 10px; }
+  .tcs-note { font-size: 14px; text-align: center; max-width: 30ch; }
+  .tcs-section .tm-basket { top: calc(10vh + 300px); }
+  .tcs-bubble { font-size: 22px; max-width: 300px; } /* basket is scaled down on phones */
+}
+
+/* ---------- animations ---------- */
+@keyframes tcs-bob {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 -7px; }
+}
+@keyframes tcs-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.25; }
+}
+@keyframes tcs-dot {
+  0%, 20%  { opacity: 0.15; }
+  50%      { opacity: 1; }
+  100%     { opacity: 0.15; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tcs-mascot, .tcs-pill-dot, .tcs-dots i { animation: none; }
+  .tcs-mascot img, .tcs-bubble { transition: none; }
+}
